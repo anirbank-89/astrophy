@@ -26,5 +26,5 @@ router.use((req,res,next)=>{
     }
 })
 
-router.post('/product/addPrpduct',ProductController.create)
+// router.post('/product/addPrpduct',ProductController.create)
 module.exports = router;
