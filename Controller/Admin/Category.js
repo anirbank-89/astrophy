@@ -84,7 +84,7 @@ const update = async(req,res)=>{
             if(err)
             {
                 return res.status(500).json({
-                    success: false,
+                    status: false,
                     message: "Server error. Please try again.",
                     error: err,
                   });
@@ -93,7 +93,7 @@ const update = async(req,res)=>{
             {
                 data = { ...req.body, ...data._doc };
                 return res.status(200).json({
-                    success: true,
+                    status: true,
                     message: "Category update successful",
                     data: data,
                   });
@@ -101,7 +101,7 @@ const update = async(req,res)=>{
             else
             {
                 return res.status(500).json({
-                    success: false,
+                    status: false,
                     message: "Admin not match",
                     data: null,
                   });
@@ -115,14 +115,14 @@ const Delete = async(req,res)=>{
         {_id: { $in : [mongoose.Types.ObjectId(req.params.id)]}})
         .then((data)=>{
             return res.status(200).json({
-                success: true,
+                status: true,
                 message: 'Category delete successfully',
                 data: data
             });
         })
         .catch((err)=>{
             res.status(500).json({
-                success: false,
+                status: false,
                 message: 'Server error. Please try again.',
                 error: error,
             });
