@@ -76,7 +76,63 @@ const viewAll = async( req ,res )=>
     })
 }
 
+const update = async(req,res)=>{
+    return Category.findOneAndUpdate(
+        {_id:{ $in : [mongoose.Types.ObjectId(req.params.id)]}},
+        req.body,
+        async(err ,data)=>{
+            if(err)
+            {
+                return res.status(500).json({
+                    success: false,
+                    message: "Server error. Please try again.",
+                    error: err,
+                  });
+            }
+            else if(data!=null)
+            {
+                data = { ...req.body, ...data._doc };
+                return res.status(200).json({
+                    success: true,
+                    message: "Category update successful",
+                    data: data,
+                  });
+            }
+            else
+            {
+                return res.status(500).json({
+                    success: false,
+                    message: "Admin not match",
+                    data: null,
+                  });
+            }
+        }
+    )
+}
+
+const Delete = async(req,res)=>{
+    return Category.remove(
+        {_id: { $in : [mongoose.Types.ObjectId(req.params.id)]}})
+        .then((data)=>{
+            return res.status(200).json({
+                success: true,
+                message: 'Category delete successfully',
+                data: data
+            });
+        })
+        .catch((err)=>{
+            res.status(500).json({
+                success: false,
+                message: 'Server error. Please try again.',
+                error: error,
+            });
+        })
+    
+}
+
 module.exports = {
     create,
-    viewAll
+    viewAll,
+    update,
+    Delete
   };

@@ -30,4 +30,8 @@ router.use((req,res,next)=>{
 // router.post('/product/addPrpduct',ProductController.create)
 router.post('/category/Category',CategoryController.create)
 router.get('/category/Category',CategoryController.viewAll)
+router.put('/category/Category/:id',CategoryController.update)
+router.delete('/category/Category/:id',CategoryController.Delete)
+
+
 module.exports = router;
