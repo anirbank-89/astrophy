@@ -32,8 +32,10 @@ user.middleware = async (req, res, next) => {
             let authorization = req.headers.authorization
             let userData = null;
             let userType = typeof(req.headers.usertype) != "undefined" ? req.headers.usertype : "User";
-
-            userData = await AdminController.getTokenData(authorization);
+            console.log(userType);
+            if (userType == "Admin") {
+                userData = await AdminController.getTokenData(authorization);
+            }
            
 
            

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const ProductController = require('../../Controller/Admin/Product');
+const CategoryController = require('../../Controller/Admin/Category');
 
 
 
@@ -27,4 +28,6 @@ router.use((req,res,next)=>{
 })
 
 // router.post('/product/addPrpduct',ProductController.create)
+router.post('/category/Category',CategoryController.create)
+router.get('/category/Category',CategoryController.viewAll)
 module.exports = router;

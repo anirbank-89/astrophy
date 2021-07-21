@@ -22,6 +22,6 @@ const AdminRoute = require('./admin');
 
 
 
-// router.use('/admin', AdminRoute);
+router.use('/admin', AdminRoute);
 
 module.exports = router;
