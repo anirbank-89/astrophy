@@ -128,13 +128,13 @@ const update = async( req , res)=>
             else if (data != null) {
                 data = { ...req.body, ...data._doc };
                 res.status(200).json({
-                success: true,
+                status: true,
                 message: "Product update successful",
                 data: data,
                 });
             } else {
                 res.status(500).json({
-                success: false,
+                status: false,
                 message: "User not match",
                 data: null,
                 });
