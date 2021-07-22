@@ -105,6 +105,11 @@ const viewAll = async( req ,res )=>
 
 const update = async( req , res)=>
 {
+    if (typeof (req.file) !== "undefined" || req.file !== null) {
+        let image_url = await Upload.uploadFile(req, "products");
+        req.body.image = image_url;
+      }
+
     return Product.findOneAndUpdate({_id:{$id:[mongoose.Types.ObjectId(req.param.id)]}},
     req.body,
     async( err , data)=>

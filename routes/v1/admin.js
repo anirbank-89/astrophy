@@ -29,7 +29,7 @@ router.use((req,res,next)=>{
 
 router.post('/product/Product',upload.single("image"),ProductController.create)
 router.get('/product/Product',ProductController.viewAll)
-router.put('/product/Product/:id',ProductController.update)
+router.put('/product/Product/:id',upload.single("image"),ProductController.update)
 router.delete('/product/Product/:id',ProductController.Delete)
 
 router.post('/category/Category',CategoryController.create)
