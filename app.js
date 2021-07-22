@@ -36,14 +36,16 @@ app.use('/', indexRouter);
 // app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+
 
 app.use("/uploads",express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'admin')));
 app.use((req, res, next) => {
     res.sendFile(path.join(__dirname, "admin", "index.html"));
 });
+
+app.use(function(req, res, next) {
+    next(createError(404));
+  });
 
 module.exports = app;
