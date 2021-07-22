@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Category = require("../../Models/category");
 var passwordHash = require('password-hash');
-var {validator, Validator} = require('node-input-validator');
+const {Validator} = require('node-input-validator');
 var jwt = require('jsonwebtoken')
 var uuidv1 = require('uuid').v1;
 
@@ -41,7 +41,7 @@ const create = async(req,res)=>{
            })
         })
         .catch((error)=>{
-        res.status(200).json({
+        res.status(500).json({
             status: false,
             message: "Server error. Please try again.",
             error: error,
@@ -68,7 +68,7 @@ const viewAll = async( req ,res )=>
         })
     })
     .catch((err)=>{
-        res.status(200).json({
+        res.status(500).json({
             status: false,
             message: "Server error. Please try again.",
             error: error,
@@ -78,37 +78,32 @@ const viewAll = async( req ,res )=>
 
 const update = async(req,res)=>{
     return Category.findOneAndUpdate(
-        {_id:{ $in : [mongoose.Types.ObjectId(req.params.id)]}},
+        { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
         req.body,
-        async(err ,data)=>{
-            if(err)
-            {
-                return res.status(500).json({
-                    status: false,
-                    message: "Server error. Please try again.",
-                    error: err,
-                  });
-            }
-            else if(data!=null)
-            {
-                data = { ...req.body, ...data._doc };
-                return res.status(200).json({
-                    status: true,
-                    message: "Category update successful",
-                    data: data,
-                  });
-            }
-            else
-            {
-                return res.status(500).json({
-                    status: false,
-                    message: "Admin not match",
-                    data: null,
-                  });
-            }
+        async (err, data) => {
+          if (err) {
+            res.status(500).json({
+              success: false,
+              message: "Server error. Please try again.",
+              error: err,
+            });
+          } else if (data != null) {
+            data = { ...req.body, ...data._doc };
+            res.status(200).json({
+              success: true,
+              message: "Category update successful",
+              data: data,
+            });
+          } else {
+            res.status(500).json({
+              success: false,
+              message: "User not match",
+              data: null,
+            });
+          }
         }
-    )
-}
+      );
+    };
 
 const Delete = async(req,res)=>{
     return Category.remove(

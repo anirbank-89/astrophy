@@ -27,7 +27,8 @@ router.use((req,res,next)=>{
     }
 })
 
-// router.post('/product/addPrpduct',ProductController.create)
+router.post('/product/Product',upload.single("image"),ProductController.create)
+router.get('/product/Product',ProductController.viewAll)
 router.post('/category/Category',CategoryController.create)
 router.get('/category/Category',CategoryController.viewAll)
 router.put('/category/Category/:id',CategoryController.update)
