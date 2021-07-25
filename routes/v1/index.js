@@ -15,7 +15,8 @@ const middleware  = require('../../service/middleware').middleware;
 router.post('/admin/register', AdminController.register);
 router.post('/admin/login', AdminController.login);
 router.post('/user/register', UserController.register);
-router.post('/user/register', UserController.login);
+router.post('/user/login', UserController.login);
+router.post('/user/allproducts', UserController.viewAllProducts);
 
 /** ================================= without login url section end ================================ */
 router.use(middleware);

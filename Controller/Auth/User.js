@@ -1,4 +1,5 @@
 var User = require('../../Models/user');
+var Product = require('../../Models/product');
 var mongoose = require('mongoose');
 var passwordHash = require('password-hash');
 
@@ -58,7 +59,7 @@ const register = async(req,res)=>{
             message: 'Server error. Please try again.',
             error: error,
         });
-    })
+    });
 }
 
 const login = async(req,res) =>
@@ -73,7 +74,7 @@ const login = async(req,res) =>
         return res.status(401).json({
             status:false,
             error: v.errors
-        })
+        });
     }
 
     User.findOne({email:req.body.email})
@@ -86,7 +87,7 @@ const login = async(req,res) =>
                             error: err,
                         });
                 }
-                if(user.methods.comparePassword(req.body.password))
+                if(user.comparePassword(req.body.password))
                 {
                     return res.status(200).json({
                         status: true,
@@ -107,8 +108,25 @@ const login = async(req,res) =>
           )
 }
 
+const viewAllProducts = async (req,res)=>{
+    return Product.find({ '__v': 0 })
+    .then((data)=>{
+        res.status(200).json({
+            status: true,
+            message: "All v.0 products found",
+            data: data
+        });
+    }).catch((err)=>{
+        res.status(400).json({
+            status: true,
+            message: "Server error. Please try again."
+        });
+    });
+}
+
 module.exports = {
     getTokenData,
     register,
-    login
+    login,
+    viewAllProducts
 }

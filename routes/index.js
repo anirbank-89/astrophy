@@ -11,4 +11,5 @@ router.post('/', function(req, res, next) {
 });
 
 router.use('/v1/index',require('./v1/index'))
+router.use('/v1/admin',require('./v1/admin'))
 module.exports = router;
