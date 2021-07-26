@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 const ProductController = require('../../Controller/User/Product');
+const SubscriptionController = require('../../Controller/User/Subscription');
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -18,7 +20,8 @@ router.use((req,res,next)=>{
 });
 
 /** ================================= with login url ================================= */
-router.get('/product/viewall',ProductController.viewProductList)
+// router.get('/product/viewall',ProductController.viewProductList)
+router.get('/listSubs', SubscriptionController.viewAllsubscription);
 /** ================================= with login url section end ================================ */
 
 module.exports = router;

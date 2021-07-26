@@ -20,7 +20,7 @@ router.post('/admin/login', AdminController.login);
 router.post('/user/register', UserController.register);
 router.post('/user/login', UserController.login);
 router.get('/user/listProducts', UserController.viewProductList);
-router.get('/user/listSubs', UserController.viewAllsubscription);
+
 
 
 

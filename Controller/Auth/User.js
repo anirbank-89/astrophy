@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
 var User = require('../../Models/user');
 var Product = require('../../Models/product');
-var Subsciption = require('../../Models/subscription');
 var passwordHash = require('password-hash');
 
 var jwt = require('jsonwebtoken');
