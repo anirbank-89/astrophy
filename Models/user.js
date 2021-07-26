@@ -30,6 +30,11 @@ let UserSchema = new Schema({
         type:String,
         required:false,
         unique:true
+    },
+    type:{
+        type:String,
+        required:false,
+        dafault:'User'
     }
 });
 UserSchema.methods.comparePassword = function (candidatePassword) {
