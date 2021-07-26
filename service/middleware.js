@@ -6,7 +6,7 @@
  */
 var user = {};
 var AdminController = require('../Controller/Auth/Admin');
-
+var UserController = require('../Controller/Auth/User');
 
 
 
@@ -17,6 +17,12 @@ const parmisoen = [
     },
     {
         url: "/admin/register",
+    },
+    {
+        url: "/user/login",
+    },
+    {
+        url: "/user/register",
     }
 
 ]
@@ -36,7 +42,9 @@ user.middleware = async (req, res, next) => {
             if (userType == "Admin") {
                 userData = await AdminController.getTokenData(authorization);
             }
-           
+            if (userType == "User") {
+                userData = await UserController.getTokenData(authorization);
+            }
 
            
             if (userData && userData != null) {
