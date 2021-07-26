@@ -3,6 +3,7 @@ var router = express.Router();
 
 const ProductController = require('../../Controller/Admin/Product');
 const CategoryController = require('../../Controller/Admin/Category');
+const SubscriptionController = require('../../Controller/Admin/Subscription');
 
 
 
@@ -31,6 +32,14 @@ router.post('/product/Product',upload.single("image"),ProductController.create)
 router.get('/product/Product',ProductController.viewAll)
 router.put('/product/Product/:id',upload.single("image"),ProductController.update)
 router.delete('/product/Product/:id',ProductController.Delete)
+
+router.post('/subscription',SubscriptionController.create)
+router.get('/subscription',SubscriptionController.viewAll)
+router.put('/subscription/:id',SubscriptionController.update)
+router.delete('/subscription/:id',SubscriptionController.Delete)
+
+
+
 
 router.post('/category/Category',CategoryController.create)
 router.get('/category/Category',CategoryController.viewAll)

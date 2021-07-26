@@ -40,7 +40,7 @@ const register = async(req,res)=>{
     const admin = new Admin(adminData)
 
     return admin.save().then((data)=>{
-        return res.status(200).json({
+            res.status(200).json({
             status: true,
             success: true,
             message: 'New Admin created successfully',
