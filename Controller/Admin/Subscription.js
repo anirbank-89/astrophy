@@ -12,6 +12,7 @@ const create = async( req , res )=>
 {
     let v = new Validator(req.body,{
         name:"required",
+        description:"required",
         seller_comission:"required",
         duration:"required",
         price:"required",
@@ -30,6 +31,7 @@ const create = async( req , res )=>
     let subdata = {
         _id:mongoose.Types.ObjectId(),
         name:req.body.name,
+        description:req.body.description,
         seller_comission:req.body.seller_comission,
         duration:req.body.duration,
         price:req.body.price,

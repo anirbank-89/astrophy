@@ -6,6 +6,10 @@ const SubscriptionSchema = new mongoose.Schema({
         type:String,
         required:true,        
     },
+    description:{
+        type:String,
+        required:true,        
+    },
     seller_comission:{
         type:Number,
         required:true
