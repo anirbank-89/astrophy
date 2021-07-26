@@ -34,7 +34,7 @@ let UserSchema = new Schema({
     type:{
         type:String,
         required:false,
-        dafault:'User'
+        default:'User'
     },
     start: {
 		type: Date,
