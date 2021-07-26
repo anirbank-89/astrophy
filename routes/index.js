@@ -10,6 +10,6 @@ router.post('/', function(req, res, next) {
   return res.send({status:true})
 });
 
-router.use('/v1/index',require('./v1/index'))
-router.use('/v1/admin',require('./v1/admin'))
+router.use('/v1', require('./v1'));
+
 module.exports = router;

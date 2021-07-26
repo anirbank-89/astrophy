@@ -1,5 +1,6 @@
-var User = require('../../Models/user');
 var mongoose = require('mongoose');
+var User = require('../../Models/user');
+var Product = require('../../Models/product');
 var passwordHash = require('password-hash');
 
 var jwt = require('jsonwebtoken');
@@ -78,15 +79,15 @@ const login = async(req,res) =>
 
     User.findOne({email:req.body.email})
           .then(user =>{
-                if(user.length < 1 )
+                if(user!=null && user!='' && user.length < 1 )
                 {
                     return res.status(401).json({
                             status: false,
                             message: 'Server error. Please try again.',
-                            error: err,
+                            error: 'Server Error',
                         });
                 }
-                if(user.comparePassword(req.body.password))
+                if(user!=null && user!='' && user.comparePassword(req.body.password))
                 {
                     return res.status(200).json({
                         status: true,
@@ -99,7 +100,7 @@ const login = async(req,res) =>
                     return res.status(200).json({
                         status: false,
                         message: 'Server error. Please try again.',
-                        error: err,
+                        error: 'Server Error',
                     });
                 }
             }
@@ -107,8 +108,43 @@ const login = async(req,res) =>
           )
 }
 
+const viewProductList = async( req ,res )=>
+{
+    return Product.aggregate(
+        [
+            {
+                $lookup:{
+                    from:"categories",
+                    localField:"catID",
+                    foreignField: "_id",
+                    as:"category_data"
+                }
+            },
+            {
+                $project:{
+                    _v:0
+                }
+            }
+        ]
+    ).then((data)=>{
+        res.status(200).json({
+            status:true,
+            message:'Product Data Get Successfully',
+            data:data
+        })
+    })
+    .catch((err)=>{
+        res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            error: error,
+          });
+    })
+}
+
 module.exports = {
     getTokenData,
     register,
-    login
+    login,
+    viewProductList
 }

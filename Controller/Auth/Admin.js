@@ -102,15 +102,15 @@ const login = async(req,res) =>
     Admin.findOne({email:req.body.email})
         //   .exe()
           .then(admin =>{
-                if(admin.length < 1 )
+                if(admin!=null && admin!='' && admin.length < 1 )
                 {
                     return res.status(401).json({
                             status: false,
                             message: 'Server error. Please try again.',
-                            error: err,
+                            error: 'Server Error',
                         });
                 }
-                if(admin.comparePassword(req.body.password))
+                if(admin!=null && admin!='' && admin.comparePassword(req.body.password))
                 {
                     return res.status(200).json({
                         status: true,
@@ -123,7 +123,7 @@ const login = async(req,res) =>
                     return res.status(200).json({
                         status: false,
                         message: 'Server error. Please try again.',
-                        error: err,
+                        error: 'Server Error',
                     });
                 }
             }
