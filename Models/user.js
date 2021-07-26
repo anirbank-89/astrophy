@@ -35,7 +35,12 @@ let UserSchema = new Schema({
         type:String,
         required:false,
         dafault:'User'
-    }
+    },
+    start: {
+		type: Date,
+		default: Date.now,
+		required: false
+	}
 });
 UserSchema.methods.comparePassword = function (candidatePassword) {
     return passwordHash.verify(candidatePassword, this.password);
