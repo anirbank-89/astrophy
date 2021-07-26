@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var User = require('../../Models/user');
 var Product = require('../../Models/product');
+var Subsciption = require('../../Models/subscription');
 var passwordHash = require('password-hash');
 
 var jwt = require('jsonwebtoken');
@@ -142,9 +143,36 @@ const viewProductList = async( req ,res )=>
     })
 }
 
+const viewAllsubscription = async( req , res)=>{
+    return Subsciption.aggregate(
+        [
+            {
+                $project:{
+                    _v:0
+                }
+            }
+        ]
+    )
+    .then((data)=>{
+        res.status(200).json({
+            status:true,
+            message:'Subscription Data Get Successfully',
+            data:data
+        })
+    })
+    .catch((err)=>{
+        res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            error: error,
+          });
+    })
+}
+
 module.exports = {
     getTokenData,
     register,
     login,
-    viewProductList
+    viewProductList,
+    viewAllsubscription
 }

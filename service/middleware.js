@@ -26,6 +26,9 @@ const parmisoen = [
     },
     {
         url: "/user/listProducts",
+    },
+    {
+        url: "/user/listSubs",
     }
 
 ]
