@@ -103,22 +103,6 @@ const viewAll = async( req ,res )=>
     })
 }
 
-const viewPerCategory = async (req,res)=>{
-    return Product.find({ 'products.__v': 0 })
-      .then((data)=>{
-          res.status(200).json({
-              status: true,
-              message: "All v.0 products found",
-              data: data
-          });
-      }).catch((err)=>{
-          res.status(400).json({
-              status: true,
-              message: "Server error. Please try again."
-          });
-      });
-}
-
 const update = async( req , res)=>
 {
     console.log(req.file)
@@ -183,7 +167,6 @@ const Delete = async(req,res)=>{
 module.exports = {
     create,
     viewAll,
-    viewPerCategory,
     update,
     Delete
 }

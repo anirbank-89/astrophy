@@ -16,15 +16,15 @@ router.post('/admin/register', AdminController.register);
 router.post('/admin/login', AdminController.login);
 router.post('/user/register', UserController.register);
 router.post('/user/login', UserController.login);
-router.post('/user/allproducts', UserController.viewAllProducts);
 
 /** ================================= without login url section end ================================ */
 router.use(middleware);
 
 const AdminRoute = require('./admin');
-
+const UserRoute = require('./user');
 
 
 router.use('/admin', AdminRoute);
+router.use('/user', UserRoute);
 
 module.exports = router;

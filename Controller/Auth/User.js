@@ -1,5 +1,4 @@
 var User = require('../../Models/user');
-var Product = require('../../Models/product');
 var mongoose = require('mongoose');
 var passwordHash = require('password-hash');
 
@@ -108,25 +107,8 @@ const login = async(req,res) =>
           )
 }
 
-const viewAllProducts = async (req,res)=>{
-    return Product.find({ '__v': 0 })
-    .then((data)=>{
-        res.status(200).json({
-            status: true,
-            message: "All v.0 products found",
-            data: data
-        });
-    }).catch((err)=>{
-        res.status(400).json({
-            status: true,
-            message: "Server error. Please try again."
-        });
-    });
-}
-
 module.exports = {
     getTokenData,
     register,
-    login,
-    viewAllProducts
+    login
 }
