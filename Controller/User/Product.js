@@ -39,6 +39,29 @@ const viewProductList = async( req ,res )=>
     })
 }
 
+const viewSingleProduct = async (req,res)=>{
+    let id=req.params.id;
+    return Product.findOne(
+        {_id: { $in : [mongoose.Types.ObjectId(id)] } },
+        (err,docs)=>{
+        if(err){
+            res.status(400).json({
+                status: false,
+                message: "Server error. Data not available",
+                error: err
+            });
+        }
+        else {
+            res.status(200).json({
+                status: true,
+                message: "Product get successfully",
+                data: docs
+            });
+        }
+    });
+}
+
 module.exports = {
     viewProductList,
+    viewSingleProduct,
 }

@@ -22,6 +22,7 @@ router.use((req,res,next)=>{
 /** ================================= with login url ================================= */
 // router.get('/product/viewall',ProductController.viewProductList)
 router.get('/listSubs', SubscriptionController.viewAllsubscription);
+router.post('/subscription-purchase', SubscriptionController.newSubscription);
 /** ================================= with login url section end ================================ */
 
 module.exports = router;

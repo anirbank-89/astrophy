@@ -1,8 +1,11 @@
 var mongoose = require('mongoose');
+var moment = require('moment-timezone');
 var jwt = require('jsonwebtoken');
 var uuidv1 = require('uuid').v1;
 
 var Subsciption = require('../../Models/subscription');
+var SubscribedBy = require('../../Models/subscr_purchase');
+var User = require('../../Models/user');
 
 const viewAllsubscription = async( req , res)=>{
     return Subsciption.aggregate(
@@ -30,6 +33,41 @@ const viewAllsubscription = async( req , res)=>{
     })
 }
 
+const newSubscription = async (req,res)=>{
+    let userData = {
+        _id:mongoose.Types.ObjectId(),
+        userid: mongoose.Types.ObjectId(req.body.userid),
+        subscr_id:mongoose.Types.ObjectId(req.body.subscr_id),
+        seller_comission:req.body.seller_comission,
+        price:req.body.price,
+        subscribed_on: moment.tz(Date.now(), "Asia/Kolkata")
+    }
+    let new_subscription = new SubscribedBy(userData);
+
+    return new_subscription.save().then((data)=>{
+        // console.log(data);
+        res.status(200).json({
+            status: true,
+            success: true,
+            message: "New subscription applied successfully.",
+            data: data
+        });
+    }).catch((err)=>{
+        res.status(500).json({
+            status: false,
+            success: false,
+            message: "Server error. Please try again.",
+            error: err
+        });
+    })
+
+    User.findOneAndUpdate(
+        { _id: { $in : [mongoose.Types.ObjectId(req.body.userid)] } },
+        {type: "Seller"}
+    );
+}
+
 module.exports = {
-    viewAllsubscription
+    viewAllsubscription,
+    newSubscription,
 }
