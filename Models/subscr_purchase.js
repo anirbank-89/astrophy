@@ -1,10 +1,9 @@
 var mongoose = require('mongoose');
 var moment = require('moment-timezone');
 var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata")
-var Schema = mongoose.Schema;
 
-const UserSubsriptionSchema = new Schema({
-    _id:Schema.Types.ObjectId,
+const UserSubsriptionSchema = new mongoose.Schema({
+    _id:mongoose.Schema.Types.ObjectId,
     userid:{
         type: mongoose.Schema.Types.ObjectId,
         required: true

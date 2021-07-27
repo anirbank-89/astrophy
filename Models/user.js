@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 const passwordHash = require('password-hash');
-const Schema = mongoose.Schema;
 
-let UserSchema = new Schema({
-    _id:Schema.Types.ObjectId,
+let UserSchema = new mongoose.Schema({
+    _id:mongoose.Schema.Types.ObjectId,
     firstName:{
         type: String,
         required: true

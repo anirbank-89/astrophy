@@ -46,12 +46,24 @@ const newSubscription = async (req,res)=>{
 
     return new_subscription.save().then((data)=>{
         // console.log(data);
-        res.status(200).json({
-            status: true,
-            success: true,
-            message: "New subscription applied successfully.",
-            data: data
+        User.findOneAndUpdate(
+            {_id:req.body.userid}, 
+            { 
+                $set: {'type':'Seller'}
+            },
+            {
+                returnNewDocument: true
+            }
+        , function( error, result){
+            // data.user_data = result
+            res.status(200).json({
+                status: true,
+                success: true,
+                message: "New subscription applied successfully.",
+                data: data
+            });
         });
+        
     }).catch((err)=>{
         res.status(500).json({
             status: false,
@@ -61,10 +73,7 @@ const newSubscription = async (req,res)=>{
         });
     })
 
-    User.findOneAndUpdate(
-        { _id: { $in : [mongoose.Types.ObjectId(req.body.userid)] } },
-        {type: "Seller"}
-    );
+    
 }
 
 module.exports = {
