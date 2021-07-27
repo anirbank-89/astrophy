@@ -38,6 +38,9 @@ router.get('/subscription',SubscriptionController.viewAll)
 router.put('/subscription/:id',SubscriptionController.update)
 router.delete('/subscription/:id',SubscriptionController.Delete)
 
+router.get('/subscription/purchasehistory',SubscriptionController.subscriptionHistory)
+
+
 
 
 

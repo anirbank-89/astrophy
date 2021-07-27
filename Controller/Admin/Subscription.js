@@ -1,6 +1,8 @@
 var mongoose = require('mongoose')
 var passwordHash = require('password-hash')
 var Subsciption = require('../../Models/subscription');
+var SubscribedBy = require('../../Models/subscr_purchase');
+var User = require('../../Models/user');
 
 var jwt = require('jsonwebtoken');
 
@@ -132,9 +134,68 @@ const Delete = async(req ,res ) =>
             })
 }
 
+const subscriptionHistory = async( req ,res )=>
+{
+    return SubscribedBy.aggregate(
+        [
+            {
+                $project:{
+                    _v:0
+                }
+            },
+            {
+                $lookup:{
+                    from:"subscriptions",
+                    localField:"subscr_id",
+                    foreignField:"_id",
+                    as:"subscription_data"
+                }
+            },
+            {
+                $lookup:{
+                    from:"users",
+                    localField:"userid",
+                    foreignField:"_id",
+                    as:"user_data"
+                }
+            }
+
+        ]
+    )
+    .then((data)=>{
+        if(data!=null && data!='')
+        {
+            res.status(200).send({
+                status:true,
+                data:data,
+                error:null,
+                message:"Subscription History Data Get Successfully"
+            })
+        }
+        else
+        {
+            res.status(400).send({
+                status:false,
+                data:null,
+                error:'No Data',
+            })
+        }
+    })
+    .catch((err)=>{
+        res.status(500).send({
+            status:false,
+            data:null,
+            error:err,
+            message:'Server Error'
+        })
+    })
+}
+
+
 module.exports={
     create,
     viewAll,
     update,
-    Delete
+    Delete,
+    subscriptionHistory
 }
