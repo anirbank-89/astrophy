@@ -23,6 +23,11 @@ const UserSubsriptionSchema = new mongoose.Schema({
     subscribed_on:{
         type: Date,
         default: dateKolkata
+    },
+    status: {
+        type: Boolean,
+        required: false,
+        default: true
     }
 });
 

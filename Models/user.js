@@ -39,7 +39,12 @@ let UserSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now,
 		required: false
-	}
+	},
+    status: {
+        type: Boolean,
+        required: false,
+        default: true
+    }
 });
 UserSchema.methods.comparePassword = function (candidatePassword) {
     return passwordHash.verify(candidatePassword, this.password);

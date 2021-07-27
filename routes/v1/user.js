@@ -21,7 +21,7 @@ router.use((req,res,next)=>{
 
 /** ================================= with login url ================================= */
 // router.get('/product/viewall',ProductController.viewProductList)
-router.get('/listSubs', SubscriptionController.viewAllsubscription);
+router.get('/listSubs/:id', SubscriptionController.viewAllsubscription);
 router.post('/subscription-purchase', SubscriptionController.newSubscription);
 /** ================================= with login url section end ================================ */
 
