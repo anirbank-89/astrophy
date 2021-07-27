@@ -21,7 +21,7 @@ const viewAllsubscription = async (req, res) => {
               $expr: {
                 $and: [
                   { $eq: ["$userid", mongoose.Types.ObjectId(req.params.id)] },
-                  { $eq: ["$subscr_id", "$$subscr_id"] }
+                  { $eq: ["$subscr_id", "$$subscr_id"] },
                 ],
               },
             },
@@ -53,64 +53,58 @@ const viewAllsubscription = async (req, res) => {
 };
 
 const newSubscription = async (req, res) => {
-  let userData = {
-    _id: mongoose.Types.ObjectId(),
+  let subData = await SubscribedBy.findOne({
     userid: mongoose.Types.ObjectId(req.body.userid),
     subscr_id: mongoose.Types.ObjectId(req.body.subscr_id),
-    seller_comission: req.body.seller_comission,
-    price: req.body.price,
-    subscribed_on: moment.tz(Date.now(), "Asia/Kolkata"),
-  };
-  let new_subscription = new SubscribedBy(userData);
+    status: true,
+  }).exec();
+  if (subData == null || subData == "") {
+    let userData = {
+      _id: mongoose.Types.ObjectId(),
+      userid: mongoose.Types.ObjectId(req.body.userid),
+      subscr_id: mongoose.Types.ObjectId(req.body.subscr_id),
+      seller_comission: req.body.seller_comission,
+      price: req.body.price,
+      subscribed_on: moment.tz(Date.now(), "Asia/Kolkata"),
+    };
+    let new_subscription = new SubscribedBy(userData);
 
-  return new_subscription
-    .save()
-    .then((data) => {
-      // console.log(data);
-      User.findOneAndUpdate(
-        { _id: req.body.userid },
-        {
-          $set: { type: "Seller" },
-        },
-        {
-          returnNewDocument: true,
-        },
-        function (error, result) {
-          // data.user_data = result
-          res.status(200).json({
-            status: true,
-            success: true,
-            message: "New subscription applied successfully.",
-            data: data,
-          });
-        }
-      );
-    })
-    .catch((err) => {
-      res.status(500).json({
-        status: false,
-        success: false,
-        message: "Server error. Please try again.",
-        error: err,
+    return new_subscription
+      .save()
+      .then((data) => {
+        User.findOneAndUpdate(
+          { _id: req.body.userid },
+          {
+            $set: { type: "Seller" },
+          },
+          {
+            returnNewDocument: true,
+          },
+          function (error, result) {
+            res.status(200).json({
+              status: true,
+              success: true,
+              message: "New subscription applied successfully.",
+              data: data,
+            });
+          }
+        );
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          success: false,
+          message: "Server error. Please try again.",
+          error: err,
+        });
       });
+  } else {
+    return res.status(500).json({
+      status: false,
+      success: false,
+      message: "Subscription Exists",
     });
-
-  // User.findOneAndUpdate(
-  //     { _id: { $in : [mongoose.Types.ObjectId(req.body.userid)] } },
-  //     {type: "Seller"}, ()
-  // );
-  User.findOneAndUpdate(
-    { _id: { $in: [mongoose.Types.ObjectId(req.body.userid)] } },
-    { type: "Seller" },
-    null,
-    function (err, docs) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("Original Doc : ", docs);
-      }
-    }
-  );
+  }
 };
 
 module.exports = {
