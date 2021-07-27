@@ -31,9 +31,6 @@ const viewAllsubscription = async (req, res) => {
       },
     },
     {
-        $unwind: "$speakers",
-    },
-    {
       $project: {
         _v: 0,
       },
