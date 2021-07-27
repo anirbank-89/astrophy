@@ -73,7 +73,19 @@ const newSubscription = async (req,res)=>{
         });
     })
 
-    
+    // User.findOneAndUpdate(
+    //     { _id: { $in : [mongoose.Types.ObjectId(req.body.userid)] } },
+    //     {type: "Seller"}, ()
+    // );
+    User.findOneAndUpdate({ _id: { $in : [mongoose.Types.ObjectId(req.body.userid)] } }, 
+        {type:"Seller"}, null, function (err, docs) {
+        if (err){
+            console.log(err)
+        }
+        else{
+            console.log("Original Doc : ",docs);
+        }
+    });
 }
 
 module.exports = {
