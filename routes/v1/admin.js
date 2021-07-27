@@ -52,7 +52,4 @@ router.delete('/category/Category/:id',CategoryController.Delete)
 router.get('/userlist', UserSellersController.viewUserList)     // added by anirbank-93
 router.get('/sellerlist', UserSellersController.viewSellerList) // added by anirbank-93
 
-router.get('/userlist', UserSellersController.viewUserList)     // added by anirbank-93
-router.get('/sellerlist', UserSellersController.viewSellerList) // added by anirbank-93
-
 module.exports = router;
