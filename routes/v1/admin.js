@@ -4,7 +4,8 @@ var router = express.Router();
 const ProductController = require('../../Controller/Admin/Product');
 const CategoryController = require('../../Controller/Admin/Category');
 const SubscriptionController = require('../../Controller/Admin/Subscription');
-const UserSellersController = require('../../Controller/Admin/UserSellers');    // added by anirbank-93
+const UserSellersController = require('../../Controller/Admin/UserSellers');  // added by anirbank-93
+const ServiceController = require('../../Controller/Admin/Service');         // added by anirbank-93
 
 
 const multer = require('multer');
@@ -50,6 +51,13 @@ router.put('/category/Category/:id',CategoryController.update)
 router.delete('/category/Category/:id',CategoryController.Delete)
 
 router.get('/userlist', UserSellersController.viewUserList)     // added by anirbank-93
+router.get('/viewuser/:id', UserSellersController.viewUser)     // added by anirbank-93
 router.get('/sellerlist', UserSellersController.viewSellerList) // added by anirbank-93
+router.get('/viewseller/:id', UserSellersController.viewSeller)  // added by anirbank-93
+
+router.post('/service',upload.single("image"),ServiceController.create) // added by anirbank-93
+router.get('/service', ServiceController.viewAll)                       // added by anirbank-93
+router.put('/service/:id',upload.single("image"),ServiceController.update)// added by anirbank-93
+router.delete('/service/:id', ServiceController.Delete)                   // added by anirbank-93
 
 module.exports = router;
