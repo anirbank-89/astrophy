@@ -2,7 +2,9 @@ var express = require('express');
 var router = express.Router();
 
 const ProductController = require('../../Controller/User/Product');
-const SubscriptionController = require('../../Controller/User/Subscription');
+const SubscriptionController = require('../../Controller/User/Subscription');// added by anirbank-93
+const ServiceController = require('../../Controller/User/Service');          // added by anirbank-93
+const ShopController = require('../../Controller/User/Shop');                // added by anirbank-93
 
 
 /* GET home page. */
@@ -22,7 +24,16 @@ router.use((req,res,next)=>{
 /** ================================= with login url ================================= */
 // router.get('/product/viewall',ProductController.viewProductList)
 router.get('/listSubs/:id', SubscriptionController.viewAllsubscription);
-router.post('/subscription-purchase', SubscriptionController.newSubscription);
+router.post('/subscription-purchase', SubscriptionController.newSubscription);// added by anirbank-93
+
+router.get('/service', ServiceController.viewAllServices); // added by anirbank-93
+router.get('/service/:id', ServiceController.viewService); // added by anirbank-93
+
+router.post('/shop', ShopController.register);             // added by anirbank-93
+router.get('/shop', ShopController.viewAllShops);          // added by anirbank-93
+router.get('/shop/:id', ShopController.viewShop);          // added by anirbank-93
+router.put('/shop/:id', ShopController.editShop);          // added by anirbank-93
+router.delete('/shop/:id', ShopController.deleteShop);     // added by anirbank-93
 /** ================================= with login url section end ================================ */
 
 module.exports = router;
