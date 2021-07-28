@@ -55,7 +55,6 @@ const viewAllsubscription = async (req, res) => {
 const newSubscription = async (req, res) => {
   let subData = await SubscribedBy.findOne({
     userid: mongoose.Types.ObjectId(req.body.userid),
-    subscr_id: mongoose.Types.ObjectId(req.body.subscr_id),
     status: true,
   }).exec();
   if (subData == null || subData == "") {
