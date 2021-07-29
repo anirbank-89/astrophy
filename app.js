@@ -39,10 +39,10 @@ app.use('/', indexRouter);
 
 
 app.use("/uploads",express.static(path.join(__dirname, 'uploads')));
-app.use(express.static(path.join(__dirname, 'build')));
-app.use((req, res, next) => {
-    res.sendFile(path.join(__dirname, "build", "index.html"));
-});
+// app.use(express.static(path.join(__dirname, 'build')));
+// app.use((req, res, next) => {
+//     res.sendFile(path.join(__dirname, "build", "index.html"));
+// });
 
 app.use(function(req, res, next) {
     next(createError(404));
