@@ -57,7 +57,7 @@ const create = async (req,res)=>{
       });
 }
 
-const viewAll = async (req,res)=>{
+const viewAllServices = async (req,res)=>{
     return Service.find()
       .then((docs)=>{
           res.status(200).json({
@@ -143,7 +143,7 @@ const Delete = async (req,res)=>{
 
 module.exports = {
     create,
-    viewAll,
+    viewAllServices,
     update,
     Delete,
 }
