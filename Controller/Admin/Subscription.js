@@ -18,6 +18,7 @@ const create = async (req, res) => {
     duration: "required",
     price: "required",
     type: "required",
+    no_of_listing: "required"
   });
 
   let matched = await v.check().then((val) => val);
@@ -36,6 +37,7 @@ const create = async (req, res) => {
     duration: req.body.duration,
     price: req.body.price,
     type: req.body.type,
+    no_of_listing: req.body.no_of_listing
   };
 
   let subscriptionSchema = new Subsciption(subdata);

@@ -47,7 +47,7 @@ const register = async (req,res)=>{
       .catch((err)=>{
           res.status(500).json({
               status: false,
-              message: "Server error. Please try agsin.",
+              message: "Server error. Service name already exists.",
               errors: err
           })
       })

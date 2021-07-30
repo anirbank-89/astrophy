@@ -6,7 +6,7 @@ const UserSubsriptionSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   userid: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    required: true
   },
   subscr_id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -23,6 +23,10 @@ const UserSubsriptionSchema = new mongoose.Schema({
   subscribed_on: {
     type: Date,
     default: dateKolkata,
+  },
+  no_of_listing:{
+    type: Number,
+    required: true
   },
   status: {
     type: Boolean,

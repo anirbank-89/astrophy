@@ -6,6 +6,7 @@ var uuidv1 = require("uuid").v1;
 var Subsciption = require("../../Models/subscription");
 var SubscribedBy = require("../../Models/subscr_purchase");
 var User = require("../../Models/user");
+const subscription = require("../../Models/subscription");
 
 const viewAllsubscription = async (req, res) => {
   return Subsciption.aggregate([
@@ -65,7 +66,8 @@ const newSubscription = async (req, res) => {
       seller_comission: req.body.seller_comission,
       price: req.body.price,
       subscribed_on: moment.tz(Date.now(), "Asia/Kolkata"),
-    };
+      no_of_listing: req.body.no_of_listing
+    }
     let new_subscription = new SubscribedBy(userData);
 
     return new_subscription

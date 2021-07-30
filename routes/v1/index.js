@@ -26,8 +26,8 @@ router.post('/user/login', UserController.login);
 router.get('/user/listProducts', UserController.viewProductList);
 router.get('/user/viewproduct/:id', UserProductController.viewSingleProduct);   // added by anirbank-93
 
-router.get('/user/services', ServiceController.viewAllServices);// added by anirbank-93
-router.get('/user/services/:id', ServiceController.viewService);// added by anirbank-93
+router.get('/user/service', ServiceController.viewAllServices);// added by anirbank-93
+router.get('/user/service/:id', ServiceController.viewService);// added by anirbank-93
 
 
 /** ================================= without login url section end ================================ */

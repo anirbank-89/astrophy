@@ -26,6 +26,10 @@ const SubscriptionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  no_of_listing:{
+    type: Number,
+    required: true
+  },
   status: {
     type: Boolean,
     required: false,

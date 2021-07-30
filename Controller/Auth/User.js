@@ -20,7 +20,6 @@ const register = async(req,res)=>{
     const v = new Validator(req.body,{
         email:'required|email',
         password:'required|minLength:8',
-        phone:'required',
         firstName:'required',
         lastName: 'required'
     })
