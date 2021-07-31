@@ -7,7 +7,7 @@ var Upload = require("../../service/upload");
 
 const { Validator } = require('node-input-validator');
 
-const register = async (req,res)=>{
+const createNUpdate = async (req,res)=>{
     const v = new Validator(req.body,{
         name: 'required',
         title: 'required',
@@ -18,50 +18,94 @@ const register = async (req,res)=>{
         res.status(200).send({ status: false, error: v.errors });
     }
     console.log(req.files)
-    if (typeof(req.files)=='undefined' || req.files == null) {
-        return res.status(200).send({
-            status:true,
-            error:{
-                "images":{
-                    "message": "The image fields are mandatory.",
-                    "rule": "required"
-                }
+    console.log(req.body);
+    
+    Shop.find({userid: {$in: [mongoose.Types.ObjectId(req.body.userid)]}})
+      .then((data)=>{
+          if (data == null || data == '') {
+              //bn
+              if (typeof(req.files)=='undefined' || req.files == null) {
+                return res.status(200).send({
+                    status:true,
+                    error:{
+                        "images":{
+                            "message": "The image fields are mandatory.",
+                            "rule": "required"
+                        }
+                    }
+                });
             }
-        });
-    }
-    
-    let shopData = {
-        _id: mongoose.Types.ObjectId(),
-        banner_img: "uploads/shop_n_banner_image/"+"banner_"+Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"+req.files.banner_img[0].originalname,
-        shop_img: "uploads/shop_n_banner_image/"+"shop_"+Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"+req.files.shop_img[0].originalname,
-        name: req.body.name,
-        title: req.body.title,
-        description: req.body.description,
-        userid: mongoose.Types.ObjectId(req.body.userid)
-    }
-    if(req.body.tags != '' || req.body.tags != null){
-        shopData.tags = req.body.tags;
-    }
-    if(req.body.personalization != '' || req.body.personalization != null){
-        shopData.personalization = req.body.personalization;
-    }
-    const shop_owner = new Shop(shopData)
-    
-    shop_owner.save().then((docs)=>{
-        res.status(200).json({
-            status: true,
-            success: true,
-            message: "New shop successfully created",
-            data: docs
-        });
-    })
-    .catch((err)=>{
-        res.status(500).json({
-            status: false,
-            message: "Server error. Shop already exists for seller",
-            error: err
-        });
-    })
+
+            let shopData = {
+                _id: mongoose.Types.ObjectId(),
+                banner_img: "uploads/shop_n_banner_image/"+"banner_"+Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"+req.files.banner_img[0].originalname,
+                shop_img: "uploads/shop_n_banner_image/"+"shop_"+Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"+req.files.shop_img[0].originalname,
+                name: req.body.name,
+                title: req.body.title,
+                description: req.body.description,
+                userid: mongoose.Types.ObjectId(req.body.userid)
+            }
+            if(req.body.tags != '' || req.body.tags != null){
+                shopData.tags = req.body.tags;
+            }
+            if(req.body.personalization != '' || req.body.personalization != null){
+                shopData.personalization = req.body.personalization;
+            }
+            const shop_owner = new Shop(shopData)
+            
+            shop_owner.save().then((docs)=>{
+                res.status(200).json({
+                    status: true,
+                    success: true,
+                    message: "New shop successfully created",
+                    data: docs
+                });
+            })
+            .catch((err)=>{
+                res.status(500).json({
+                    status: false,
+                    message: "Server error. Please try again",
+                    error: err
+                });
+            });
+          }
+          else {
+              //b
+            Shop.findOneAndUpdate(
+                {userid: { $in : [mongoose.Types.ObjectId(req.body.userid)] } }, 
+                {
+                    name: req.body.name,
+                    title: req.body.title,
+                    tags: req.body.tags,
+                    description: req.body.description,
+                    personalization: req.body.personalization,
+                    userid: req.body.userid
+                },
+                async (err,docs)=>{
+                    if(err){
+                        res.status(500).json({
+                            status: false,
+                            message: "Server error. Please try again.",
+                            error: err
+                        });
+                    }
+                    else{
+                        res.status(200).json({
+                            status: true,
+                            message: "Shop data updated successfully!",
+                            data: docs
+                        });
+                    }
+                }
+            )
+          }
+      })
+      .catch((err)=>{
+          res.status(500).json({
+              status: false,
+              message: "Server error. Please provide images"
+          });
+      });
 }
 
 const viewAllShops = async (req,res)=>{
@@ -100,7 +144,7 @@ const viewAllShops = async (req,res)=>{
 
 const viewShop = async (req,res)=>{
     return Shop.findOne(
-        {_id: { $in : [mongoose.Types.ObjectId(req.params.id)] } }, 
+        {userid: { $in : [mongoose.Types.ObjectId(req.body.userid)] } }, 
         async (err,docs)=>{
             if(err){
                 res.status(500).json({
@@ -120,80 +164,8 @@ const viewShop = async (req,res)=>{
     )
 }
 
-const editShop = async (req,res)=>{
-    const v = new Validator(req.body,{
-        name: 'required',
-        title: 'required',
-        description: 'required'
-    });
-    let matched = v.check().then((val)=>val);
-    if(!matched){
-        res.status(200).send({status: false, error: v.errors});
-    }
-    console.log(req.files)
-    if (typeof(req.files)=='undefined' || req.files == null) {
-        return res.status(200).send({
-            status:true,
-            error:{
-                "images":{
-                    "message": "The image fields are mandatory.",
-                    "rule": "required"
-                }
-            }
-        });
-    }
-    Shop.findOneAndUpdate(
-        {_id: { $in : [mongoose.Types.ObjectId(req.params.id)] } }, 
-        {
-            banner_img: "uploads/shop_n_banner_image/"+"banner_"+Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"+req.files.banner_img[0].originalname,
-            shop_img: "uploads/shop_n_banner_image/"+"shop_"+Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"+req.files.shop_img[0].originalname,
-            name: req.body.name,
-            title: req.body.title,
-            tags: req.body.tags,
-            description: req.body.description,
-            personalization: req.body.personalization
-        },
-        async (err,docs)=>{
-            if(err){
-                res.status(500).json({
-                    status: false,
-                    message: "Server error. Please try again.",
-                    error: err
-                });
-            }
-            else{
-                res.status(200).json({
-                    status: true,
-                    message: "Shop data updated successfully!",
-                    data: docs
-                });
-            }
-        }
-    )
-}
-
-const deleteShop = async (req,res)=>{
-    Shop.deleteOne({_id: { $in : [mongoose.Types.ObjectId(req.params.id)]}})
-              .then((data)=>{
-                  res.status(200).json({
-                      status: true,
-                      message: "Shop deleted successfully",
-                      data: data
-                  });
-              })
-              .catch((err)=>{
-                  res.status(500).json({
-                      status: false,
-                      message: "Server error. Please try again.",
-                      error: err
-                  });
-              });
-}
-
 module.exports = {
-    register,
+    createNUpdate,
     viewAllShops,
-    viewShop,
-    editShop,
-    deleteShop
+    viewShop
 }

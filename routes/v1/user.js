@@ -54,11 +54,8 @@ router.get('/service/:id', ServiceController.viewService); // added by anirbank-
 
 router.get('/service/subcategory/:id', ServiceController.viewServiceSubCategory)// added by anirbank-93
 
-router.post('/shop',uploadMultiple,ShopController.register);// added by anirbank-93
-router.get('/shop', ShopController.viewAllShops);          // added by anirbank-93
-router.get('/shop/:id', ShopController.viewShop);          // added by anirbank-93
-router.put('/shop/:id', uploadMultiple, ShopController.editShop);          // added by anirbank-93
-router.delete('/shop/:id', ShopController.deleteShop);     // added by anirbank-93
+router.post('/shop', uploadMultiple, ShopController.createNUpdate);// added by anirbank-93
+router.get('/shop', ShopController.viewShop);                // added by anirbank-93
 
 router.post('/shop/services', upload1.single("image"), ShopServiceController.register)// added by anirbank-93
 /** ================================= with login url section end ================================ */

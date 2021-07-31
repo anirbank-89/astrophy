@@ -5,11 +5,11 @@ const ShopSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
     banner_img: {
         type: String,
-        required: true
+        required: false
     },
     shop_img:{
         type: String,
-        required: true
+        required: false
     },
     name:{
         type: String,
