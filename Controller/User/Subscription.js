@@ -6,7 +6,6 @@ var uuidv1 = require("uuid").v1;
 var Subsciption = require("../../Models/subscription");
 var SubscribedBy = require("../../Models/subscr_purchase");
 var User = require("../../Models/user");
-const subscription = require("../../Models/subscription");
 
 const viewAllsubscription = async (req, res) => {
   return Subsciption.aggregate([
@@ -68,6 +67,12 @@ const newSubscription = async (req, res) => {
       subscribed_on: moment.tz(Date.now(), "Asia/Kolkata"),
       no_of_listing: req.body.no_of_listing
     }
+    // subscription = await Subsciption.findOne({_id: {$in: [mongoose.Types.ObjectId(req.body.subscr_id)]}});
+    // console.log(subscription)
+    // listing_info = subscription.no_of_listing
+    // console.log(listing_info)
+    // userData.no_of_listing = listing_info
+
     let new_subscription = new SubscribedBy(userData);
 
     return new_subscription

@@ -7,7 +7,12 @@ const uploadFile = async (req, folder) => {
     return file_name;
 }
 
+const uploadMultipleFiles = async (req,folder)=>{
+    let file_name = "uploads/"+folder+"/"+req.body.originalname;
+    return file_name;
+}
 
 module.exports = {
-    uploadFile
+    uploadFile,
+    uploadMultipleFiles
 };

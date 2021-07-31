@@ -41,7 +41,42 @@ const viewService = async (req,res)=>{
     });
 }
 
+const viewServiceSubCategory = async (req,res)=>{
+    return Service.aggregate(
+        [
+            {
+                $lookup:{
+                    from:"service_subcategories",
+                    localField:"_id",
+                    foreignField:"serviceid",
+                    as:"subcategories"
+                }
+            },
+            {
+                $project:{
+                    _v:0
+                }
+            }
+        ]
+    )
+    .then((data)=>{
+        res.status(200).json({
+            status: false,
+            message: "Service sub-categories successfully get.",
+            data: data
+        })
+    })
+    .catch((err)=>{
+        res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            errors: err
+        })
+    })
+}
+
 module.exports = {
     viewAllServices,
     viewService,
+    viewServiceSubCategory
 }

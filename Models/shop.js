@@ -3,27 +3,33 @@ const Schema = mongoose.Schema
 
 const ShopSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
+    banner_img: {
+        type: String,
+        required: true
+    },
+    shop_img:{
+        type: String,
+        required: true
+    },
     name:{
         type: String,
         required: true
+    },
+    title:{
+        type:String,
+        required: true
+    },
+    tags:{
+        type: String,
+        required: false
     },
     description:{
         type: String,
         required: true
     },
-    address:{
+    personalization:{
         type: String,
         required: false
-    },
-    phone:{
-        type: Number,
-        required: true,
-        unique: false
-    },
-    email:{
-        type: String,
-        required: true,
-        unique: false
     },
     userid:{
         type: mongoose.Schema.Types.ObjectId,
