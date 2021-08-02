@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 const ProductController = require("../../Controller/User/Product");
+const UserSellerController=require('../../Controller/User/UserSellers');//added by anirbank-93
 const SubscriptionController = require("../../Controller/User/Subscription");// added by anirbank-93
 const ServiceController = require('../../Controller/User/Service');          // added by anirbank-93
 const ShopController = require("../../Controller/User/Shop");      // added by anirbank-93
@@ -49,15 +50,20 @@ router.use((req, res, next) => {
 router.get("/listSubs/:id", SubscriptionController.viewAllsubscription);
 router.post("/subscription-purchase", SubscriptionController.newSubscription);// added by anirbank-93
 
+router.get('/seller/:id', UserSellerController.viewUser);   // added by anirbank-93
+router.get('/list-of-users', UserSellerController.viewUserList);// added by anirbank-93
+router.get('/list-of-sellers', UserSellerController.viewSellerList);// added by anirbank-93
+
 router.get('/service', ServiceController.viewAllServices); // added by anirbank-93
 router.get('/service/:id', ServiceController.viewService); // added by anirbank-93
 
 router.get('/service/subcategory/:id', ServiceController.viewServiceSubCategory)// added by anirbank-93
 
 router.post('/shop', uploadMultiple, ShopController.createNUpdate);// added by anirbank-93
-router.get('/shop', ShopController.viewShop);                // added by anirbank-93
+router.get('/shop', ShopController.viewShop);              // added by anirbank-93
 
-router.post('/shop/services', upload1.single("image"), ShopServiceController.register)// added by anirbank-93
+router.post('/shop/services', upload1.single("image"), ShopServiceController.register);// added by anirbank-93
+router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.update);// added by anirbank-93
 /** ================================= with login url section end ================================ */
 
 module.exports = router;
