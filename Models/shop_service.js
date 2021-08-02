@@ -6,7 +6,6 @@ const ShopServiceSchema = new Schema({
     _id:mongoose.Schema.Types.ObjectId,
     name:{
         type: String,
-        unique: true,
         required: true
     },
     price:{
@@ -22,7 +21,10 @@ const ShopServiceSchema = new Schema({
         required: false
     },
     category_id: mongoose.Schema.Types.ObjectId,
-    subcategory_id: mongoose.Schema.Types.ObjectId,
+    subcategory_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        unique: true
+    },
     hashtags:{
         type: String,
         required: false
