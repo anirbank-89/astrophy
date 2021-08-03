@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var User = require('../../Models/user2');
+var User = require('../../Models/user');
 var Product = require('../../Models/product');
 var passwordHash = require('password-hash');
 
