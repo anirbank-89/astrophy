@@ -16,11 +16,12 @@ const register = async (req,res)=>{
     if(!matched){
         res.status(200).send({status: false, errors: v.errors})
     }
+    console.log(req.file)
 
     ShopService.find({subcategory_id: {$in: [mongoose.Types.ObjectId(req.body.subcategory_id)]}})
-      .then((data)=>{
+      .then(async (data)=>{
           if(data==null || data==''){
-              let image_url = Upload.uploadFile(req, "shop_services")
+              let image_url = await Upload.uploadFile(req, "shop_services")
               let shopServiceData = {
                   _id: mongoose.Types.ObjectId(),
                   name: req.body.name,
@@ -52,7 +53,7 @@ const register = async (req,res)=>{
                   .catch((err)=>{
                       res.status(500).json({
                       status: false,
-                      message: "Server error. This service already exists.",
+                      message: "Server error. Please try again",
                       errors: err
                     })
                   })
@@ -60,13 +61,14 @@ const register = async (req,res)=>{
           else{
               ShopService.findOneAndUpdate(
                 {subcategory_id: {$in: [mongoose.Types.ObjectId(req.body.subcategory_id)]}}, 
-                {
-                  name: req.body.name,
-                  price: req.body.price,
-                  details: req.body.details,
-                  personalization: req.body.personalization,
-                  hashtags: req.body.hashtags
-                }, 
+                // {
+                //   name: req.body.name,
+                //   price: req.body.price,
+                //   details: req.body.details,
+                //   personalization: req.body.personalization,
+                //   hashtags: req.body.hashtags
+                // },
+                req.body, 
                 async (err,docs)=>{
                     if(err){
                         res.status(500).json({
@@ -91,7 +93,7 @@ const register = async (req,res)=>{
 const update = async (req,res)=>{
     let id = req.params.id
     return ShopService.findOneAndUpdate(
-        {subcategory_id: {$in: [mongoose.Types.ObjectId(id)]}}, 
+        {_id: {$in: [mongoose.Types.ObjectId(id)]}}, 
         {
           name: req.body.name,
           price: req.body.price,
