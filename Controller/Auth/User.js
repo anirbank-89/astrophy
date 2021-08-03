@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var User = require('../../Models/user');
+var User = require('../../Models/user2');
 var Product = require('../../Models/product');
 var passwordHash = require('password-hash');
 
@@ -60,6 +60,8 @@ const register = async(req,res)=>{
         });
     });
 }
+
+// const signup = async (req,res)=>{}
 
 const login = async(req,res) =>
 {

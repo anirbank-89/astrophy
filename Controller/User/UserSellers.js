@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var User = require("../../Models/user");
 var Shop = require("../../Models/shop");
+var ShopServices = require('../../Models/shop_service');
 
 const { Validator } = require('node-input-validator');
 // const { stringify } = require('uuid');
@@ -9,7 +10,7 @@ const viewUser = async (req,res)=>{
     let id=req.params.id;
     User.findOne(
         {_id: { $in : [mongoose.Types.ObjectId(id)] } }, 
-        (err,docs)=>{
+        async (err,docs)=>{
         if(err){
             res.status(500).json({
                 status: false,
@@ -18,30 +19,40 @@ const viewUser = async (req,res)=>{
             });
         }
         else {
-            Shop.findOne({userid: {$in: [mongoose.Types.ObjectId(id)]}})
+            // console.log("user", docs);
+            // console.log("shop", data);
+            Shop.find({userid: {$in: [mongoose.Types.ObjectId(id)]}})
               .then((data)=>{
-                  if(data!=null || data!=''){
-                      console.log("Shop", data)
-                      let seller = docs;
-                      let shop = data
-                      seller.shop_id = shop._id
-                      console.log("Seller", seller.shop_id)
-                        res.status(200).json({
-                            status: true,
-                            message: "User successfully get",
-                            data: seller,
-                            shop_id: seller.shop_id
-                      })
+                  if(data==null || data==''){
+                    res.status(200).json({
+                        status: true,
+                        message: "User successfully get. User doesn't have a shop",
+                        data: docs,
+                        shop_id: []
+                    })
+                  }
+                  else{
+                    console.log("Shop", data)
+                    let seller = docs;
+                    console.log("Seller", seller)
+                    let shop = data[0]
+                    seller.shop_id = shop._id
+                      res.status(200).json({
+                          status: true,
+                          message: "User and shop id successfully get",
+                          data: seller,
+                          shop_id: seller.shop_id
+                    })
                   }
               })
               .catch((err)=>{
                   res.status(200).json({
                       status: false,
-                      message: "User doesn't have a shop",
-                      error: err,
-                      data: docs
+                      message: "Server error. Please try again later",
+                      error: err
                   })
               })
+
         }
     });
 }

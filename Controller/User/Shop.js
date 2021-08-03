@@ -38,8 +38,8 @@ const createNUpdate = async (req,res)=>{
 
             let shopData = {
                 _id: mongoose.Types.ObjectId(),
-                banner_img: "uploads/shop_n_banner_image/"+"banner_"+Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"+req.files.banner_img[0].originalname,
-                shop_img: "uploads/shop_n_banner_image/"+"shop_"+Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"+req.files.shop_img[0].originalname,
+                banner_img: "uploads/shop_banner_n_image/"+"banner_"+req.files.banner_img[0].originalname,// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
+                shop_img: "uploads/shop_banner_n_image/"+"shop_"+req.files.shop_img[0].originalname,// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
                 name: req.body.name,
                 title: req.body.title,
                 description: req.body.description,

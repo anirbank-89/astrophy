@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Service = require('../../Models/service');
 var Subcategory = require('../../Models/subcategory');
+var ShopServices = require('../../Models/shop_service');
 
 const viewAllServices = async (req,res)=>{
     return Service.find()
@@ -60,8 +61,49 @@ const viewServiceSubCategory = async (req,res)=>{
       })
 }
 
+const viewShopServicesPerService = async (req,res)=>{
+    let id = req.params.id
+    Service.find({_id: {$in: [mongoose.Types.ObjectId(id)]}})
+      .then((data)=>{
+          if (data==null || data=='' ) {
+              res.status(500).json({
+                  status: false,
+                  message: "Invalid id",
+                  error: error
+              })
+          }
+          else {
+              ShopServices.find({category_id: {$in: [mongoose.Types.ObjectId(id)]}})
+                .then((docs)=>{
+                    if(docs==null || docs=='') {
+                        res.status(200).json({
+                            status: false,
+                            message: "Currently no services are available for this category.",
+                            error: error
+                        })
+                    }
+                    else {
+                        res.status(200).json({
+                            status: true,
+                            message: "Shop services get successfully",
+                            data: docs
+                        })
+                    }
+                })
+          }
+      }).
+      catch((err)=>{
+          res.status(500).json({
+              status: false,
+              message: "Server error. Please try again.",
+              error: err
+          })
+      })
+}
+
 module.exports = {
     viewAllServices,
     viewService,
-    viewServiceSubCategory
+    viewServiceSubCategory,
+    viewShopServicesPerService
 }

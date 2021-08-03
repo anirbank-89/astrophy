@@ -17,9 +17,8 @@ let UserSchema = new mongoose.Schema({
         unique: true
     },
     phone:{
-        type: String,
-        required:false,
-        default:""
+        type: Number,
+        required:false
     },
     password:{
         type: String,
@@ -50,4 +49,4 @@ UserSchema.methods.comparePassword = function (candidatePassword) {
     return passwordHash.verify(candidatePassword, this.password);
 }
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("all_users", UserSchema);

@@ -1,4 +1,5 @@
 var mongoose = require('mongoose')
+var Shop = require('../../Models/shop')
 var ShopService = require('../../Models/shop_service')
 var Subcategory = require('../../Models/subcategory')
 var Upload = require('../../service/upload')
@@ -88,8 +89,9 @@ const register = async (req,res)=>{
 }
 
 const update = async (req,res)=>{
+    let id = req.params.id
     return ShopService.findOneAndUpdate(
-        {subcategory_id: {$in: [mongoose.Types.ObjectId(req.body.subcategory_id)]}}, 
+        {subcategory_id: {$in: [mongoose.Types.ObjectId(id)]}}, 
         {
           name: req.body.name,
           price: req.body.price,
@@ -116,7 +118,46 @@ const update = async (req,res)=>{
       )
 }
 
+const viewShopServicesPerSeller = async (req,res)=>{
+    let id = req.params.id
+    Shop.find({_id: {$in: [mongoose.Types.ObjectId(id)]}})
+        .then((data)=>{
+            if(data==null || data==''){
+                res.status(500).json({
+                    status: false,
+                    message: "Server error. Please try again.",
+                    error: error
+                })
+            }
+            else{
+                ShopService.find({shop_id: {$in: [mongoose.Types.ObjectId(id)]}})
+                  .then((docs)=>{
+                      res.status(200).json({
+                          status: true,
+                          message: "Shop services get sucessfully",
+                          data: docs
+                      })
+                  })
+                  .catch((err)=>{
+                      res.status(500).json({
+                          status: false,
+                          message: "Server error2. Please try again.",
+                          error: err
+                      })
+                  })
+            }
+        })
+        .catch((fault)=>{
+            res.status(200).json({
+                status: false,
+                message: "This user doesn't have an active shop.",
+                error: fault
+            })
+        })
+}
+
 module.exports = {
     register,
-    update
+    update,
+    viewShopServicesPerSeller
 }
