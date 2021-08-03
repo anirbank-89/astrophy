@@ -57,6 +57,7 @@ router.get('/list-of-sellers', UserSellerController.viewSellerList);// added by 
 router.get('/service', ServiceController.viewAllServices); // added by anirbank-93
 router.get('/service/:id', ServiceController.viewService); // added by anirbank-93
 router.get('/service/subcategory/:id', ServiceController.viewServiceSubCategory);// added by anirbank-93
+router.get('/service/shop-services/:id', ServiceController.viewShopServicesPerService);// added by anirbank-93
 
 router.post('/shop', uploadMultiple, ShopController.createNUpdate);// added by anirbank-93
 router.get('/shop/:id', ShopController.viewShop);              // added by anirbank-93
