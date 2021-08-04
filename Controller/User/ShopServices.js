@@ -120,8 +120,8 @@ const update = async (req,res)=>{
 }
 
 const viewShopServicesPerSeller = async (req,res)=>{
-    let id = req.params.id
-    Shop.find({_id: {$in: [mongoose.Types.ObjectId(id)]}})
+    let id = req.params.id          // shop_id of shop_services
+    ShopService.find({shop_id: {$in: [mongoose.Types.ObjectId(id)]}})
         .then((data)=>{
             if(data==null || data==''){
                 res.status(500).json({
@@ -131,27 +131,45 @@ const viewShopServicesPerSeller = async (req,res)=>{
                 })
             }
             else{
-                ShopService.find({shop_id: {$in: [mongoose.Types.ObjectId(id)]}})
-                  .then((docs)=>{
-                      res.status(200).json({
-                          status: true,
-                          message: "Shop services get sucessfully",
-                          data: docs
-                      })
-                  })
-                  .catch((err)=>{
-                      res.status(500).json({
-                          status: false,
-                          message: "Server error2. Please try again.",
-                          error: err
-                      })
-                  })
+                res.status(200).json({
+                    status: true,
+                    message: "Shop services get sucessfully.",
+                    data: data
+                })
             }
         })
         .catch((fault)=>{
             res.status(200).json({
                 status: false,
-                message: "This user doesn't have an active shop.",
+                message: "This seller doesn't have any services currently.",
+                error: fault
+            })
+        })
+}
+
+const viewOneService = async (req,res)=>{
+    let id = req.params.id          // _id of shop_services
+    ShopService.find({_id: {$in: [mongoose.Types.ObjectId(id)]}})
+        .then((data)=>{
+            if(data==null || data==''){
+                res.status(500).json({
+                    status: false,
+                    message: "Server error2. Please try again",
+                    error: error
+                })
+            }
+            else{
+                res.status(200).json({
+                    status: true,
+                    message: "Shop's this service get successfully",
+                    data: data
+                })
+            }
+        })
+        .catch((fault)=>{
+            res.status(200).json({
+                status: false,
+                message: "Server error. Please try again.",
                 error: fault
             })
         })
@@ -160,5 +178,6 @@ const viewShopServicesPerSeller = async (req,res)=>{
 module.exports = {
     register,
     update,
-    viewShopServicesPerSeller
+    viewShopServicesPerSeller,
+    viewOneService
 }

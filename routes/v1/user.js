@@ -64,6 +64,7 @@ router.get('/shop/:id', ShopController.viewShop);              // added by anirb
 
 router.post('/shop/services', upload1.single("image"), ShopServiceController.register);// added by anirbank-93
 router.get('/shop/all-services/:id', ShopServiceController.viewShopServicesPerSeller); // added by anirbank-93
+router.get('/shop/view-shopservice/:id', ShopServiceController.viewOneService);        // added by anirbank-93
 router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.update);// added by anirbank-93
 /** ================================= with login url section end ================================ */
 
