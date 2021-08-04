@@ -16,11 +16,6 @@ let UserSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    phone:{
-        type: String,
-        required:false,
-        default:""
-    },
     password:{
         type: String,
         required: true

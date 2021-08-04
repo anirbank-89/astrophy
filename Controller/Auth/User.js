@@ -36,10 +36,10 @@ const register = async(req,res)=>{
         password:passwordHash.generate(req.body.password),
         token:createToken(req.body)
     }
-    if (typeof (req.body.phone) !='undefined')
-    {
-        userData.phone = Number(req.body.phone)
-    }
+    // if (typeof (req.body.phone) !='undefined')
+    // {
+    //     userData.phone = Number(req.body.phone)
+    // }
 
     const all_users = new User(userData)
 
