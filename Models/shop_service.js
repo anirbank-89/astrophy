@@ -21,10 +21,7 @@ const ShopServiceSchema = new Schema({
         required: false
     },
     category_id: mongoose.Schema.Types.ObjectId,
-    subcategory_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        unique: true
-    },
+    subcategory_id: mongoose.Schema.Types.ObjectId,
     hashtags:{
         type: String,
         required: false
