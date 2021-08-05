@@ -5,6 +5,7 @@ var Subcategory = require('../../Models/subcategory')
 var Upload = require('../../service/upload')
 
 const { Validator } = require('node-input-validator')
+const service = require('../../Models/service')
 
 const register = async (req,res)=>{
     const v = new Validator(req.body,{
@@ -122,55 +123,112 @@ const update = async (req,res)=>{
 const viewShopServicesPerSeller = async (req,res)=>{
     let id = req.params.id          // shop_id of shop_services
     ShopService.find({shop_id: {$in: [mongoose.Types.ObjectId(id)]}})
-        .then((data)=>{
-            if(data==null || data==''){
-                res.status(500).json({
-                    status: false,
-                    message: "Server error. Please try again.",
-                    error: error
-                })
-            }
-            else{
+      .then((data)=>{
+        if(data==null || data==''){
+            res.status(200).json({
+                status: true,
+                message: "This seller doesn't have any services currently.",
+                error: data
+            })
+        }
+        else {
+            ShopService.aggregate(
+                [
+                    {
+                        $lookup:{
+                            from: "shops",
+                            localField: "shop_id",
+                            foreignField: "_id",
+                            as: "shop_details"
+                        }
+                    },
+                    {
+                        $project:{
+                            _v:0
+                        }
+                    }
+                ]
+            )
+            .then((docs)=>{
                 res.status(200).json({
                     status: true,
-                    message: "Shop services get sucessfully.",
-                    data: data
+                    message: "All services of this shop get successfully.",
+                    data: docs
                 })
-            }
-        })
-        .catch((fault)=>{
-            res.status(200).json({
-                status: false,
-                message: "This seller doesn't have any services currently.",
-                error: fault
             })
+            .catch((fault)=>{
+                res.status(400).json({
+                    status: false,
+                    message: "Service error2. Please try again",
+                    error: fault
+                })
+            })
+        }
+      })
+      .catch((err)=>{
+        res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            error: err
         })
+    })
 }
 
 const viewOneService = async (req,res)=>{
     let id = req.params.id          // _id of shop_services
-    ShopService.find({_id: {$in: [mongoose.Types.ObjectId(id)]}})
+    ShopService.findOne({_id: {$in: [mongoose.Types.ObjectId(id)]}})
         .then((data)=>{
             if(data==null || data==''){
-                res.status(500).json({
+                res.status(400).json({
                     status: false,
-                    message: "Server error2. Please try again",
+                    message: "Invalid id",
                     error: error
                 })
             }
             else{
-                res.status(200).json({
-                    status: true,
-                    message: "Shop's this service get successfully",
-                    data: data
-                })
+                ShopService.aggregate(
+                    [
+                        {
+                            $match:{
+                                _id: {$in: [mongoose.Types.ObjectId(id)]}
+                            }
+                        },
+                        {
+                            $lookup:{
+                                from: "shops",
+                                localField: "shop_id",
+                                foreignField: "_id",
+                                as: "shop_details"
+                            }
+                        },
+                        {
+                            $project:{
+                                _v:0
+                            }
+                        }
+                    ]
+                  )
+                  .then((docs)=>{
+                      res.status(200).json({
+                          status: true,
+                          message: "This shop service get successfully",
+                          data: docs
+                      })
+                  })
+                  .catch((fault)=>{
+                      res.status(500).json({
+                          status: false,
+                          message: "Server error2. Please try again.",
+                          error: fault
+                      })
+                  })
             }
         })
-        .catch((fault)=>{
-            res.status(200).json({
+        .catch((err)=>{
+            res.status(500).json({
                 status: false,
                 message: "Server error. Please try again.",
-                error: fault
+                error: err
             })
         })
 }
