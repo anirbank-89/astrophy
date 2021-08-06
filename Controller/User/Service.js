@@ -120,48 +120,6 @@ const viewShopServicesPerService = async (req,res)=>{
         })
     }) 
 }
-
-// Service.find({_id: {$in: [mongoose.Types.ObjectId(id)]}})
-//       .then((data)=>{
-//           if (data==null || data=='' ) {
-//               res.status(500).json({
-//                   status: false,
-//                   message: "Invalid id",
-//                   error: data
-//               })
-//           }
-//           else {}
-//         })
-//         .catch((error)=>{
-//             res.status(500).json({
-//                 status: false,
-//                 message: "Server error. Please try again",
-//                 error: errors
-//             })
-//         })
-
-// Shop.find({_id: {$in: [mongoose.Types.ObjectId(docs[0].shop_id)]}})   // shop_id in 'shop_services' table 
-//                               .then((docs)=>{
-//                                   // console.log("services", data)
-//                                       // console.log("seller",docs)
-//                                       docs.forEach(element=>{
-//                                         element.shop_details = docs[0]
-//                                        // element['shop_details'] = docs[0]
-//                                     })
-//                                     res.status(200).json({
-//                                         status: true,
-//                                         message: "All shop services get sucessfully.",
-//                                         service_category: data,
-//                                         services: docs
-//                                     })
-//                               })
-//                               .catch((err)=>{
-//                                   res.status(500).json({
-//                                       status: false,
-//                                       message: "Service error3. Please try again",
-//                                       error: err
-//                                   })
-//                               })
           
 module.exports = {
     viewAllServices,

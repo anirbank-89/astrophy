@@ -128,12 +128,17 @@ const viewShopServicesPerSeller = async (req,res)=>{
             res.status(200).json({
                 status: true,
                 message: "This seller doesn't have any services currently.",
-                error: data
+                data: data
             })
         }
         else {
             ShopService.aggregate(
                 [
+                    {
+                        $match:{
+                            shop_id: {$in: [mongoose.Types.ObjectId(id)]}
+                        }
+                    },
                     {
                         $lookup:{
                             from: "shops",
@@ -179,10 +184,10 @@ const viewOneService = async (req,res)=>{
     ShopService.findOne({_id: {$in: [mongoose.Types.ObjectId(id)]}})
         .then((data)=>{
             if(data==null || data==''){
-                res.status(400).json({
-                    status: false,
+                res.status(200).json({
+                    status: true,
                     message: "Invalid id",
-                    error: error
+                    data: []
                 })
             }
             else{
@@ -222,6 +227,30 @@ const viewOneService = async (req,res)=>{
                           error: fault
                       })
                   })
+                //   ShopService.aggregate(
+                //       [
+                //           {
+                //               $addFields:{
+                //                   shop_details:{
+                //                     $match: {
+                //                         _id: {$in: [mongoose.Types.ObjectId(id)]}
+                //                     },
+                //                     $lookup:{
+                //                         from: "shops",
+                //                         localField: "shop_id",
+                //                         foreignField: "_id"
+                //                     },
+                //                     $project:{
+                //                             _v: 0
+                //                         }
+                //                   }
+                //               }
+                //           }
+                //       ]
+                //   )//
+                //   .then((docs)=>{
+                //       res.status(200).json()
+                //   })
             }
         })
         .catch((err)=>{

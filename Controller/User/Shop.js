@@ -74,6 +74,8 @@ const createNUpdate = async (req,res)=>{
             Shop.findOneAndUpdate(
                 {userid: { $in : [mongoose.Types.ObjectId(req.body.userid)] } }, 
                 {
+                    banner_img: "uploads/shop_banner_n_image/"+"banner_"+req.files.banner_img[0].originalname,
+                    shop_img: "uploads/shop_banner_n_image/"+"shop_"+req.files.shop_img[0].originalname,
                     name: req.body.name,
                     title: req.body.title,
                     tags: req.body.tags,
@@ -81,6 +83,7 @@ const createNUpdate = async (req,res)=>{
                     personalization: req.body.personalization,
                     userid: req.body.userid
                 },
+                // req.body,
                 async (err,docs)=>{
                     if(err){
                         res.status(500).json({
