@@ -70,7 +70,7 @@ const viewShopServicesPerService = async (req,res)=>{
             res.status(200).json({
                 status: true,
                 message: "This service category doesn't have any services currently.",
-                error: data
+                data: data
             })
         }
         else {

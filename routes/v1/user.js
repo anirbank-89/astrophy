@@ -7,6 +7,7 @@ const SubscriptionController = require("../../Controller/User/Subscription");// 
 const ServiceController = require('../../Controller/User/Service');          // added by anirbank-93
 const ShopController = require("../../Controller/User/Shop");      // added by anirbank-93
 const ShopServiceController = require("../../Controller/User/ShopServices"); // added by anirbank-93
+const CartController = require('../../Controller/User/Cart')
 
 const multer = require('multer');
 
@@ -69,6 +70,8 @@ router.get('/shop/all-services/:id', ShopServiceController.viewShopServicesPerSe
 // route to fetch one service of a shop
 router.get('/shop/view-shopservice/:id', ShopServiceController.viewOneService);        // added by anirbank-93
 router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.update);// added by anirbank-93
+
+router.put('/add-to-cart/:id', CartController.addToCart);
 /** ================================= with login url section end ================================ */
 
 module.exports = router;
