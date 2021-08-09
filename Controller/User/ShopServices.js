@@ -91,16 +91,29 @@ const register = async (req,res)=>{
 }
 
 const update = async (req,res)=>{
+    const v = new Validator(req.body,{
+        name: "required",
+        price: "required",
+        details: "required"
+    })
+    
+    let matched = await v.check().then((val)=>val);
+    if(!matched){
+        return res.status(200).send({
+            status: false,
+            error: v.errors
+        });
+    }
+    console.log(req.file)
+    if (typeof (req.file) != "undefined" || req.file != null) {
+        let image_url = await Upload.uploadFile(req, "shop_services");
+        req.body.image = image_url;
+    }
+
     let id = req.params.id
     return ShopService.findOneAndUpdate(
         {_id: {$in: [mongoose.Types.ObjectId(id)]}}, 
-        {
-          name: req.body.name,
-          price: req.body.price,
-          details: req.body.details,
-          personalization: req.body.personalization,
-          hashtags: req.body.hashtags
-        }, 
+        req.body, 
         async (err,docs)=>{
             if(err){
                 res.status(500).json({
