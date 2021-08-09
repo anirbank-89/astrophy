@@ -71,8 +71,10 @@ router.get('/shop/all-services/:id', ShopServiceController.viewShopServicesPerSe
 router.get('/shop/view-shopservice/:id', ShopServiceController.viewOneService);        // added by anirbank-93
 router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.update);// added by anirbank-93
 
-router.put('/add-to-cart/:id', CartController.addToCart);
-router.get('/get-cart/:id', CartController.getCart);
+router.post('/add-to-cart', CartController.addToCart);
+router.put('/updateCart/:user_id/:prod_id', CartController.updateCart);
+router.get('/get-cart/:user_id', CartController.getCart);
+router.delete('/cartDelete/:id',CartController.Delete)
 /** ================================= with login url section end ================================ */
 
 module.exports = router;
