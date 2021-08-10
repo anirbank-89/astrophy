@@ -101,25 +101,43 @@ const updateCart = async ( req , res) =>{
 
 const getCart = async (req,res)=>{
 
-    let subData = await Cart.findOne({
-        user_id: mongoose.Types.ObjectId(req.params.user_id)
-      }).exec();
-
-    if (subData == null || subData == "") {
-        res.status(500).json({
-        status: false,
-        message: "Cart Empty",
-        data: null,
-        });
-    }
-    else
+  return Cart.aggregate([
     {
-        res.status(200).json({
-        status:true,
-        message:'Cart Item Get Successfully',
-        data:subData
-        })
+        $match: {
+            user_id: mongoose.Types.ObjectId(req.params.user_id),
+        },
+    },
+    {
+        $project: {
+            // _id: 0,
+            
+            __v: 0,            
+        }
     }
+])
+    .then((data) => {
+        if (data.length > 0) {
+            return res.status(200).json({
+                status: true,
+                message: "Cart Listing Successfully",
+                data: data,
+            });
+        } else {
+            return res.status(200).json({
+                status: true,
+                message: "Empty Cart",
+                data: data,
+            });
+        }
+
+    })
+    .catch((err) => {
+        return res.status(500).json({
+            status: false,
+            message: "No Match",
+            data: null,
+        });
+    });
 }
 
 const Delete = async (req ,res)=>{
