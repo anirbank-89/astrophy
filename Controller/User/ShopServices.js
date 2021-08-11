@@ -10,7 +10,8 @@ const service = require('../../Models/service')
 const register = async (req,res)=>{
     const v = new Validator(req.body,{
         name: "required",
-        price: "required",
+        mrp: "required",
+        selling_price: "required",
         details: "required"
     })
     let matched = v.check().then((val)=>val)
@@ -22,7 +23,8 @@ const register = async (req,res)=>{
     let shopServiceData = {
         _id: mongoose.Types.ObjectId(),
         name: req.body.name,
-        price: req.body.price,
+        mrp: req.body.price,
+        selling_price: req.body.selling_price,
         details: req.body.details,
         category_id: mongoose.Types.ObjectId(req.body.category_id),
         subcategory_id: mongoose.Types.ObjectId(req.body.subcategory_id),

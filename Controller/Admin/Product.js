@@ -15,7 +15,9 @@ const create = async( req , res ) =>
         catID : "required",
         name : "required",
         description : "required",
-        price : "required"
+        mrp : "required",
+        selling_price : "required",
+
     })
 
     let matched = await v.check().then((val)=>val)
@@ -45,7 +47,8 @@ const create = async( req , res ) =>
         name : req.body.name,
         catID : mongoose.Types.ObjectId(req.body.catID),
         description : req.body.description,
-        price : Number(req.body.price),
+        mrp : Number(req.body.mrp),
+        selling_price : Number(req.body.selling_price),
         image: image_url
     }
 

@@ -15,7 +15,11 @@ const ProductSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    price:{
+    mrp:{
+        type:Number,
+        required:true
+    },
+    selling_price:{
         type:Number,
         required:true
     },
