@@ -80,7 +80,7 @@ router.delete('/cartDelete/:id',CartController.Delete)
 
 router.post('/wishlist', WishlistController.create);
 router.get('/getWishlist/:user_id', WishlistController.getWish);
-router.get('/deleteWishlist/:id', WishlistController.Delete);
+router.delete('/deleteWishlist/:id', WishlistController.Delete);
 
 
 
