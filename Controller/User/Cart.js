@@ -30,6 +30,7 @@ const addToCart = async (req, res) => {
     prod_id: mongoose.Types.ObjectId(req.body.prod_id),
   }).exec();
   if (subData == null || subData == "") {
+      
     let WishData = await Wishlist.findOne({
       user_id: mongoose.Types.ObjectId(req.body.user_id),
       prod_id: mongoose.Types.ObjectId(req.body.prod_id),
