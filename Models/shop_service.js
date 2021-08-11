@@ -8,11 +8,7 @@ const ShopServiceSchema = new Schema({
         type: String,
         required: true
     },
-    mrp:{
-        type: Number,
-        required: true
-    },
-    selling_price:{
+    price:{
         type: Number,
         required: true
     },
