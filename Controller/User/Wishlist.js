@@ -106,13 +106,13 @@ const getWish = async (req,res)=>{
         if (data.length > 0) {
             return res.status(200).json({
                 status: true,
-                message: "Cart Listing Successfully",
+                message: "Wistlist Get Successfully",
                 data: data,
             });
         } else {
             return res.status(200).json({
                 status: true,
-                message: "Empty Cart",
+                message: "Empty List",
                 data: data,
             });
         }
@@ -128,12 +128,12 @@ const getWish = async (req,res)=>{
 }
 
 const Delete = async (req ,res)=>{
-    return Cart.remove(
+    return Wishlist.remove(
         {_id: { $in : [mongoose.Types.ObjectId(req.params.id)]}})
         .then((data)=>{
             return res.status(200).json({
                 status: true,
-                message: 'Cart Item delete successfully',
+                message: 'Wishlist Item delete successfully',
                 data: data
             });
         })
