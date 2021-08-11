@@ -8,6 +8,8 @@ const ServiceController = require('../../Controller/User/Service');          // 
 const ShopController = require("../../Controller/User/Shop");      // added by anirbank-93
 const ShopServiceController = require("../../Controller/User/ShopServices"); // added by anirbank-93
 const CartController = require('../../Controller/User/Cart')
+const WishlistController = require('../../Controller/User/Wishlist')
+
 
 const multer = require('multer');
 
@@ -75,6 +77,9 @@ router.post('/add-to-cart', CartController.addToCart);
 router.put('/updateCart/:user_id/:prod_id', CartController.updateCart);
 router.get('/get-cart/:user_id', CartController.getCart);
 router.delete('/cartDelete/:id',CartController.Delete)
+
+router.post('/wishlist', WishlistController.create);
+
 /** ================================= with login url section end ================================ */
 
 module.exports = router;
