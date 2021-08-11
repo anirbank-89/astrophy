@@ -7,6 +7,7 @@ const SubscriptionController = require('../../Controller/Admin/Subscription');
 const UserSellersController = require('../../Controller/Admin/UserSellers'); // added by anirbank-93
 const ServiceController = require('../../Controller/Admin/Service');         // added by anirbank-93
 const ServiceSubCategoryController = require('../../Controller/Admin/SubCategory');// added by anirbank-93
+const CouponController = require('../../Controller/Admin/Coupon');
 
 const multer = require('multer');
  
@@ -65,4 +66,8 @@ router.get('/service/subcategory', ServiceSubCategoryController.viewAll)   // ad
 router.put('/service/subcategory/:id', ServiceSubCategoryController.update)// added by anirbank-93
 router.delete('/service/subcategory/:id', ServiceSubCategoryController.Delete)// added by anirbank-93
 
+router.post('/coupon',CouponController.create)   
+router.get('/coupon', CouponController.viewAll)  
+router.put('/coupon/:id', CouponController.update)
+router.delete('/coupon/:id', CouponController.Delete)
 module.exports = router;

@@ -16,8 +16,8 @@ const CouponSchema = new mongoose.Schema({
         required:true,
     }, 
     expdate:{
-        type:Date,
-        required:true,
+        type:String,
+        required:false,
     }, 
     times:{
         type:Number,
