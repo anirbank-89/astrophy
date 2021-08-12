@@ -3,6 +3,8 @@ const Cart = require("../../Models/cart");
 const Product = require("../../Models/product");
 var User = require("../../Models/user");
 var Wishlist = require("../../Models/wishlist");
+var Coupon = require("../../Models/coupon");
+
 
 const { Validator } = require("node-input-validator");
 
@@ -169,9 +171,35 @@ const Delete = async (req, res) => {
     });
 };
 
+const checkCoupon = async(req,res)=>
+{
+  let coupData = await Coupon.findOne({
+    name: req.body.name,
+    status: true,
+  }).exec();
+  // console.log(coupData)
+  if(coupData!='' && coupData !=null)
+  {
+    return res.status(200).json({
+      status:true,
+      data:coupData,
+      message:"Coupon get successfully"
+    })
+  }
+  else
+  {
+    return res.status(400).json({
+      status:false,
+      data:null,
+      message:"No Data"
+    })
+  }
+}
+
 module.exports = {
   addToCart,
   getCart,
   updateCart,
   Delete,
+  checkCoupon
 };

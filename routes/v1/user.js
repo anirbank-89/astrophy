@@ -82,6 +82,8 @@ router.post('/wishlist', WishlistController.create);
 router.get('/getWishlist/:user_id', WishlistController.getWish);
 router.delete('/deleteWishlist/:id', WishlistController.Delete);
 
+router.post('/checkCoupon', CartController.checkCoupon);
+
 
 
 /** ================================= with login url section end ================================ */
