@@ -4,6 +4,9 @@ const CartSchema = new mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
     user_id:mongoose.Schema.Types.ObjectId,
     prod_id:mongoose.Schema.Types.ObjectId,
+    order_id:{
+        type:Number
+    },
     productname:{
         type:String,
         required:true

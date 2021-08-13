@@ -119,6 +119,7 @@ const getCart = async (req, res) => {
     {
       $match: {
         user_id: mongoose.Types.ObjectId(req.params.user_id),
+        status :true
       },
     },
     {

@@ -9,6 +9,8 @@ const ShopController = require("../../Controller/User/Shop");      // added by a
 const ShopServiceController = require("../../Controller/User/ShopServices"); // added by anirbank-93
 const CartController = require('../../Controller/User/Cart')
 const WishlistController = require('../../Controller/User/Wishlist')
+const CheckoutController = require('../../Controller/User/Checkout')
+
 
 
 const multer = require('multer');
@@ -83,6 +85,9 @@ router.get('/getWishlist/:user_id', WishlistController.getWish);
 router.delete('/deleteWishlist/:id', WishlistController.Delete);
 
 router.post('/checkCoupon', CartController.checkCoupon);
+
+router.post('/checkout', CheckoutController.create);
+
 
 
 
