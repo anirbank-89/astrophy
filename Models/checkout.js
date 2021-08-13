@@ -26,7 +26,14 @@ const CheckoutSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    coupon_id:mongoose.Schema.Types.ObjectId,
+    coupon_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        required:false
+    },
+    coupon:{
+        type:String,
+        required:false,
+    },
     firstname:{
         type:String,
         required:true
@@ -41,7 +48,7 @@ const CheckoutSchema = new mongoose.Schema({
     },
     address2:{
         type:String,
-        required:true
+        required:false
     },
     country:{
         type:String,

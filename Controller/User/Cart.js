@@ -30,6 +30,7 @@ const addToCart = async (req, res) => {
   let subData = await Cart.findOne({
     user_id: mongoose.Types.ObjectId(req.body.user_id),
     prod_id: mongoose.Types.ObjectId(req.body.prod_id),
+    status:true
   }).exec();
   if (subData == null || subData == "") {
       

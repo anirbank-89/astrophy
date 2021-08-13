@@ -11,11 +11,9 @@ const create = async (req, res) => {
     subtotal: "required",
     discount_percent: "required",
     total: "required",
-    coupon_id: "required",
     firstname: "required",
     lastname: "required",
     address1: "required",
-    address2: "required",
     country: "required",
     state: "required",
     zip: "required",
@@ -40,23 +38,57 @@ const create = async (req, res) => {
     subtotal: req.body.subtotal,
     discount_percent: req.body.discount_percent,
     total: req.body.total,
-    coupon_id: req.body.coupon_id,
     firstname: req.body.firstname,
     lastname: req.body.lastname,
     address1: req.body.address1,
-    address2: req.body.address2,
     country: req.body.country,
     state: req.body.state,
     zip: req.body.zip,
     paymenttype: req.body.paymenttype,
   };
+  if (
+    req.body.coupon_id != "" &&
+    req.body.coupon_id != null &&
+    typeof req.body.coupon_id != undefined
+  ) {
+    dataSubmit.coupon_id = mongoose.Types.ObjectId(req.body.coupon_id);
+  }
+  if (
+    req.body.coupon != "" &&
+    req.body.coupon != null &&
+    typeof req.body.coupon != undefined
+  ) {
+    dataSubmit.coupon = req.body.coupon;
+  }
+  if (
+    req.body.address2 != "" &&
+    req.body.address2 != null &&
+    typeof req.body.address2 != undefined
+  ) {
+    dataSubmit.address2 = req.body.address2;
+  }
   console.log(dataSubmit);
+  //   return false;
+  if (
+    req.body.coupon_id != "" &&
+    req.body.coupon_id != null &&
+    typeof req.body.coupon_id != undefined
+  ) {
+    let coupData = await Coupon.findOne({
+      _id: mongoose.Types.ObjectId(req.body.coupon_id),
+      status: true,
+    }).exec();
+    let coupLimit = parseInt(coupData.times) - parseInt(1);
+    Coupon.updateMany(
+      { _id: mongoose.Types.ObjectId(req.body.coupon_id) },
+      { $set: { times: coupLimit } },
+      { multi: true },
+      (err, writeResult) => {
+        // console.log(err);
+      }
+    );
+  }
 
-  let coupData = await Coupon.findOne({
-    _id: mongoose.Types.ObjectId(req.body.coupon_id),
-    status: true,
-  }).exec();
-  
   const saveData = new Checkout(dataSubmit);
   return saveData
     .save()
@@ -69,20 +101,10 @@ const create = async (req, res) => {
           // console.log(err);
         }
       );
-    
-      let coupLimit = parseInt(coupData.times) - parseInt(1);
-      Coupon.updateMany(
-        { _id: mongoose.Types.ObjectId(req.body.coupon_id)},
-        { $set: { times: coupLimit } },
-        { multi: true },
-        (err, writeResult) => {
-          // console.log(err);
-        }
-      );
 
       res.status(200).json({
         status: true,
-        message: "Item Added to Successfully",
+        message: "Order Placed Successfully",
         data: data,
       });
     })
