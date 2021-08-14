@@ -95,6 +95,7 @@ router.post('/checkout', CheckoutController.create);
 router.post('/checkout', CheckoutController.create);
 
 router.get('/orderdetails/:user_id', MyaccountController.viewAll);
+router.put('/refundProduct/:id', MyaccountController.refundProduct);
 
 router.post('/productreview', ProductreviewController.create);
 

@@ -83,7 +83,7 @@ const CheckoutSchema = new mongoose.Schema({
         required:false
     },
     status:{
-        type:Boolean,
+        type:String,
         default:true
     }
 })
