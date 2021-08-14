@@ -89,7 +89,8 @@ const updateCart = async (req, res) => {
       user_id: { $in: [mongoose.Types.ObjectId(req.params.user_id)] },
       prod_id: { $in: [mongoose.Types.ObjectId(req.params.prod_id)] },
     },
-    req.body,
+    {$set:req.body},
+    {new: true},
     async (err, data) => {
       if (err) {
         res.status(500).json({
@@ -98,7 +99,7 @@ const updateCart = async (req, res) => {
           error: err,
         });
       } else if (data != null) {
-        data = { ...req.body, ...data._doc };
+        // data = { ...req.body, ...data._doc };
         res.status(200).json({
           status: true,
           message: "Cart update successful",
