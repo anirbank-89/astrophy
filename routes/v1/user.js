@@ -78,7 +78,7 @@ router.get('/shop/view-shopservice/:id', ShopServiceController.viewOneService); 
 router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.update);// added by anirbank-93
 
 router.post('/add-to-cart', CartController.addToCart);
-router.put('/updateCart/:user_id/:prod_id', CartController.updateCart);
+router.put('/updateCart/:id', CartController.updateCart);
 router.get('/get-cart/:user_id', CartController.getCart);
 router.delete('/cartDelete/:id',CartController.Delete)
 

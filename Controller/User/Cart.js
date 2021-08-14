@@ -85,11 +85,8 @@ const addToCart = async (req, res) => {
 
 const updateCart = async (req, res) => {
   return Cart.findOneAndUpdate(
-    {
-      user_id: { $in: [mongoose.Types.ObjectId(req.params.user_id)] },
-      prod_id: { $in: [mongoose.Types.ObjectId(req.params.prod_id)] },
-    },
-    {$set:req.body},
+    { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+    req.body,
     {new: true},
     async (err, data) => {
       if (err) {
