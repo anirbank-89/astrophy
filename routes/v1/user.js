@@ -10,6 +10,8 @@ const ShopServiceController = require("../../Controller/User/ShopServices"); // 
 const CartController = require('../../Controller/User/Cart')
 const WishlistController = require('../../Controller/User/Wishlist')
 const CheckoutController = require('../../Controller/User/Checkout')
+const MyaccountController = require('../../Controller/User/Myaccount')
+
 
 
 
@@ -87,6 +89,11 @@ router.delete('/deleteWishlist/:id', WishlistController.Delete);
 router.post('/checkCoupon', CartController.checkCoupon);
 
 router.post('/checkout', CheckoutController.create);
+
+router.post('/checkout', CheckoutController.create);
+
+router.get('/orderdetails/:user_id', MyaccountController.viewAll);
+
 
 
 
