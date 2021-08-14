@@ -11,6 +11,8 @@ const CartController = require('../../Controller/User/Cart')
 const WishlistController = require('../../Controller/User/Wishlist')
 const CheckoutController = require('../../Controller/User/Checkout')
 const MyaccountController = require('../../Controller/User/Myaccount')
+const ProductreviewController = require('../../Controller/User/ProductReview')
+
 
 
 
@@ -93,6 +95,9 @@ router.post('/checkout', CheckoutController.create);
 router.post('/checkout', CheckoutController.create);
 
 router.get('/orderdetails/:user_id', MyaccountController.viewAll);
+
+router.post('/productreview', ProductreviewController.create);
+
 
 
 
