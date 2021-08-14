@@ -6,6 +6,7 @@ const create = async (req, res) => {
     _id: mongoose.Types.ObjectId(),
     product_id: mongoose.Types.ObjectId(req.body.prod_id),
     user_id: mongoose.Types.ObjectId(req.body.user_id),
+    order_id:req.body.order_id
   };
   if (typeof req.body.rating != "undefined" || req.body.rating != "") {
     shopServiceData.rating = req.body.rating;

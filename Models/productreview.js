@@ -9,6 +9,9 @@ const ReviewSchema = new mongoose.Schema({
     }, 
     comment:{
         type:String,
+    },
+    order_id:{
+        type:Number
     }
 
 })
