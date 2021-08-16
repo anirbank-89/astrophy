@@ -36,7 +36,6 @@ const create = async (req, res) => {
       `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`
     ),
     subtotal: req.body.subtotal,
-    discount_percent: req.body.discount_percent,
     total: req.body.total,
     firstname: req.body.firstname,
     lastname: req.body.lastname,
