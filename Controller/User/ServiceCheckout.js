@@ -8,6 +8,7 @@ const { Validator } = require("node-input-validator");
 const create = async (req, res) => {
   const v = new Validator(req.body, {
     user_id: "required",
+    seller_id:"required",
     subtotal: "required",
     //discount_percent: "required",
     total: "required",
@@ -32,6 +33,7 @@ const create = async (req, res) => {
   let dataSubmit = {
     _id: mongoose.Types.ObjectId(),
     user_id: mongoose.Types.ObjectId(req.body.user_id),
+    seller_id: mongoose.Types.ObjectId(req.body.seller_id),
     order_id: Number(
       `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`
     ),

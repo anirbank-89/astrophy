@@ -5,6 +5,7 @@ var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 const ServiceCheckoutSchema = new mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
     user_id:mongoose.Schema.Types.ObjectId,
+    seller_id:mongoose.Schema.Types.ObjectId,
     order_id:
     {
         type:Number,
