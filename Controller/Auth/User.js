@@ -122,8 +122,18 @@ const viewProductList = async( req ,res )=>
                 }
             },
             {
+                $lookup:{
+                    from:"reviews",
+                    localField:"_id",
+                    foreignField: "product_id",
+                    as:"review_data",
+                }
+            },
+            
+            {
                 $project:{
-                    _v:0
+                    _v:0,
+                   avg : { $avg : '$review_data.rating' } 
                 }
             }
         ]
@@ -138,7 +148,7 @@ const viewProductList = async( req ,res )=>
         res.status(500).json({
             status: false,
             message: "Server error. Please try again.",
-            error: error,
+            error: err,
           });
     })
 }
