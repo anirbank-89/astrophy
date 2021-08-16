@@ -20,7 +20,7 @@ const CheckoutSchema = new mongoose.Schema({
     },
     discount_percent:{
         type:Number,
-        required:true
+        required:false
     },
     total:{
         type:Number,

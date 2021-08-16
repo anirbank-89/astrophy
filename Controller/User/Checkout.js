@@ -9,7 +9,6 @@ const create = async (req, res) => {
   const v = new Validator(req.body, {
     user_id: "required",
     subtotal: "required",
-    discount_percent: "required",
     total: "required",
     firstname: "required",
     lastname: "required",
@@ -36,7 +35,6 @@ const create = async (req, res) => {
       `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`
     ),
     subtotal: req.body.subtotal,
-    discount_percent: req.body.discount_percent,
     total: req.body.total,
     firstname: req.body.firstname,
     lastname: req.body.lastname,
@@ -46,12 +44,20 @@ const create = async (req, res) => {
     zip: req.body.zip,
     paymenttype: req.body.paymenttype,
   };
+  
   if (
     req.body.coupon_id != "" &&
     req.body.coupon_id != null &&
     typeof req.body.coupon_id != undefined
   ) {
     dataSubmit.coupon_id = mongoose.Types.ObjectId(req.body.coupon_id);
+  }
+  if (
+    req.body.discount_percent != "" &&
+    req.body.discount_percent != null &&
+    typeof req.body.discount_percent != undefined
+  ) {
+    dataSubmit.discount_percent = req.body.discount_percent;
   }
   if (
     req.body.coupon != "" &&
