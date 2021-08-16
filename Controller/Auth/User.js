@@ -129,6 +129,12 @@ const viewProductList = async( req ,res )=>
                     as:"review_data",
                 }
             },
+            {
+                $group: {
+                  avgRating: { $avg: '$review_data.rating' },
+                  nRatings: { $sum: 1 },
+                },
+              },
             
             {
                 $project:{
