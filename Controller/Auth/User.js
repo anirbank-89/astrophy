@@ -130,12 +130,17 @@ const viewProductList = async( req ,res )=>
                 }
             },
             {
-                $group: {
-                  avgRating: { $avg: '$review_data.rating' },
-                  nRatings: { $sum: 1 },
-                },
-              },
-            
+                $addFields: {
+                    avgRating: {
+                        $avg: {
+                            $map: {
+                                input: "$review_data",
+                                in: "$$this.rating"
+                            }
+                        }
+                    }
+                }
+            },    
             {
                 $project:{
                     _v:0,
