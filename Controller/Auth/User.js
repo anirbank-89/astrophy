@@ -133,7 +133,7 @@ const viewProductList = async( req ,res )=>
             {
                 $project:{
                     _v:0,
-                   avg : { $avg : '$review_data.rating' } 
+                //    avg : { $avg : '$review_data.rating' } 
                 }
             }
         ]

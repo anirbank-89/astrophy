@@ -99,6 +99,9 @@ router.put('/refundProduct/:id', MyaccountController.refundProduct);
 
 router.post('/productreview', ProductreviewController.create);
 
+router.get('/productreview/:prod_id', ProductreviewController.getReviews);
+
+
 
 
 

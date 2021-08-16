@@ -47,6 +47,48 @@ const create = async (req, res) => {
   }
 };
 
+const getReviews = async (req,res)=>{
+
+  return Productreview.aggregate([
+    {
+        $match: {
+            product_id: mongoose.Types.ObjectId(req.params.prod_id),
+        },
+    },
+    {
+        $project: {
+            // _id: 0,
+            
+            __v: 0,            
+        }
+    }
+])
+    .then((data) => {
+        if (data.length > 0) {
+            return res.status(200).json({
+                status: true,
+                message: "Reviews Get Successfully",
+                data: data,
+            });
+        } else {
+            return res.status(200).json({
+                status: true,
+                message: "Empty List",
+                data: data,
+            });
+        }
+
+    })
+    .catch((err) => {
+        return res.status(500).json({
+            status: false,
+            message: "No Match",
+            data: null,
+        });
+    });
+}
+
 module.exports = {
   create,
+  getReviews
 };
