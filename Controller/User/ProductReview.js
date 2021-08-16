@@ -6,7 +6,7 @@ const create = async (req, res) => {
     _id: mongoose.Types.ObjectId(),
     product_id: mongoose.Types.ObjectId(req.body.prod_id),
     user_id: mongoose.Types.ObjectId(req.body.user_id),
-    order_id:req.body.order_id
+    order_id: req.body.order_id,
   };
   if (typeof req.body.rating != "undefined" || req.body.rating != "") {
     shopServiceData.rating = req.body.rating;
@@ -36,59 +36,64 @@ const create = async (req, res) => {
           errors: err,
         });
       });
-  }
-  else
-  {
+  } else {
     res.status(500).json({
-        status: false,
-        message: "Already reviewed",
-        errors: null,
-      });
+      status: false,
+      message: "Already reviewed",
+      errors: null,
+    });
   }
 };
 
-const getReviews = async (req,res)=>{
-
+const getReviews = async (req, res) => {
   return Productreview.aggregate([
     {
-        $match: {
-            product_id: mongoose.Types.ObjectId(req.params.prod_id),
-        },
+      $match: {
+        product_id: mongoose.Types.ObjectId(req.params.prod_id),
+      },
     },
     {
-        $project: {
-            // _id: 0,
-            
-            __v: 0,            
-        }
-    }
-])
-    .then((data) => {
-        if (data.length > 0) {
-            return res.status(200).json({
-                status: true,
-                message: "Reviews Get Successfully",
-                data: data,
-            });
-        } else {
-            return res.status(200).json({
-                status: true,
-                message: "Empty List",
-                data: data,
-            });
-        }
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user_data",
+      },
+    },
+    { $unwind : "$user_data" },
+    {
+      $project: {
+        // _id: 0,
 
+        __v: 0,
+      },
+    },
+  ])
+    .then((data) => {
+      if (data.length > 0) {
+        return res.status(200).json({
+          status: true,
+          message: "Reviews Get Successfully",
+          data: data,
+        });
+      } else {
+        return res.status(200).json({
+          status: true,
+          message: "Empty List",
+          data: data,
+        });
+      }
     })
     .catch((err) => {
-        return res.status(500).json({
-            status: false,
-            message: "No Match",
-            data: null,
-        });
+      return res.status(500).json({
+        status: false,
+        message: "No Match",
+        data: null,
+      });
     });
-}
+};
 
 module.exports = {
   create,
-  getReviews
+  getReviews,
 };
