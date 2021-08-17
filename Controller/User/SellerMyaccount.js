@@ -2,6 +2,8 @@ var mongoose = require('mongoose')
 var ServiceCheckout = require('../../Models/servicecheckout')
 var User = require('../../Models/user')
 var ServiceCart = require('../../Models/servicecart')
+var Shop = require("../../Models/shop");
+var ShopServices = require('../../Models/shop_service');
 const { Validator } = require('node-input-validator')
 
 const viewAll = async (req,res)=>{
@@ -10,16 +12,14 @@ const viewAll = async (req,res)=>{
             {
                 $match: {
                     user_id: mongoose.Types.ObjectId(req.params.user_id),
-                    //for seller
-                    seller_id: mongoose.Types.ObjectId(req.params.seller_id),
                 },
             },
             {
                 $lookup:{
-                    from:"servicecarts",
-                    localField:"order_id",
+                    from:"servicecarts",//
+                    localField:"order_id",//
                     foreignField:"order_id",
-                    as:"servicecart_data"
+                    as:"servicecart_data"//
                 }
             },
             {

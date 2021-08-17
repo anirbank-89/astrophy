@@ -113,7 +113,7 @@ router.delete('/servicecart/:id',ServiceCartController.Delete)
 
 router.post('/servicecheckout', ServiceCheckoutController.create);
 
-router.get('/orderdetails/:user_id', ServiceMyaccountController.viewAll);
+router.get('/orderdetails/:user_id/:seller_id', ServiceMyaccountController.viewAll);
 
 
 
