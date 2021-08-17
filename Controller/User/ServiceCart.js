@@ -29,7 +29,6 @@ const addToServiceCart = async (req, res) => {
 
   let subData = await ServiceCart.findOne({
     user_id: mongoose.Types.ObjectId(req.body.user_id),
-    serv_id: mongoose.Types.ObjectId(req.body.serv_id),
     status:true
   }).exec();
   if (subData == null || subData == "") {
