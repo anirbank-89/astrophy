@@ -12,9 +12,10 @@ const WishlistController = require('../../Controller/User/Wishlist')
 const CheckoutController = require('../../Controller/User/Checkout')
 const MyaccountController = require('../../Controller/User/Myaccount')
 const ProductreviewController = require('../../Controller/User/ProductReview')
-const ServiceMyaccountController = require('../../Controller/User/ServiceMyaccount')
+const ServiceMyaccountController = require('../../Controller/User/ServiceMyaccount')//krittika
 const ServiceCartController = require('../../Controller/User/ServiceCart')//krittika
 const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout')//krittika
+const SellerMyaccountController = require('../../Controller/User/SellerMyaccount')//krittika
 
 
 
@@ -113,7 +114,8 @@ router.delete('/servicecart/:id',ServiceCartController.Delete)
 
 router.post('/servicecheckout', ServiceCheckoutController.create);
 
-router.get('/orderdetails/:user_id/:seller_id', ServiceMyaccountController.viewAll);
+router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
+router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
 
 
 

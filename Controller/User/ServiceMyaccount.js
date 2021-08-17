@@ -10,8 +10,7 @@ const viewAll = async (req,res)=>{
             {
                 $match: {
                     user_id: mongoose.Types.ObjectId(req.params.user_id),
-                    //for seller
-                    seller_id: mongoose.Types.ObjectId(req.params.seller_id),
+                   
                 },
             },
             {
