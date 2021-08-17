@@ -12,6 +12,10 @@ const WishlistController = require('../../Controller/User/Wishlist')
 const CheckoutController = require('../../Controller/User/Checkout')
 const MyaccountController = require('../../Controller/User/Myaccount')
 const ProductreviewController = require('../../Controller/User/ProductReview')
+const ServiceMyaccountController = require('../../Controller/User/ServiceMyaccount')
+const ServiceCartController = require('../../Controller/User/ServiceCart')//krittika
+const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout')//krittika
+
 
 
 
@@ -100,6 +104,17 @@ router.put('/refundProduct/:id', MyaccountController.refundProduct);
 router.post('/productreview', ProductreviewController.create);
 
 router.get('/productreview/:prod_id', ProductreviewController.getReviews);
+
+
+//krittika
+router.post('/servicecart', ServiceCartController.addToServiceCart);
+router.get('/servicecart/:user_id', ServiceCartController.getServiceCart);
+router.delete('/servicecart/:id',ServiceCartController.Delete)
+
+router.post('/servicecheckout', ServiceCheckoutController.create);
+
+router.get('/orderdetails/:user_id', ServiceMyaccountController.viewAll);
+
 
 
 

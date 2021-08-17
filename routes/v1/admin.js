@@ -9,6 +9,7 @@ const ServiceController = require('../../Controller/Admin/Service');         // 
 const ServiceSubCategoryController = require('../../Controller/Admin/SubCategory');// added by anirbank-93
 const CouponController = require('../../Controller/Admin/Coupon');
 const OrderhistoryController = require('../../Controller/Admin/Orderhistory');
+const ServicehistoryController = require('../../Controller/Admin/Servicehistory');
 
 
 const multer = require('multer');
@@ -74,5 +75,7 @@ router.put('/coupon/:id', CouponController.update)
 router.delete('/coupon/:id', CouponController.Delete)
 
 router.get('/orderHistory', OrderhistoryController.viewAll)  
+
+router.get('/servicedetails', ServicehistoryController.viewAll);
 
 module.exports = router;
