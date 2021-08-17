@@ -220,6 +220,26 @@ const viewOneService = async (req,res)=>{
                             }
                         },
                         {
+                            $unwind: {
+                                path: "$shop_details",
+                                preserveNullAndEmptyArrays: true                        
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "shop_details.userid",
+                                foreignField: "_id",
+                                as: 'shop_details.user_data'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$shop_details.user_data",
+                                preserveNullAndEmptyArrays: true                        
+                            }
+                        },
+                        {
                             $project:{
                                 _v:0
                             }
