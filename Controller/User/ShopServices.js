@@ -235,6 +235,26 @@ const viewOneService = async (req,res)=>{
                         },
                         {
                             $lookup:{
+                                from:"servicereviews",
+                                localField:"_id",
+                                foreignField: "service_id",
+                                as:"rev_data",
+                            }
+                        },
+                        {
+                            $addFields: {
+                                avgRating: {
+                                    $avg: {
+                                        $map: {
+                                            input: "$rev_data",
+                                            in: "$$this.rating"
+                                        }
+                                    }
+                                }
+                            }
+                        }, 
+                        {
+                            $lookup:{
                                 from: "shops",
                                 localField: "shop_id",
                                 foreignField: "_id",
@@ -260,7 +280,7 @@ const viewOneService = async (req,res)=>{
                                 path: "$shop_details.user_data",
                                 preserveNullAndEmptyArrays: true                        
                             }
-                        },
+                        },  
                         {
                             $project:{
                                 _v:0
