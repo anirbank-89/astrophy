@@ -16,7 +16,7 @@ const ServiceMyaccountController = require('../../Controller/User/ServiceMyaccou
 const ServiceCartController = require('../../Controller/User/ServiceCart')//krittika
 const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout')//krittika
 const SellerMyaccountController = require('../../Controller/User/SellerMyaccount')//krittika
-
+const ServicereviewController = require('../../Controller/User/ServiceReview')
 
 
 
@@ -116,6 +116,8 @@ router.post('/servicecheckout', ServiceCheckoutController.create);
 
 router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
 router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
+router.post('/servicereview', ServicereviewController.create);
+router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
 
 
 

@@ -3,6 +3,8 @@ var Service = require('../../Models/service');
 var Shop = require('../../Models/shop');
 var Subcategory = require('../../Models/subcategory');
 var ShopService = require('../../Models/shop_service');
+var ServiceReview = require('../../Models/servicereview');
+
 
 const viewAllServices = async (req,res)=>{
     return Service.find()
@@ -64,16 +66,16 @@ const viewServiceSubCategory = async (req,res)=>{
 
 const viewShopServicesPerService = async (req,res)=>{
     let id = req.params.id       // _id of 'services' table in params
-    ShopService.find({category_id: {$in: [mongoose.Types.ObjectId(id)]}})
-      .then((data)=>{
-        if(data==null || data==''){
-            res.status(200).json({
-                status: true,
-                message: "This service category doesn't have any services currently.",
-                data: data
-            })
-        }
-        else {
+    // ShopService.find({category_id: {$in: [mongoose.Types.ObjectId(id)]}})
+    //   .then((data)=>{
+    //     if(data==null || data==''){
+    //         res.status(200).json({
+    //             status: true,
+    //             message: "This service category doesn't have any services currently.",
+    //             data: data
+    //         })
+    //     }
+    //     else {
             ShopService.aggregate(
                 [
                     {
@@ -89,6 +91,27 @@ const viewShopServicesPerService = async (req,res)=>{
                             as: "shop_details"
                         }
                     },
+
+                    {
+                        $lookup:{
+                            from:"servicereviews",
+                            localField:"_id",
+                            foreignField: "service_id",
+                            as:"rev_data",
+                        }
+                    },
+                    {
+                        $addFields: {
+                            avgRating: {
+                                $avg: {
+                                    $map: {
+                                        input: "$rev_data",
+                                        in: "$$this.rating"
+                                    }
+                                }
+                            }
+                        }
+                    },    
                     {
                         $project:{
                             _v:0
@@ -110,15 +133,15 @@ const viewShopServicesPerService = async (req,res)=>{
                     error: fault
                 })
             })
-        }
-      })
-      .catch((err)=>{
-        res.status(500).json({
-            status: false,
-            message: "Server error. Please try again.",
-            error: err
-        })
-    }) 
+    //     }
+    //   })
+    //   .catch((err)=>{
+    //     res.status(500).json({
+    //         status: false,
+    //         message: "Server error. Please try again.",
+    //         error: err
+    //     })
+    // }) 
 }
           
 module.exports = {

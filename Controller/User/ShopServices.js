@@ -3,6 +3,7 @@ var Shop = require('../../Models/shop')
 var ShopService = require('../../Models/shop_service')
 var Subcategory = require('../../Models/subcategory')
 var Upload = require('../../service/upload')
+var ServiceReview = require('../../Models/servicereview');
 
 const { Validator } = require('node-input-validator')
 const service = require('../../Models/service')
@@ -160,6 +161,27 @@ const viewShopServicesPerSeller = async (req,res)=>{
                             as: "shop_details"
                         }
                     },
+
+                    {
+                        $lookup:{
+                            from:"servicereviews",
+                            localField:"_id",
+                            foreignField: "service_id",
+                            as:"rev_data",
+                        }
+                    },
+                    {
+                        $addFields: {
+                            avgRating: {
+                                $avg: {
+                                    $map: {
+                                        input: "$review_data",
+                                        in: "$$this.rating"
+                                    }
+                                }
+                            }
+                        }
+                    },    
                     {
                         $project:{
                             _v:0
