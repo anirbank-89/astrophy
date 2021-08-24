@@ -37,6 +37,10 @@ const ProductSchema = new mongoose.Schema({
     required: true,
     default: true
     },
+    delivery:{
+        type:String,
+        required:true
+    },
 
 
     
