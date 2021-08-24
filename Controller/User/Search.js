@@ -4,6 +4,7 @@ var Shop = require("../../Models/shop");
 var Subcategory = require("../../Models/subcategory");
 var ShopService = require("../../Models/shop_service");
 var ServiceReview = require("../../Models/servicereview");
+var Product = require("../../Models/product");
 
 const serviceSearch = async (req, res) => {
   return ShopService.aggregate([
@@ -114,7 +115,7 @@ const serviceSearch = async (req, res) => {
       if (data.length > 0) {
         res.status(200).json({
           status: true,
-          message: "Product Get",
+          message: "Service Get Successfully",
           data: data,
         });
       } else {
@@ -128,13 +129,135 @@ const serviceSearch = async (req, res) => {
     .catch((err) => {
       res.status(500).json({
         status: false,
-        message: "Ambulance Booking not match",
+        message: "No Match",
         data: null,
         err,
       });
     });
 };
 
+const productSearch = async (req, res) => {
+    return Product.aggregate([
+      req.body.delivery != "" && typeof req.body.delivery != "undefined"
+        ? {
+            $match: { delivery: { $in: [req.body.delivery.toString()] } },
+          }
+        : { $project: { __v: 0 } },
+      (req.body.min != "" && typeof req.body.min != "undefined") ||
+      (req.body.max != "" && typeof req.body.max != "undefined")
+        ? {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $gte: ["$selling_price", req.body.min],
+                  },
+                  {
+                    $lte: ["$selling_price", req.body.max],
+                  },
+                ],
+              },
+            },
+          }
+        : { $project: { __v: 0 } },
+        {
+            $lookup:{
+                from:"categories",
+                localField:"catID",
+                foreignField: "_id",
+                as:"category_data"
+            }
+        },
+      {
+        $lookup: {
+          from: "carts",
+          localField: "_id",
+          foreignField: "prod_id",
+          as: "cart_items",
+        },
+      },
+      {
+        $addFields: {
+          totalAdded: {
+            $cond: {
+              if: { $isArray: "$cart_items" },
+              then: { $size: "$cart_items" },
+              else: null,
+            },
+          },
+        },
+      },
+      {
+        $lookup:{
+            from:"reviews",
+            localField:"_id",
+            foreignField: "product_id",
+            as:"review_data",
+        }
+    },
+    {
+        $addFields: {
+            avgRating: {
+                $avg: {
+                    $map: {
+                        input: "$review_data",
+                        in: "$$this.rating"
+                    }
+                }
+            }
+        }
+    },
+      req.body.newarrivals != "" && typeof req.body.newarrivals != "undefined"
+        ? { $sort: { _id: -1 } }
+        : { $project: { __v: 0 } },
+      req.body.highlow != "" && typeof req.body.highlow != "undefined"
+        ? { $sort: { selling_price: -1 } }
+        : { $project: { __v: 0 } },
+      req.body.lowhigh != "" && typeof req.body.lowhigh != "undefined"
+        ? { $sort: { selling_price: 1 } }
+        : { $project: { __v: 0 } },
+      req.body.lowhighrev != "" && typeof req.body.lowhighrev != "undefined"
+        ? { $sort: { avgRating: 1 } }
+        : { $project: { __v: 0 } },
+      req.body.highlowrev != "" && typeof req.body.highlowrev != "undefined"
+        ? { $sort: { avgRating: -1 } }
+        : { $project: { __v: 0 } },
+      req.body.bestselling != "" && typeof req.body.bestselling != "undefined"
+        ? { $sort: { totalAdded: -1 } }
+        : { $project: { __v: 0 } },
+      req.body.lowhighsell != "" && typeof req.body.lowhighsell != "undefined"
+        ? { $sort: { totalAdded: 1 } }
+        : { $project: { __v: 0 } },
+      req.body.highlowsell != "" && typeof req.body.highlowsell != "undefined"
+        ? { $sort: { totalAdded: -1 } }
+        : { $project: { __v: 0 } },
+    ])
+      .then((data) => {
+        if (data.length > 0) {
+          res.status(200).json({
+            status: true,
+            message: "Product Get Successfully",
+            data: data,
+          });
+        } else {
+          res.status(200).json({
+            status: false,
+            message: "No Data ",
+            data: data,
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "No match",
+          data: null,
+          err,
+        });
+      });
+  };
+
 module.exports = {
   serviceSearch,
+  productSearch
 };
