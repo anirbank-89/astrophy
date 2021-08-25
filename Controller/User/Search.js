@@ -86,44 +86,36 @@ const serviceSearch = async (req, res) => {
         },
       },
     },
-    req.body.shortby != "" &&
-    typeof req.body.shortby != "undefined" &&
-    req.body.shortby == "newarrivals"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "newarrivals"
       ? { $sort: { _id: -1 } }
       : { $project: { __v: 0 } },
-    req.body.shortby != "" &&
-    typeof req.body.shortby != "undefined" &&
-    req.body.shortby == "highlow"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "highlow"
       ? { $sort: { price: -1 } }
       : { $project: { __v: 0 } },
-    req.body.shortby != "" &&
-    typeof req.body.shortby != "undefined" &&
-    req.body.shortby == "lowhigh"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "lowhigh"
       ? { $sort: { price: 1 } }
       : { $project: { __v: 0 } },
-    req.body.shortby != "" &&
-    typeof req.body.shortby != "undefined" &&
-    req.body.shortby == "lowhighrev"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "lowhighrev"
       ? { $sort: { avgRating: 1 } }
       : { $project: { __v: 0 } },
-    req.body.shortby != "" &&
-    typeof req.body.shortby != "undefined" &&
-    req.body.shortby == "highlowrev"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "highlowrev"
       ? { $sort: { avgRating: -1 } }
       : { $project: { __v: 0 } },
-    req.body.shortby != "" &&
-    typeof req.body.shortby != "undefined" &&
-    req.body.shortby == "bestselling"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "bestselling"
       ? { $sort: { totalAdded: -1 } }
       : { $project: { __v: 0 } },
-    req.body.shortby != "" &&
-    typeof req.body.shortby != "undefined" &&
-    req.body.shortby == "lowhighsell"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "lowhighsell"
       ? { $sort: { totalAdded: 1 } }
       : { $project: { __v: 0 } },
-    req.body.shortby != "" &&
-    typeof req.body.shortby != "undefined" &&
-    req.body.shortby == "highlowsell"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "highlowsell"
       ? { $sort: { totalAdded: -1 } }
       : { $project: { __v: 0 } },
   ])
@@ -223,28 +215,35 @@ const productSearch = async (req, res) => {
         },
       },
     },
-    req.body.newarrivals != "" && typeof req.body.newarrivals != "undefined"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "newarrivals"
       ? { $sort: { _id: -1 } }
       : { $project: { __v: 0 } },
-    req.body.highlow != "" && typeof req.body.highlow != "undefined"
+    typeof req.body.shortby != "undefined" && req.body.shortby == "highlow"
       ? { $sort: { selling_price: -1 } }
       : { $project: { __v: 0 } },
-    req.body.lowhigh != "" && typeof req.body.lowhigh != "undefined"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "lowhigh"
       ? { $sort: { selling_price: 1 } }
       : { $project: { __v: 0 } },
-    req.body.lowhighrev != "" && typeof req.body.lowhighrev != "undefined"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "lowhighrev"
       ? { $sort: { avgRating: 1 } }
       : { $project: { __v: 0 } },
-    req.body.highlowrev != "" && typeof req.body.highlowrev != "undefined"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "highlowrev"
       ? { $sort: { avgRating: -1 } }
       : { $project: { __v: 0 } },
-    req.body.bestselling != "" && typeof req.body.bestselling != "undefined"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "bestselling"
       ? { $sort: { totalAdded: -1 } }
       : { $project: { __v: 0 } },
-    req.body.lowhighsell != "" && typeof req.body.lowhighsell != "undefined"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "lowhighsell"
       ? { $sort: { totalAdded: 1 } }
       : { $project: { __v: 0 } },
-    req.body.highlowsell != "" && typeof req.body.highlowsell != "undefined"
+
+    typeof req.body.shortby != "undefined" && req.body.shortby == "highlowsell"
       ? { $sort: { totalAdded: -1 } }
       : { $project: { __v: 0 } },
   ])
