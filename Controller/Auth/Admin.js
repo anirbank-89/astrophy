@@ -122,8 +122,8 @@ const login = async(req,res) =>
                 {
                     return res.status(200).json({
                         status: false,
-                        message: 'Server error. Please try again.',
-                        error: 'Server Error',
+                        message: 'Invalid Email or Password !!. Please try again.',
+                        error: 'Invalid Email or Password !!',
                     });
                 }
             }

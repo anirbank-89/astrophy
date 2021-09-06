@@ -5,7 +5,6 @@ var User = require("../../Models/user");
 var Wishlist = require("../../Models/wishlist");
 //var Coupon = require("../../Models/coupon");
 
-
 const { Validator } = require("node-input-validator");
 
 const addToServiceCart = async (req, res) => {
@@ -15,7 +14,6 @@ const addToServiceCart = async (req, res) => {
     servicename: "required",
     price: "required",
     image: "required",
-
   });
 
   let matched = await v.check().then((val) => val);
@@ -28,12 +26,11 @@ const addToServiceCart = async (req, res) => {
   }
 
   let subData = await ServiceCart.findOne({
-    user_id: mongoose.Types.ObjectId(req.body.user_id),
-    status:true
+    //user_id: mongoose.Types.ObjectId(req.body.user_id),
+    serv_id: mongoose.Types.ObjectId(req.body.serv_id),
+    status: true,
   }).exec();
   if (subData == null || subData == "") {
-      
-  
     let dataSubmit = {
       _id: mongoose.Types.ObjectId(),
       user_id: mongoose.Types.ObjectId(req.body.user_id),
@@ -104,7 +101,7 @@ const getServiceCart = async (req, res) => {
     {
       $match: {
         user_id: mongoose.Types.ObjectId(req.params.user_id),
-        status :true
+        status: true,
       },
     },
     {
@@ -140,7 +137,9 @@ const getServiceCart = async (req, res) => {
 };
 
 const Delete = async (req, res) => {
-  return ServiceCart.remove({ _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } })
+  return ServiceCart.remove({
+    _id: { $in: [mongoose.Types.ObjectId(req.params.id)] },
+  })
     .then((data) => {
       return res.status(200).json({
         status: true,
