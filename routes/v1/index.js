@@ -32,7 +32,10 @@ router.get('/user/service/:id', ServiceController.viewService);// added by anirb
 
 router.get('/user/service/shop-services/:id', ServiceController.viewShopServicesPerService);// added by anirbank-93
 
-router.post('/searchauto', SeaarchController.autoSearch);
+router.post('/user/searchauto', SeaarchController.autoSearch);
+
+router.post('/user/searchAll', SeaarchController.searchAll);
+
 
 
 /** ================================= without login url section end ================================ */

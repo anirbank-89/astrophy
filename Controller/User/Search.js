@@ -326,8 +326,151 @@ const autoSearch = async (req, res) => {
 
 };
 
+const searchAll = async (req, res) => {
+if(req.body.type == 'product')
+{
+  return Product.aggregate([
+    {
+      $match: {
+        name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
+      },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "catID",
+        foreignField: "_id",
+        as: "category_data",
+      },
+    },
+    {
+      $lookup: {
+        from: "carts",
+        localField: "_id",
+        foreignField: "prod_id",
+        as: "cart_items",
+      },
+    },
+    {
+      $lookup: {
+        from: "reviews",
+        localField: "_id",
+        foreignField: "product_id",
+        as: "review_data",
+      },
+    },
+    {
+      $addFields: {
+        avgRating: {
+          $avg: {
+            $map: {
+              input: "$review_data",
+              in: "$$this.rating",
+            },
+          },
+        },
+      },
+    },
+  ])
+  .then((data) => {
+    if (data.length > 0) {
+      res.status(200).json({
+        status: true,
+        message: "Product Get Successfully",
+        data: data,
+      });
+    } else {
+      res.status(200).json({
+        status: false,
+        message: "No Data ",
+        data: data,
+      });
+    }
+  })
+  .catch((err) => {
+    res.status(500).json({
+      status: false,
+      message: "No match",
+      data: null,
+      err,
+    });
+  });
+}
+else
+{
+  return ShopService.aggregate([
+    {
+      $match: {
+        name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
+      },
+    },
+    {
+      $lookup: {
+        from: "shops",
+        localField: "shop_id",
+        foreignField: "_id",
+        as: "shop_details",
+      },
+    },
+    {
+      $lookup: {
+        from: "servicecarts",
+        localField: "_id",
+        foreignField: "serv_id",
+        as: "cart_items",
+      },
+    },
+    {
+      $lookup: {
+        from: "servicereviews",
+        localField: "_id",
+        foreignField: "service_id",
+        as: "rev_data",
+      },
+    },
+    {
+      $addFields: {
+        avgRating: {
+          $avg: {
+            $map: {
+              input: "$rev_data",
+              in: "$$this.rating",
+            },
+          },
+        },
+      },
+    },
+  ])
+  .then((data) => {
+    if (data.length > 0) {
+      res.status(200).json({
+        status: true,
+        message: "Service Get Successfully",
+        data: data,
+      });
+    } else {
+      res.status(200).json({
+        status: false,
+        message: "No Data ",
+        data: data,
+      });
+    }
+  })
+  .catch((err) => {
+    res.status(500).json({
+      status: false,
+      message: "No Match",
+      data: null,
+      err,
+    });
+  });
+}
+
+};
+
 module.exports = {
   serviceSearch,
   productSearch,
   autoSearch,
+  searchAll
 };
