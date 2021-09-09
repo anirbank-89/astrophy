@@ -124,7 +124,7 @@ router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
 router.post('/searchSevice', SeaarchController.serviceSearch);
 router.post('/searchProduct', SeaarchController.productSearch);
 
-router.post('/searchauto', SeaarchController.autoSearch);
+
 
 
 
