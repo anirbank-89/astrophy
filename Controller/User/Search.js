@@ -272,7 +272,62 @@ const productSearch = async (req, res) => {
     });
 };
 
+const autoSearch = async (req, res) => {
+  let proDarr = [];
+  let prod = await Product.aggregate([
+    {
+      $match: {
+        name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
+      },
+    },
+  ])
+    .then((data) => {
+      if (data.length > 0) {
+        // proDarr.push(data);
+        data.forEach((item) => {
+          // console.log(item)
+          proDarr.push({ id:item._id,name: item.name, type: "product" });
+        });
+        return proDarr;
+      } else {
+      }
+    })
+    .catch((err) => {});
+
+    let Service = await ShopService.aggregate([
+      {
+        $match: {
+          name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
+        },
+      },
+    ])
+      .then((data) => {
+        if (data.length > 0) {
+          // proDarr.push(data);
+          data.forEach((item) => {
+            // console.log(item)
+            proDarr.push({ id:item._id,name: item.name, type: "service" });
+          });
+          return proDarr;
+        } else {
+        }
+      })
+      .catch((err) => {});
+
+  console.log(prod);
+  if(prod.length>0)
+  {
+    return res.status(200).json({
+      status: true,
+      message: "Product Get Successfully",
+      data: proDarr,
+    });
+  }
+
+};
+
 module.exports = {
   serviceSearch,
   productSearch,
+  autoSearch,
 };
