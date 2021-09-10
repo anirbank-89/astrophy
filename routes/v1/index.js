@@ -11,6 +11,7 @@ const UserController = require('../../Controller/Auth/User');
 const UserProductController = require('../../Controller/User/Product');// added by anirbank-93
 const ServiceController = require('../../Controller/User/Service');    // added by anirbank-93
 const SeaarchController = require('../../Controller/User/Search')
+const ShopServiceController = require("../../Controller/User/ShopServices");
 const middleware  = require('../../service/middleware').middleware;
 
 const AdminRoute = require('./admin');
@@ -35,6 +36,8 @@ router.get('/user/service/shop-services/:id', ServiceController.viewShopServices
 router.post('/user/searchauto', SeaarchController.autoSearch);
 
 router.post('/user/searchAll', SeaarchController.searchAll);
+
+router.get('/user/shop/view-shopservice/:id', ShopServiceController.viewOneService);
 
 
 
