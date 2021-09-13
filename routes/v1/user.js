@@ -124,6 +124,8 @@ router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
 router.post('/searchSevice', SeaarchController.serviceSearch);
 router.post('/searchProduct', SeaarchController.productSearch);
 
+router.post('/image-uploadurl', upload1.single("image"), ShopServiceController.imageurlApi);// added by anirbank-93
+
 
 
 
