@@ -118,6 +118,7 @@ router.post('/servicecheckout', ServiceCheckoutController.create);
 
 router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
 router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
+router.post('/sellerbookhistoryrepo', SellerMyaccountController.reportViewAll);
 router.post('/servicereview', ServicereviewController.create);
 router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
 

@@ -75,7 +75,12 @@ router.put('/coupon/:id', CouponController.update)
 router.delete('/coupon/:id', CouponController.Delete)
 
 router.get('/orderHistory', OrderhistoryController.viewAll)  
+router.post('/orderHistoryrepo', OrderhistoryController.productViewAllrepo)  
+
 
 router.get('/servicedetails', ServicehistoryController.viewAll);
+
+router.post('/servicedetailsrepo', ServicehistoryController.reportViewAll);
+
 
 module.exports = router;
