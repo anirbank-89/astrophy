@@ -3,6 +3,7 @@ var passwordHash = require("password-hash");
 var Subsciption = require("../../Models/subscription");
 var SubscribedBy = require("../../Models/subscr_purchase");
 var User = require("../../Models/user");
+var moment = require("moment");
 
 var jwt = require("jsonwebtoken");
 
@@ -18,7 +19,7 @@ const create = async (req, res) => {
     duration: "required",
     price: "required",
     type: "required",
-    no_of_listing: "required"
+    no_of_listing: "required",
   });
 
   let matched = await v.check().then((val) => val);
@@ -37,7 +38,7 @@ const create = async (req, res) => {
     duration: req.body.duration,
     price: req.body.price,
     type: req.body.type,
-    no_of_listing: req.body.no_of_listing
+    no_of_listing: req.body.no_of_listing,
   };
 
   let subscriptionSchema = new Subsciption(subdata);
@@ -186,10 +187,70 @@ const subscriptionHistory = async (req, res) => {
     });
 };
 
+const subscriptionHistoryRepo = async (req, res) => {
+  return SubscribedBy.aggregate([
+    req.body.datefrom != "" &&
+    typeof req.body.datefrom != "undefined" &&
+    req.body.dateto != "" &&
+    typeof req.body.dateto != "undefined"
+      ? {
+          $match: {
+            subscribed_on: {
+              $gte: new Date(req.body.datefrom),
+              $lte: moment.utc(req.body.dateto).endOf("day").toDate(),
+            },
+          },
+        }
+      : { $project: { __v: 0 } },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "subscr_id",
+        foreignField: "_id",
+        as: "subscription_data",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userid",
+        foreignField: "_id",
+        as: "user_data",
+      },
+    },
+    { $unwind: "$user_data" },
+  ])
+    .then((data) => {
+      if (data != null && data != "") {
+        res.status(200).send({
+          status: true,
+          data: data,
+          error: null,
+          message: "Subscription History Data Get Successfully",
+        });
+      } else {
+        res.status(400).send({
+          status: false,
+          data: null,
+          error: "No Data",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        status: false,
+        data: null,
+        error: err,
+        message: "Server Error",
+      });
+    });
+};
+
 module.exports = {
   create,
   viewAll,
   update,
   Delete,
   subscriptionHistory,
+  subscriptionHistoryRepo
 };

@@ -45,6 +45,9 @@ router.delete('/subscription/:id',SubscriptionController.Delete)
 
 router.get('/subscription/purchasehistory',SubscriptionController.subscriptionHistory)
 
+router.post('/subscription/purchasehistoryRepo',SubscriptionController.subscriptionHistoryRepo)
+
+
 
 
 
