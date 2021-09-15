@@ -34,6 +34,10 @@ const ShopServiceSchema = new Schema({
     status:{
         type: Boolean,
         default: true
+    },
+    chataddstatus:{
+        type: Boolean,
+        default: false
     }
 })
 

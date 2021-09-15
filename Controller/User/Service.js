@@ -80,7 +80,8 @@ const viewShopServicesPerService = async (req,res)=>{
                 [
                     {
                         $match:{
-                            category_id: {$in: [mongoose.Types.ObjectId(id)]}
+                            category_id: {$in: [mongoose.Types.ObjectId(id)]},
+                            chataddstatus : false
                         }
                     },
                     {
