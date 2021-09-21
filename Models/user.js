@@ -35,10 +35,11 @@ let UserSchema = new mongoose.Schema({
 		default: Date.now,
 		required: false
 	},
+    image: String,
     status: {
         type: Boolean,
         required: false,
-        default: true
+        default: true//
     }
 });
 

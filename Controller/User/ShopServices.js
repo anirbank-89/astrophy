@@ -4,6 +4,7 @@ var ShopService = require('../../Models/shop_service')
 var Subcategory = require('../../Models/subcategory')
 var Upload = require('../../service/upload')
 var ServiceReview = require('../../Models/servicereview');
+var serviceCart = require('../../Models/servicecart');
 
 const { Validator } = require('node-input-validator')
 const service = require('../../Models/service')
@@ -184,6 +185,40 @@ const update = async (req,res)=>{
             }
         }
       )
+}
+
+const viewAllShopServices = async (req,res)=>{
+    return ShopService.aggregate(
+        [
+            {
+                $lookup:{
+                    from:"categories",
+                    localField:"category_id",
+                    foreignField:"_id",
+                    as:"category_data"
+                }
+            },
+            {
+                $project:{
+                    _v:0
+                }
+            }
+        ]
+    )
+    .then((data)=>{
+        res.status(200).json({
+            status: true,
+            message: "Shops get successfully",
+            data: data
+        });
+    })
+    .catch((err)=>{
+        res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            error: err
+        });
+    });
 }
 
 const viewShopServicesPerSeller = async (req,res)=>{
@@ -391,6 +426,41 @@ const viewOneService = async (req,res)=>{
         })
 }
 
+const salesCount = async (req,res)=>{
+    var in_cart= await serviceCart.find(
+        {serv_id: mongoose.Types.ObjectId(req.params.serv_id)}
+        ).exec()
+
+    console.log(in_cart)
+
+    var sales_count = in_cart.length;
+    console.log("sales count", sales_count);
+
+    if (in_cart!=null || in_cart!="") {
+        if (sales_count > 1) {
+            return res.status(200).json({
+                status: true,
+                message: "Get number of sales",
+                number: sales_count
+            });
+        }
+        else {
+            return res.status(200).json({
+                status: true,
+                message: "This shop service hasn't made any sale.",
+                number: 0
+            });
+        }
+    }
+    else {
+        return res.status(500).json({
+            status: false,
+            message: "Invalid id. Server error.",
+            data: in_cart
+        })
+    }
+}
+
 const imageurlApi = async(req,res)=>{
     let imagUrl = '';
     let image_url = await Upload.uploadFile(req, "chat")
@@ -408,8 +478,10 @@ const imageurlApi = async(req,res)=>{
 module.exports = {
     register,
     update,
+    viewAllShopServices,
     viewShopServicesPerSeller,
     viewOneService,
+    salesCount,
     imageurlApi,
     chatServiceregister
 }

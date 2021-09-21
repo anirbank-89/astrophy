@@ -83,10 +83,13 @@ router.post('/shop/services', upload1.single("image"), ShopServiceController.reg
 
 router.post('/shop/chatservices', upload1.single("image"), ShopServiceController.chatServiceregister);// added by anirbank-93
 
+router.get('/shop/all-services', ShopServiceController.viewAllShopServices); // added by anirbank-93
 // route to fetch all services of a shop
 router.get('/shop/all-services/:id', ShopServiceController.viewShopServicesPerSeller); // added by anirbank-93
 // route to fetch one service of a shop
 router.get('/shop/view-shopservice/:id', ShopServiceController.viewOneService);        // added by anirbank-93
+// no. of times shop service sales
+router.get('/sales-count/:serv_id', ShopServiceController.salesCount);
 router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.update);// added by anirbank-93
 
 router.post('/add-to-cart', CartController.addToCart);
@@ -106,6 +109,8 @@ router.post('/checkout', CheckoutController.create);
 
 router.get('/orderdetails/:user_id', MyaccountController.viewAll);
 router.put('/refundProduct/:id', MyaccountController.refundProduct);
+router.put('/update-profile/:id', upload1.single("image"), MyaccountController.updateProfile);
+router.put('/update-password/:id', MyaccountController.updatePassword);
 
 router.post('/productreview', ProductreviewController.create);
 
