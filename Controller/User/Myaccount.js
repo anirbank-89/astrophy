@@ -164,8 +164,9 @@ const updatePassword = async (req,res)=>{
       errors: V.errors
     });
   }
-
+  // if new password and confirm password is same
   if (req.body.cnf_password == req.body.new_password) {
+    // if new pw and old pw is same
     if (req.body.new_password == req.body.old_password) {
       return res.status(500).json({
         status: false,
@@ -173,9 +174,11 @@ const updatePassword = async (req,res)=>{
         data: null
       });
     }
+    // if new and old password is not same, then update
     else {
       User.findOne({_id: {$in:[mongoose.Types.ObjectId(req.params.id)]}})
       .then(user=>{
+        // if old password value matched & return true from database
         if(user.comparePassword(req.body.old_password) === true) {
           User.findOneAndUpdate(
             {_id: {$in:[mongoose.Types.ObjectId(req.params.id)]}},
@@ -199,6 +202,7 @@ const updatePassword = async (req,res)=>{
             }
           )
         }
+        // if old password value is incorrectly provided
         else {
           res.status(500).json({
             status: false,
@@ -216,6 +220,7 @@ const updatePassword = async (req,res)=>{
       })
     }
   }
+  // if new and confirm pw does not match
   else {
     return res.status(400).json({
       status: false,
