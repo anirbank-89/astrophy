@@ -20,7 +20,7 @@ const register = async (req,res)=>{
         res.status(200).send({status: false, errors: v.errors})
     }
     console.log(req.file)
-    let image_url = await Upload.uploadFile(req, "shop_services")
+    // let image_url = await Upload.uploadFile(req, "shop_services")
     let shopServiceData = {
         _id: mongoose.Types.ObjectId(),
         name: req.body.name,
@@ -36,9 +36,9 @@ const register = async (req,res)=>{
     if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
         shopServiceData.hashtags = req.body.hashtags
     }
-    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
-        shopServiceData.image = image_url
-    }
+    // if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
+    //     shopServiceData.image = image_url
+    // }
 
     let shop_service = new ShopService(shopServiceData)
     shop_service.save()
@@ -58,6 +58,19 @@ const register = async (req,res)=>{
       })
 }
 
+const shopserviceImageUrl = async(req,res)=>{
+    let imagUrl = '';
+    let image_url = await Upload.uploadFile(req, "shop_services")
+    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
+        imagUrl = image_url
+    }
+
+    return res.status(200).send({
+        status : true,
+        data : imagUrl,
+        error : null
+    })
+}
 
 const chatServiceregister = async (req,res)=>{
     const v = new Validator(req.body,{
@@ -422,7 +435,7 @@ const salesCount = async (req,res)=>{
     }
 }
 
-const imageurlApi = async(req,res)=>{
+const chatImageUrl = async(req,res)=>{
     let imagUrl = '';
     let image_url = await Upload.uploadFile(req, "chat")
     if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
@@ -438,11 +451,12 @@ const imageurlApi = async(req,res)=>{
 
 module.exports = {
     register,
+    shopserviceImageUrl,
     update,
     viewAllShopServices,
     viewShopServicesPerSeller,
     viewOneService,
     salesCount,
-    imageurlApi,
+    chatImageUrl,
     chatServiceregister
 }

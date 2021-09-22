@@ -27,8 +27,9 @@ const ShopServiceSchema = new Schema({
         required: false
     },
     image:{
-        type: String,
-        required: false
+        type: Array,
+        required: false,
+        default: null
     },
     shop_id: mongoose.Schema.Types.ObjectId,
     status:{

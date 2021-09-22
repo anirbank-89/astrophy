@@ -80,9 +80,7 @@ router.post('/shop', uploadMultiple, ShopController.createNUpdate);// added by a
 router.get('/shop/:id', ShopController.viewShop);              // added by anirbank-93
 
 router.post('/shop/services', upload1.single("image"), ShopServiceController.register);// added by anirbank-93
-
-router.post('/shop/chatservices', upload1.single("image"), ShopServiceController.chatServiceregister);// added by anirbank-93
-
+router.post('/shop-service-images', upload1.single("image"), ShopServiceController.shopserviceImageUrl);// anirbank-93
 router.get('/shop/all-services', ShopServiceController.viewAllShopServices); // added by anirbank-93
 // route to fetch all services of a shop
 router.get('/shop/all-services/:id', ShopServiceController.viewShopServicesPerSeller); // added by anirbank-93
@@ -91,7 +89,9 @@ router.get('/shop/view-shopservice/:id', ShopServiceController.viewOneService); 
 // no. of times shop service sales
 router.get('/sales-count/:serv_id', ShopServiceController.salesCount);                 // added by anirbank-93
 router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.update);// added by anirbank-93
-router.post('/image-uploadurl', upload1.single("image"), ShopServiceController.imageurlApi);
+
+router.post('/shop/chatservices', upload1.single("image"), ShopServiceController.chatServiceregister);// added by anirbank-93
+router.post('/image-uploadurl', upload1.single("image"), ShopServiceController.chatImageUrl);
 
 router.post('/add-to-cart', CartController.addToCart);
 router.put('/updateCart/:id', CartController.updateCart);
