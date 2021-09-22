@@ -22,7 +22,7 @@ let UserSchema = new mongoose.Schema({
     },
     city: String,
     about: String,
-    include: Array,
+    include: [],
     token:{
         type:String,
         required:false,

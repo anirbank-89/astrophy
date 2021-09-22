@@ -103,7 +103,7 @@ const updateProfile = async (req,res)=>{
     password: req.body.password,
     city: req.body.city,
     about: req.body.about,
-    include: req.body.include
+    include: JSON.parse(req.body.include)
   }
 
   console.log(req.file);
