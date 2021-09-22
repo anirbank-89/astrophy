@@ -1,13 +1,13 @@
 var mongoose = require('mongoose')
 var Shop = require('../../Models/shop')
 var ShopService = require('../../Models/shop_service')
+const service = require('../../Models/service')
 var Subcategory = require('../../Models/subcategory')
-var Upload = require('../../service/upload')
 var ServiceReview = require('../../Models/servicereview');
 var serviceCart = require('../../Models/servicecart');
 
 const { Validator } = require('node-input-validator')
-const service = require('../../Models/service')
+var Upload = require('../../service/upload')
 
 const register = async (req,res)=>{
     const v = new Validator(req.body,{
@@ -188,23 +188,24 @@ const update = async (req,res)=>{
 }
 
 const viewAllShopServices = async (req,res)=>{
-    return ShopService.aggregate(
-        [
-            {
-                $lookup:{
-                    from:"categories",
-                    localField:"category_id",
-                    foreignField:"_id",
-                    as:"category_data"
-                }
-            },
-            {
-                $project:{
-                    _v:0
-                }
-            }
-        ]
-    )
+    ShopService.find({status: true})
+    // .aggregate(
+    //     [
+    //         {
+    //             $lookup:{
+    //                 from:"categories",
+    //                 localField:"category_id",
+    //                 foreignField:"_id",
+    //                 as:"category_data"
+    //             }
+    //         },
+    //         {
+    //             $project:{
+    //                 _v:0
+    //             }
+    //         }
+    //     ]
+    // )
     .then((data)=>{
         res.status(200).json({
             status: true,
@@ -341,7 +342,22 @@ const viewOneService = async (req,res)=>{
                                     }
                                 }
                             }
-                        }, 
+                        },
+                        // {
+                        //     $addFields:{
+                        //         total_sales:{
+                        //             $size:{
+                        //                 $filter:{
+                        //                     input: "$servicecarts",
+                        //                     as: "shop_service_sales",
+                        //                     cond:{
+                        //                         serv_id: {$in: [mongoose.Types.ObjectId(id)]}
+                        //                     }
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
+                        // },
                         {
                             $lookup:{
                                 from: "shops",
@@ -391,30 +407,6 @@ const viewOneService = async (req,res)=>{
                           error: fault
                       })
                   })
-                //   ShopService.aggregate(
-                //       [
-                //           {
-                //               $addFields:{
-                //                   shop_details:{
-                //                     $match: {
-                //                         _id: {$in: [mongoose.Types.ObjectId(id)]}
-                //                     },
-                //                     $lookup:{
-                //                         from: "shops",
-                //                         localField: "shop_id",
-                //                         foreignField: "_id"
-                //                     },
-                //                     $project:{
-                //                             _v: 0
-                //                         }
-                //                   }
-                //               }
-                //           }
-                //       ]
-                //   )//
-                //   .then((docs)=>{
-                //       res.status(200).json()
-                //   })
             }
         })
         .catch((err)=>{

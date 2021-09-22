@@ -34,7 +34,7 @@ const createNUpdate = async (req,res)=>{
                         }
                     }
                 });
-            }
+              }
 
             let shopData = {
                 _id: mongoose.Types.ObjectId(),

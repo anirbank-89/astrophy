@@ -5,9 +5,8 @@ var User = require('../../Models/user')
 var Cart = require('../../Models/cart')
 var Upload = require('../../service/upload')
 
-var passwordHash = require('password-hash');
+var passwordHash = require('password-hash')
 const { Validator } = require('node-input-validator')
-const user = require('../../Models/user')
 
 
 const viewAll = async (req,res)=>{
@@ -101,7 +100,10 @@ const updateProfile = async (req,res)=>{
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
-    password: passwordHash.generate(req.body.password)
+    password: req.body.password,
+    city: req.body.city,
+    about: req.body.about,
+    include: req.body.include
   }
 
   console.log(req.file);
@@ -174,7 +176,7 @@ const updatePassword = async (req,res)=>{
     else {
       User.findOne({_id: {$in:[mongoose.Types.ObjectId(req.params.id)]}})
       .then(user=>{
-        if(user.comparePassword(req.body.old_password)) {
+        if(user.comparePassword(req.body.old_password) === true) {
           User.findOneAndUpdate(
             {_id: {$in:[mongoose.Types.ObjectId(req.params.id)]}},
             {password: passwordHash.generate(req.body.new_password)},

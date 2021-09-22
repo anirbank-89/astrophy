@@ -89,8 +89,9 @@ router.get('/shop/all-services/:id', ShopServiceController.viewShopServicesPerSe
 // route to fetch one service of a shop
 router.get('/shop/view-shopservice/:id', ShopServiceController.viewOneService);        // added by anirbank-93
 // no. of times shop service sales
-router.get('/sales-count/:serv_id', ShopServiceController.salesCount);
+router.get('/sales-count/:serv_id', ShopServiceController.salesCount);                 // added by anirbank-93
 router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.update);// added by anirbank-93
+router.post('/image-uploadurl', upload1.single("image"), ShopServiceController.imageurlApi);
 
 router.post('/add-to-cart', CartController.addToCart);
 router.put('/updateCart/:id', CartController.updateCart);
@@ -132,8 +133,6 @@ router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
 
 router.post('/searchSevice', SeaarchController.serviceSearch);
 router.post('/searchProduct', SeaarchController.productSearch);
-
-router.post('/image-uploadurl', upload1.single("image"), ShopServiceController.imageurlApi);// added by anirbank-93
 
 
 
