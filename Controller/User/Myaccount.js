@@ -103,8 +103,16 @@ const updateProfile = async (req,res)=>{
     password: req.body.password,
     city: req.body.city,
     about: req.body.about,
-    include: JSON.parse(req.body.include)
   }
+  
+  if (req.body.include=="" || 
+      req.body.include==null || 
+      typeof req.body.include=="undefined" ) {
+        editData.include = null
+      } else {
+        editData.include = JSON.parse(req.body.include)
+      }
+
 
   console.log(req.file);
   if (req.file!=null && 
@@ -122,7 +130,7 @@ const updateProfile = async (req,res)=>{
     User.findOneAndUpdate(
       {_id: {$in:[mongoose.Types.ObjectId(req.params.id)]}},
       editData,
-      {returnNewDocument: true},
+      {new: true},
       (err,docs)=>{
         if (!err) {
           res.status(200).json({
