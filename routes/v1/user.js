@@ -30,14 +30,14 @@ var storage1 = multer.memoryStorage();
 var upload1 = multer({storage: storage1});
 
 var storage2 = multer.diskStorage({
-  destination: (req,file,cb)=>{cb(null,"uploads/shop_banner_n_image")},
+  destination: (req,file,cb)=>{cb(null,"uploads/shop_services")},
   filename: (req,file,cb)=>{
-    if(file.fieldname == 'banner_img'){
+    if(file.fieldname == 'file1'){
       pro_img1 = "banner_"+file.originalname;// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
       banner_img = pro_img1;
       cb(null,pro_img1);
     }
-    if (file.fieldname == "shop_img") {
+    if (file.fieldname == "file2") {
       pro_img2 = "shop_"+file.originalname;// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
       shop_img = pro_img2;
       cb(null, pro_img2);
@@ -46,7 +46,7 @@ var storage2 = multer.diskStorage({
 });
 
 var upload2 = multer({storage: storage2});
-var uploadMultiple = upload2.fields([{name: 'banner_img', maxCount: 1}, {name: 'shop_img', maxCount: 1}]);
+var uploadMultiple = upload2.fields([{name: 'file1', maxCount: 10}, {name: 'file2', maxCount: 10}]);
 
 /* GET home page. */
 router.get("/", function (req, res, next) {

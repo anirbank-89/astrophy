@@ -36,9 +36,9 @@ const register = async (req,res)=>{
     if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
         shopServiceData.hashtags = req.body.hashtags
     }
-    // if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
-    //     shopServiceData.image = image_url
-    // }
+    if(typeof(req.body.image)!='undefined' || req.body.image!='' || req.body.image!=null){
+        shopServiceData.image = JSON.parse(req.body.image)
+    }
 
     let shop_service = new ShopService(shopServiceData)
     shop_service.save()
