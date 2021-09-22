@@ -22,6 +22,11 @@ const viewAll = async (req,res)=>{
                 }
             },
             {
+                $sort:{
+                  _id: -1
+                }
+            },
+            {
                 $project:{
                     _v:0
                 }

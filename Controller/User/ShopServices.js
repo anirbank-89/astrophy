@@ -56,40 +56,6 @@ const register = async (req,res)=>{
               errors: err
           })
       })
-
-    // ShopService.find({subcategory_id: {$in: [mongoose.Types.ObjectId(req.body.subcategory_id)]}})
-    //   .then(async (data)=>{
-    //       if(data==null || data==''){}
-    //       else{
-    //           ShopService.findOneAndUpdate(
-    //             {subcategory_id: {$in: [mongoose.Types.ObjectId(req.body.subcategory_id)]}}, 
-    //             // {
-    //             //   name: req.body.name,
-    //             //   price: req.body.price,
-    //             //   details: req.body.details,
-    //             //   personalization: req.body.personalization,
-    //             //   hashtags: req.body.hashtags
-    //             // },
-    //             req.body, 
-    //             async (err,docs)=>{
-    //                 if(err){
-    //                     res.status(500).json({
-    //                         status: false,
-    //                         message: "Server error. Please try again.",
-    //                         error: err
-    //                     });
-    //                 }
-    //                 else{
-    //                     res.status(200).json({
-    //                         status: true,
-    //                         message: "Shop service updated successfully!",
-    //                         data: docs
-    //                     });
-    //                 }
-    //             }
-    //           )
-    //       }
-    // })
 }
 
 
@@ -188,24 +154,27 @@ const update = async (req,res)=>{
 }
 
 const viewAllShopServices = async (req,res)=>{
-    ShopService.find({status: true})
-    // .aggregate(
-    //     [
-    //         {
-    //             $lookup:{
-    //                 from:"categories",
-    //                 localField:"category_id",
-    //                 foreignField:"_id",
-    //                 as:"category_data"
-    //             }
-    //         },
-    //         {
-    //             $project:{
-    //                 _v:0
-    //             }
-    //         }
-    //     ]
-    // )
+    // var all_services = await ShopService.find({status: true}).exec();
+
+    // return res.send(all_services)
+    ShopService
+    .aggregate(
+        [
+            {
+                $lookup:{
+                    from:"categories",
+                    localField:"category_id",
+                    foreignField:"_id",
+                    as:"category_data"
+                }
+            },
+            {
+                $project:{
+                    _v:0
+                }
+            }
+        ]
+    )
     .then((data)=>{
         res.status(200).json({
             status: true,

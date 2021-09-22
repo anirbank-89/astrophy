@@ -27,7 +27,7 @@ const viewAll = async (req,res)=>{
             },
             {
               $sort:{
-                order_id: -1
+                _id: -1
               }
             },
             {
@@ -87,7 +87,7 @@ const updateProfile = async (req,res)=>{
   const V = new Validator(req.body,{
     // email, password should be made unable for edit in frontend
     email:'required|email',
-    password:'required|minLength:8',
+    password:'required',// |minLength:8
     firstName: 'required',
     lastName: 'required'
   });
@@ -152,9 +152,9 @@ const updateProfile = async (req,res)=>{
 
 const updatePassword = async (req,res)=>{
   const V = new Validator(req.body,{
-    old_password: 'required|minLength:8',
-    new_password: 'required|minLength:8',
-    cnf_password: 'required|minLength:8'
+    old_password: 'required',
+    new_password: 'required',// |minLength:8
+    cnf_password: 'required' // |minLength:8
   });
   let matched = V.check().then(val=>val);
 
