@@ -42,7 +42,7 @@ let UserSchema = new mongoose.Schema({
     status: {
         type: Boolean,
         required: false,
-        default: true//
+        default: false//
     }
 });
 

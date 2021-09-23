@@ -36,7 +36,9 @@ const register = async (req,res)=>{
     if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
         shopServiceData.hashtags = req.body.hashtags
     }
-    if(typeof(req.body.image)!='undefined' || req.body.image!='' || req.body.image!=null){
+    if(typeof(req.body.image)=='undefined' || req.body.image=='' || req.body.image==null){
+        shopServiceData.image = null
+    } else {
         shopServiceData.image = JSON.parse(req.body.image)
     }
 

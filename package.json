@@ -26,6 +26,7 @@
     "nodemon": "^2.0.12",
     "password-hash": "^1.2.2",
     "path": "^0.12.7",
+    "superagent": "^6.1.0",
     "uuid": "^8.3.2"
   }
 }

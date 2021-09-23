@@ -1,10 +1,12 @@
 var mongoose = require('mongoose');
+var passwordHash = require('password-hash');
+var jwt = require('jsonwebtoken');
+var superagent = require('superagent');
+const { Validator } = require('node-input-validator');
+
 var User = require('../../Models/user');
 var Product = require('../../Models/product');
-var passwordHash = require('password-hash');
-
-var jwt = require('jsonwebtoken');
-const { Validator } = require('node-input-validator');
+var emailVerify = require('../../service/emailverify');
 
 function createToken(data) {
     return jwt.sign(data, 'DonateSmile');
@@ -15,6 +17,37 @@ const getTokenData = async (token) => {
     // console.log('adminData', adminData);
     return userData;
 }
+
+const sendVerifyLink = async (req,res)=>{
+    let data = {
+        url:'http://astrophy.com/email-verification',
+        to_email: req.body.email,
+        to_name: req.body.name
+    };
+    
+    superagent
+      .post('https://new.easytodb.com/astrophymail/semdmail.php')
+      .send(data) // sends a JSON post body
+      .set('Content-Type', 'application/json')
+      .end((err,info)=>{
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+                status: false,
+                message: "Failed to send mail.",
+                error: err
+            });
+          }
+          else {
+            console.log("Email info: ",info);
+            return res.status(200).json({
+                status: true,
+                message: "Mail sent successfully.",
+                data: data
+            });
+          }
+      });
+};
 
 const register = async(req,res)=>{
     const v = new Validator(req.body,{
@@ -43,7 +76,9 @@ const register = async(req,res)=>{
 
     const all_users = new User(userData)
 
-    return all_users.save().then((data)=>{
+    return all_users.save().then(async (data)=>{
+        let email_verify = await emailVerify.verification(data.firstName,data.email);
+
         res.status(200).json({
             status: true,
             success: true,
@@ -192,6 +227,7 @@ const viewAllsubscription = async( req , res)=>{
 
 module.exports = {
     getTokenData,
+    sendVerifyLink,
     register,
     login,
     viewProductList,

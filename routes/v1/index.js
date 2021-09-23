@@ -18,10 +18,10 @@ const AdminRoute = require('./admin');
 const UserRoute = require('./user');
 
 /** ================================= without login url ================================= */
-
 router.post('/admin/register', AdminController.register);
 router.post('/admin/login', AdminController.login);
 
+router.post('/user/email-verification', UserController.sendVerifyLink);
 router.post('/user/register', UserController.register);
 router.post('/user/login', UserController.login);
 
