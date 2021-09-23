@@ -96,6 +96,29 @@ const register = async(req,res)=>{
     });
 }
 
+const afterEmailVerify = async (req,res)=>{
+    return User.findOneAndUpdate(
+        {email: req.body.email},
+        {status: true},
+        {new: true},
+        (err,docs)=>{
+            if (!err) {
+                res.status(200).json({
+                    status: true,
+                    message: "Email successfully verified",
+                    data: docs
+                });
+            }
+            else {
+                res.status(500).json({
+                    status: false,
+                    message: "Failed to verify. Invalid email.",
+                    error: err
+                });
+            }
+        }
+    );
+}
 // const signup = async (req,res)=>{}
 
 const login = async(req,res) =>
@@ -229,6 +252,7 @@ module.exports = {
     getTokenData,
     sendVerifyLink,
     register,
+    afterEmailVerify,
     login,
     viewProductList,
     viewAllsubscription

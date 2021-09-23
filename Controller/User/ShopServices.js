@@ -140,9 +140,8 @@ const update = async (req,res)=>{
         });
     }
     console.log(req.file)
-    if (typeof (req.file) != "undefined" || req.file != null) {
-        let image_url = await Upload.uploadFile(req, "shop_services");
-        req.body.image = image_url;
+    if(typeof(req.body.image)!='undefined' || req.body.image!='' || req.body.image!=null){
+        req.body.image = JSON.parse(req.body.image)
     }
 
     let id = req.params.id

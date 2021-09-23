@@ -23,6 +23,7 @@ router.post('/admin/login', AdminController.login);
 
 router.post('/user/register', UserController.register);
 router.post('/user/email-verification', UserController.sendVerifyLink);
+router.post('/user/verification-success', UserController.afterEmailVerify);
 router.post('/user/login', UserController.login);
 
 router.get('/user/listProducts', UserController.viewProductList);
