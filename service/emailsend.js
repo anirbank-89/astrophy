@@ -16,7 +16,7 @@ var verification = async (name,email)=>{
 
 
     let data = {
-        url:'http://astrophy.com/email-verification',
+        url:'http://localhost:3000/after-verify',
         to_email: email,
         to_name: name
     };

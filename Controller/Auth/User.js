@@ -6,7 +6,7 @@ const { Validator } = require('node-input-validator');
 
 var User = require('../../Models/user');
 var Product = require('../../Models/product');
-var emailVerify = require('../../service/emailverify');
+var emailVerify = require('../../service/emailsend');
 
 function createToken(data) {
     return jwt.sign(data, 'DonateSmile');
@@ -20,7 +20,7 @@ const getTokenData = async (token) => {
 
 const sendVerifyLink = async (req,res)=>{
     let data = {
-        url:'http://astrophy.com/email-verification',
+        url:'http://localhost:3000/after-verify',
         to_email: req.body.email,
         to_name: req.body.name
     };
