@@ -22,8 +22,8 @@ router.post('/admin/register', AdminController.register);
 router.post('/admin/login', AdminController.login);
 
 router.post('/user/register', UserController.register);
-router.post('/user/email-verification', UserController.sendVerifyLink);
-router.post('/user/verification-success', UserController.afterEmailVerify);
+router.post('/user/email-verification', UserController.sendVerifyLink);// added by anirbank-93
+router.post('/user/verify-email', UserController.afterEmailVerify);    // added by anirbank-93
 router.post('/user/login', UserController.login);
 
 router.get('/user/listProducts', UserController.viewProductList);
