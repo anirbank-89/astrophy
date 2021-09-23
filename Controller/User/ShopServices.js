@@ -5,6 +5,7 @@ const service = require('../../Models/service')
 var Subcategory = require('../../Models/subcategory')
 var ServiceReview = require('../../Models/servicereview');
 var serviceCart = require('../../Models/servicecart');
+const ServiceCheckout = require("../../Models/servicecheckout");
 
 const { Validator } = require('node-input-validator')
 var Upload = require('../../service/upload')
@@ -454,18 +455,106 @@ const viewTopServiceProvider = async (req,res)=>{
     // var all_services = await ShopService.find({status: true}).exec();
 
     // return res.send(all_services)
-    serviceCart
+    ServiceCheckout
     .aggregate(
         [
-            {"$group" : {_id:"$serv_id", count:{$sum:1}}},
+            {
+                $group : {
+                    _id:"$seller_id"
+                }
+            },
+            {
+                $lookup:{
+                    from:'servicecarts',
+                    let:{
+                        'seller_id':'$_id'
+                    },
+                    pipeline: [
+                        {
+                          $match: {
+                            $expr: {
+                              $and: [
+                                { $eq: ["$seller_id", "$$seller_id"] },
+                              ],
+                            },
+                          },
+                        },
+                        {
+                            $group : {
+                                _id:"$serv_id",totalCount :{$sum:1}
+                            }
+                        },
+                        {
+                            $sort:{totalCount:-1}
+                        },
+                        {$limit: 1}
+                      ],
+                    as:'cart_data'
+                }
+            },
+            {
+                $unwind:"$cart_data"
+            },
+            {
+                $lookup:{
+                    from:"shop_services",
+                    localField:"cart_data._id",
+                    foreignField:"_id",
+                    as:"service_data"
+                }
+            },
+            {
+                $unwind:"$service_data"
+            },
+            {
+                $lookup:{
+                    from:"shops",
+                    localField:"service_data.shop_id",
+                    foreignField:"_id",
+                    as:"shop_data"
+                }
+            },
+            {
+                $unwind:"$shop_data"
+            },
+            {
+                $lookup:{
+                    from:"users",
+                    localField:"shop_data.userid",
+                    foreignField:"_id",
+                    as:"provider_data"
+                }
+            },
+            {
+                $unwind:"$provider_data"
+            },
             {
                 $project:{
                     _v:0
                 }
             },
             {
-                $sort:{count:-1}
-            }
+                $lookup:{
+                    from:"servicereviews",
+                    localField:"service_data._id",
+                    foreignField: "service_id",
+                    as:"rev_data",
+                }
+            },
+            {
+                $addFields: {
+                    avgRating: {
+                        $avg: {
+                            $map: {
+                                input: "$rev_data",
+                                in: "$$this.rating"
+                            }
+                        }
+                    }
+                }
+            },
+            
+            
         ]
     )
     .then((data)=>{
