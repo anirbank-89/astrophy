@@ -4,6 +4,7 @@ const ServiceCartSchema = new mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
     user_id:mongoose.Schema.Types.ObjectId,
     serv_id:mongoose.Schema.Types.ObjectId,
+    seller_id:mongoose.Schema.Types.ObjectId,
     order_id:{
         type:Number
     },

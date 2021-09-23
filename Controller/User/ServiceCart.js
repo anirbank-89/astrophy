@@ -12,6 +12,7 @@ const addToServiceCart = async (req, res) => {
   const v = new Validator(req.body, {
     user_id: "required",
     serv_id: "required",
+    seller_id:"required",
     servicename: "required",
     price: "required",
     image: "required",
@@ -38,6 +39,7 @@ const addToServiceCart = async (req, res) => {
       _id: mongoose.Types.ObjectId(),
       user_id: mongoose.Types.ObjectId(req.body.user_id),
       serv_id: mongoose.Types.ObjectId(req.body.serv_id),
+      seller_id: mongoose.Types.ObjectId(req.body.serv_id),
       servicename: req.body.servicename,
       price: req.body.price,
       image: req.body.image,

@@ -450,6 +450,40 @@ const chatImageUrl = async(req,res)=>{
     })
 }
 
+const viewTopServiceProvider = async (req,res)=>{
+    // var all_services = await ShopService.find({status: true}).exec();
+
+    // return res.send(all_services)
+    serviceCart
+    .aggregate(
+        [
+            {"$group" : {_id:"$serv_id", count:{$sum:1}}},
+            {
+                $project:{
+                    _v:0
+                }
+            },
+            {
+                $sort:{count:-1}
+            }
+        ]
+    )
+    .then((data)=>{
+        res.status(200).json({
+            status: true,
+            message: "Top Provider get successfully",
+            data: data
+        });
+    })
+    .catch((err)=>{
+        res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            error: err
+        });
+    });
+}
+
 module.exports = {
     register,
     shopserviceImageUrl,
@@ -459,5 +493,6 @@ module.exports = {
     viewOneService,
     salesCount,
     chatImageUrl,
-    chatServiceregister
+    chatServiceregister,
+    viewTopServiceProvider
 }

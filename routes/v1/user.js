@@ -93,6 +93,8 @@ router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.
 router.post('/shop/chatservices', upload1.single("image"), ShopServiceController.chatServiceregister);// added by anirbank-93
 router.post('/image-uploadurl', upload1.single("image"), ShopServiceController.chatImageUrl);
 
+
+
 router.post('/add-to-cart', CartController.addToCart);
 router.put('/updateCart/:id', CartController.updateCart);
 router.get('/get-cart/:user_id', CartController.getCart);

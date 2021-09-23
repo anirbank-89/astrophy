@@ -40,6 +40,8 @@ router.post('/user/searchAll', SeaarchController.searchAll);
 
 router.get('/user/shop/view-shopservice/:id', ShopServiceController.viewOneService);
 
+router.get('/user/topProviders',ShopServiceController.viewTopServiceProvider);
+
 
 
 /** ================================= without login url section end ================================ */
