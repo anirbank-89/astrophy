@@ -86,6 +86,17 @@ const viewShopServicesPerService = async (req,res)=>{
                     },
                     {
                         $lookup:{
+                            from: "services",
+                            localField: "category_id",
+                            foreignField: "_id",
+                            as: "category_details"
+                        }
+                    },
+                    {
+                        $unwind:"$category_details" 
+                    },
+                    {
+                        $lookup:{
                             from: "shops",
                             localField: "shop_id",
                             foreignField: "_id",
