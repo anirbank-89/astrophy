@@ -627,6 +627,108 @@ const viewAllshopservicelist = async (req,res)=>{
            
 }
 
+const viewAllrelatedService = async (req,res)=>{
+    let id = req.body.cat_id 
+    ShopService.aggregate(
+        [
+            {
+                $match:{
+                    category_id: { $in: [mongoose.Types.ObjectId(id)] },
+                    _id:{ $nin: [mongoose.Types.ObjectId(req.body.service_id)] }
+                }
+            },
+            {
+                $lookup:{
+                    from:"services",
+                    localField:"category_id",
+                    foreignField: "_id",
+                    as:"category_data",
+                }
+            },
+            {
+                $unwind:"$category_data"
+            },
+            {
+                $lookup:{
+                    from:"servicereviews",
+                    localField:"_id",
+                    foreignField: "service_id",
+                    as:"rev_data",
+                }
+            },
+            {
+                $addFields: {
+                    avgRating: {
+                        $avg: {
+                            $map: {
+                                input: "$rev_data",
+                                in: "$$this.rating"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $lookup:{
+                    from:'servicecarts',                                
+                    localField: "_id",
+                    foreignField: "serv_id",
+                    as:'cart_data'
+                }
+            },                        
+            {
+                $lookup:{
+                    from: "shops",
+                    localField: "shop_id",
+                    foreignField: "_id",
+                    as: "shop_details"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$shop_details",
+                    preserveNullAndEmptyArrays: true                        
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "shop_details.userid",
+                    foreignField: "_id",
+                    as: 'shop_details.user_data'
+                }
+            },
+            {
+                $unwind: {
+                    path: "$shop_details.user_data",
+                    preserveNullAndEmptyArrays: true                        
+                }
+            },  
+            {
+                $project:{
+                    _v:0
+                }
+            }
+        ]
+        )
+        .then((docs)=>{
+            res.status(200).json({
+                status: true,
+                message: "This shop service get successfully",
+                data: docs
+            })
+        })
+        .catch((fault)=>{
+            res.status(500).json({
+                
+                status: false,
+                message: "Server error2. Please try again.",
+                error: fault
+            })
+        })
+           
+}
+
 module.exports = {
     register,
     shopserviceImageUrl,
@@ -638,5 +740,6 @@ module.exports = {
     chatImageUrl,
     chatServiceregister,
     viewTopServiceProvider,
-    viewAllshopservicelist
+    viewAllshopservicelist,
+    viewAllrelatedService
 }

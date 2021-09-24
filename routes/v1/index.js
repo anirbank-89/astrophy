@@ -46,6 +46,9 @@ router.get('/user/topProviders',ShopServiceController.viewTopServiceProvider);
 
 router.get('/user/shop/allprovidedServiceList/:id',ShopServiceController.viewAllshopservicelist);
 
+router.post('/user/allrelatedServiceList',ShopServiceController.viewAllrelatedService);
+
+
 
 
 
