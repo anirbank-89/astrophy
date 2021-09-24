@@ -66,6 +66,7 @@ const viewServiceSubCategory = async (req,res)=>{
 
 const viewShopServicesPerService = async (req,res)=>{
     let id = req.params.id       // _id of 'services' table in params
+    let cat_data = await Service.find({_id: {$in: [mongoose.Types.ObjectId(id)]}}).exec();
     // ShopService.find({category_id: {$in: [mongoose.Types.ObjectId(id)]}})
     //   .then((data)=>{
     //     if(data==null || data==''){
@@ -132,10 +133,12 @@ const viewShopServicesPerService = async (req,res)=>{
                 ]
             )
             .then((docs)=>{
-                res.status(200).json({
+                res.status(200).json({                    
                     status: true,
                     message: "All services for this category get successfully.",
-                    data: docs
+                    data: docs,
+                    category_data:cat_data[0]
+                    
                 })
             })
             .catch((fault)=>{
