@@ -38,6 +38,8 @@ router.post('/user/searchauto', SeaarchController.autoSearch);
 
 router.post('/user/searchAll', SeaarchController.searchAll);
 
+router.post('/user/serachProviders', SeaarchController.serachProviders);
+
 router.get('/user/shop/view-shopservice/:id', ShopServiceController.viewOneService);
 
 router.get('/user/topProviders',ShopServiceController.viewTopServiceProvider);

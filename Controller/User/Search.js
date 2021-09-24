@@ -5,8 +5,57 @@ var Subcategory = require("../../Models/subcategory");
 var ShopService = require("../../Models/shop_service");
 var ServiceReview = require("../../Models/servicereview");
 var Product = require("../../Models/product");
+var User = require("../../Models/user");
 
 const serviceSearch = async (req, res) => {
+  let shopId = [];
+  if(req.body.providername != "" && typeof req.body.providername != "undefined")
+  {
+  let providerMatch = await User.aggregate([
+    {
+      $match: {
+        firstName: { $regex: ".*" + req.body.providername + ".*", $options: "i" },
+        type: "Seller",
+      },
+    },
+    {
+      $lookup: {
+        from: "shops",
+        localField: "shop_id",
+        foreignField: "_id",
+        as: "shop_details",
+      },
+    },
+    {
+      $lookup: {
+        from: "shops",
+        let: {
+          user_id: "$_id",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [{ $eq: ["$userid", "$$user_id"] }],
+              },
+            },
+          },
+        ],
+        as: "shop_details",
+      },
+    },
+  ]).exec();
+  providerMatch.forEach((item) => {
+    item.shop_details.forEach((ele) => {
+      shopId.push(ele._id);
+    });
+  });
+  shopId = shopId.map(function(el) { return mongoose.Types.ObjectId(el) })
+  }
+
+  console.log(shopId)
+
+
   return ShopService.aggregate([
     req.body.servicename != "" && typeof req.body.servicename != "undefined"
       ? {
@@ -20,6 +69,11 @@ const serviceSearch = async (req, res) => {
               $in: [mongoose.Types.ObjectId(req.body.category_id)],
             },
           },
+        }
+      : { $project: { __v: 0 } },
+      shopId.length>0
+      ? {
+          $match: { shop_id: { $in: shopId} },
         }
       : { $project: { __v: 0 } },
     (req.body.min != "" && typeof req.body.min != "undefined") ||
@@ -286,7 +340,7 @@ const autoSearch = async (req, res) => {
         // proDarr.push(data);
         data.forEach((item) => {
           // console.log(item)
-          proDarr.push({ id:item._id,name: item.name, type: "product" });
+          proDarr.push({ id: item._id, name: item.name, type: "product" });
         });
         return proDarr;
       } else {
@@ -294,114 +348,182 @@ const autoSearch = async (req, res) => {
     })
     .catch((err) => {});
 
-    let Service = await ShopService.aggregate([
-      {
-        $match: {
-          name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
-        },
+  let Service = await ShopService.aggregate([
+    {
+      $match: {
+        name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
       },
-    ])
-      .then((data) => {
-        if (data.length > 0) {
-          // proDarr.push(data);
-          data.forEach((item) => {
-            // console.log(item)
-            proDarr.push({ id:item._id,name: item.name, type: "service" });
-          });
-          return proDarr;
-        } else {
-        }
-      })
-      .catch((err) => {});
+    },
+  ])
+    .then((data) => {
+      if (data.length > 0) {
+        // proDarr.push(data);
+        data.forEach((item) => {
+          // console.log(item)
+          proDarr.push({ id: item._id, name: item.name, type: "service" });
+        });
+        return proDarr;
+      } else {
+      }
+    })
+    .catch((err) => {});
 
   console.log(prod);
-  if(prod.length>0)
-  {
+  if (prod.length > 0) {
     return res.status(200).json({
       status: true,
       message: "Product Get Successfully",
       data: proDarr,
     });
   }
-
 };
 
 const searchAll = async (req, res) => {
-if(req.body.type == 'product')
-{
-  return Product.aggregate([
-    {
-      $match: {
-        name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
+  if (req.body.type == "product") {
+    return Product.aggregate([
+      {
+        $match: {
+          name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
+        },
       },
-    },
-    {
-      $lookup: {
-        from: "categories",
-        localField: "catID",
-        foreignField: "_id",
-        as: "category_data",
+      {
+        $lookup: {
+          from: "categories",
+          localField: "catID",
+          foreignField: "_id",
+          as: "category_data",
+        },
       },
-    },
-    {
-      $lookup: {
-        from: "carts",
-        localField: "_id",
-        foreignField: "prod_id",
-        as: "cart_items",
+      {
+        $lookup: {
+          from: "carts",
+          localField: "_id",
+          foreignField: "prod_id",
+          as: "cart_items",
+        },
       },
-    },
-    {
-      $lookup: {
-        from: "reviews",
-        localField: "_id",
-        foreignField: "product_id",
-        as: "review_data",
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "product_id",
+          as: "review_data",
+        },
       },
-    },
-    {
-      $addFields: {
-        avgRating: {
-          $avg: {
-            $map: {
-              input: "$review_data",
-              in: "$$this.rating",
+      {
+        $addFields: {
+          avgRating: {
+            $avg: {
+              $map: {
+                input: "$review_data",
+                in: "$$this.rating",
+              },
             },
           },
         },
       },
-    },
-  ])
-  .then((data) => {
-    if (data.length > 0) {
-      res.status(200).json({
-        status: true,
-        message: "Product Get Successfully",
-        data: data,
+    ])
+      .then((data) => {
+        if (data.length > 0) {
+          res.status(200).json({
+            status: true,
+            message: "Product Get Successfully",
+            data: data,
+          });
+        } else {
+          res.status(200).json({
+            status: false,
+            message: "No Data ",
+            data: data,
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "No match",
+          data: null,
+          err,
+        });
       });
-    } else {
-      res.status(200).json({
-        status: false,
-        message: "No Data ",
-        data: data,
+  } else {
+    return ShopService.aggregate([
+      {
+        $match: {
+          name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
+        },
+      },
+      {
+        $lookup: {
+          from: "shops",
+          localField: "shop_id",
+          foreignField: "_id",
+          as: "shop_details",
+        },
+      },
+      {
+        $lookup: {
+          from: "servicecarts",
+          localField: "_id",
+          foreignField: "serv_id",
+          as: "cart_items",
+        },
+      },
+      {
+        $lookup: {
+          from: "servicereviews",
+          localField: "_id",
+          foreignField: "service_id",
+          as: "rev_data",
+        },
+      },
+      {
+        $addFields: {
+          avgRating: {
+            $avg: {
+              $map: {
+                input: "$rev_data",
+                in: "$$this.rating",
+              },
+            },
+          },
+        },
+      },
+    ])
+      .then((data) => {
+        if (data.length > 0) {
+          res.status(200).json({
+            status: true,
+            message: "Service Get Successfully",
+            data: data,
+          });
+        } else {
+          res.status(200).json({
+            status: false,
+            message: "No Data ",
+            data: data,
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "No Match",
+          data: null,
+          err,
+        });
       });
-    }
-  })
-  .catch((err) => {
-    res.status(500).json({
-      status: false,
-      message: "No match",
-      data: null,
-      err,
-    });
-  });
-}
-else
-{
-  return ShopService.aggregate([
+  }
+};
+
+const serachProviders = async (req, res) => {
+  // if(req.body.providername != "" && typeof req.body.providername != "undefined")
+  // {
+  let providerMatch = await User.aggregate([
     {
       $match: {
-        name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
+        firstName: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
+        type: "Seller",
       },
     },
     {
@@ -414,63 +536,42 @@ else
     },
     {
       $lookup: {
-        from: "servicecarts",
-        localField: "_id",
-        foreignField: "serv_id",
-        as: "cart_items",
-      },
-    },
-    {
-      $lookup: {
-        from: "servicereviews",
-        localField: "_id",
-        foreignField: "service_id",
-        as: "rev_data",
-      },
-    },
-    {
-      $addFields: {
-        avgRating: {
-          $avg: {
-            $map: {
-              input: "$rev_data",
-              in: "$$this.rating",
+        from: "shops",
+        let: {
+          user_id: "$_id",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [{ $eq: ["$userid", "$$user_id"] }],
+              },
             },
           },
-        },
+        ],
+        as: "shop_details",
       },
     },
-  ])
-  .then((data) => {
-    if (data.length > 0) {
-      res.status(200).json({
-        status: true,
-        message: "Service Get Successfully",
-        data: data,
-      });
-    } else {
-      res.status(200).json({
-        status: false,
-        message: "No Data ",
-        data: data,
-      });
-    }
-  })
-  .catch((err) => {
-    res.status(500).json({
-      status: false,
-      message: "No Match",
-      data: null,
-      err,
+  ]).exec();
+  // }
+
+  let shopId = [];
+  providerMatch.forEach((item) => {
+    item.shop_details.forEach((ele) => {
+      shopId.push(ele._id);
     });
   });
-}
 
+  return res.status(200).send({
+    data: providerMatch,
+    shopid: shopId,
+  });
 };
 
 module.exports = {
   serviceSearch,
   productSearch,
   autoSearch,
-  searchAll
+  searchAll,
+  serachProviders,
 };
