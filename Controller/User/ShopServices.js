@@ -508,6 +508,17 @@ const viewTopServiceProvider = async (req,res)=>{
             },
             {
                 $lookup:{
+                    from:"services",
+                    localField:"service_data.category_id",
+                    foreignField:"_id",
+                    as:"category_data"
+                }
+            },
+            {
+                $unwind:"$category_data"
+            },
+            {
+                $lookup:{
                     from:"shops",
                     localField:"service_data.shop_id",
                     foreignField:"_id",
