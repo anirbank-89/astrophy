@@ -42,6 +42,9 @@ router.get('/user/shop/view-shopservice/:id', ShopServiceController.viewOneServi
 
 router.get('/user/topProviders',ShopServiceController.viewTopServiceProvider);
 
+router.get('/user/shop/allprovidedServiceList/:id',ShopServiceController.viewAllshopservicelist);
+
+
 
 
 /** ================================= without login url section end ================================ */

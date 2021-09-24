@@ -344,6 +344,14 @@ const viewOneService = async (req,res)=>{
                         // },
                         {
                             $lookup:{
+                                from:'servicecarts',                                
+                                localField: "_id",
+                                foreignField: "serv_id",
+                                as:'cart_data'
+                            }
+                        },                        
+                        {
+                            $lookup:{
                                 from: "shops",
                                 localField: "shop_id",
                                 foreignField: "_id",
@@ -401,6 +409,7 @@ const viewOneService = async (req,res)=>{
             })
         })
 }
+
 
 const salesCount = async (req,res)=>{
     var in_cart= await serviceCart.find(
@@ -584,6 +593,40 @@ const viewTopServiceProvider = async (req,res)=>{
     });
 }
 
+const viewAllshopservicelist = async (req,res)=>{
+    let id = req.params.id 
+    ShopService.aggregate(
+        [
+            {
+                $match:{
+                    shop_id: {$in: [mongoose.Types.ObjectId(id)]}
+                }
+            },                        
+            {
+                $project:{
+                    _v:0
+                }
+            }
+        ]
+        )
+        .then((docs)=>{
+            res.status(200).json({
+                status: true,
+                message: "This shop service get successfully",
+                data: docs
+            })
+        })
+        .catch((fault)=>{
+            res.status(500).json({
+                
+                status: false,
+                message: "Server error2. Please try again.",
+                error: fault
+            })
+        })
+           
+}
+
 module.exports = {
     register,
     shopserviceImageUrl,
@@ -594,5 +637,6 @@ module.exports = {
     salesCount,
     chatImageUrl,
     chatServiceregister,
-    viewTopServiceProvider
+    viewTopServiceProvider,
+    viewAllshopservicelist
 }
