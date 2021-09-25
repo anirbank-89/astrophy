@@ -187,7 +187,7 @@ const viewProductList = async( req ,res )=>
       };
       
       const options = {
-          page: 2,
+          page: req.body.page,
           limit: 3,
           customLabels: myCustomLabels
       };
