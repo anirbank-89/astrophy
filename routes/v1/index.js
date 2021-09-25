@@ -32,7 +32,7 @@ router.get('/user/viewproduct/:id', UserProductController.viewSingleProduct);   
 router.get('/user/service', ServiceController.viewAllServices);// added by anirbank-93
 router.get('/user/service/:id', ServiceController.viewService);// added by anirbank-93
 
-router.post('/user/service/shop-services/', ServiceController.viewShopServicesPerService);// added by anirbank-93
+router.get('/user/service/shop-services/:id/:page', ServiceController.viewShopServicesPerService);// added by anirbank-93
 
 router.post('/user/searchauto', SeaarchController.autoSearch);
 

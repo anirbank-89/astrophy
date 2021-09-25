@@ -65,7 +65,7 @@ const viewServiceSubCategory = async (req,res)=>{
 }
 
 const viewShopServicesPerService = async (req,res)=>{
-    let id = req.body.id       // _id of 'services' table in params
+    let id = req.params.id       // _id of 'services' table in params
     const myCustomLabels = {
         totalDocs: 'itemCount',
         docs: 'itemsList',
@@ -81,7 +81,7 @@ const viewShopServicesPerService = async (req,res)=>{
       };
       
       const options = {
-          page: req.body.page,
+          page: req.params.page,
           limit: 3,
           customLabels: myCustomLabels
       };
