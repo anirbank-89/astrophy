@@ -65,19 +65,29 @@ const viewServiceSubCategory = async (req,res)=>{
 }
 
 const viewShopServicesPerService = async (req,res)=>{
-    let id = req.params.id       // _id of 'services' table in params
+    let id = req.body.id       // _id of 'services' table in params
+    const myCustomLabels = {
+        totalDocs: 'itemCount',
+        docs: 'itemsList',
+        limit: 'perPage',
+        page: 'currentPage',
+        nextPage: 'next',
+        prevPage: 'prev',
+        totalPages: 'pageCount',
+        hasPrevPage: 'hasPrev',
+        hasNextPage: 'hasNext',
+        pagingCounter: 'pageCounter',
+        meta: 'paginator'
+      };
+      
+      const options = {
+          page: req.body.page,
+          limit: 3,
+          customLabels: myCustomLabels
+      };
     let cat_data = await Service.find({_id: {$in: [mongoose.Types.ObjectId(id)]}}).exec();
-    // ShopService.find({category_id: {$in: [mongoose.Types.ObjectId(id)]}})
-    //   .then((data)=>{
-    //     if(data==null || data==''){
-    //         res.status(200).json({
-    //             status: true,
-    //             message: "This service category doesn't have any services currently.",
-    //             data: data
-    //         })
-    //     }
-    //     else {
-            ShopService.aggregate(
+
+            ShopService.aggregatePaginate(ShopService.aggregate(
                 [
                     {
                         $match:{
@@ -131,32 +141,24 @@ const viewShopServicesPerService = async (req,res)=>{
                         }
                     }
                 ]
-            )
-            .then((docs)=>{
-                res.status(200).json({                    
-                    status: true,
-                    message: "All services for this category get successfully.",
-                    data: docs,
-                    category_data:cat_data[0]
-                    
-                })
+            ), options, function(err, result) {
+                if(!err) {
+                    return res.status(200).json({                    
+                        status: true,
+                        message: "All services for this category get successfully.",
+                        data: result,
+                        category_data:cat_data[0]
+                        
+                    })
+                } else {
+                    return res.status(500).json({
+                                status: false,
+                                message: "Server error. Please try again.",
+                                error: err,
+                              });
+                }
             })
-            .catch((fault)=>{
-                res.status(400).json({
-                    status: false,
-                    message: "Service error2. Please try again",
-                    error: fault
-                })
-            })
-    //     }
-    //   })
-    //   .catch((err)=>{
-    //     res.status(500).json({
-    //         status: false,
-    //         message: "Server error. Please try again.",
-    //         error: err
-    //     })
-    // }) 
+   
 }
           
 module.exports = {

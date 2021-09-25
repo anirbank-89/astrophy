@@ -1,6 +1,7 @@
 var mongoose = require('mongoose')
 const shop = require('./shop')
 var Schema = mongoose.Schema
+const aggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const ShopServiceSchema = new Schema({
     _id:mongoose.Schema.Types.ObjectId,
@@ -41,5 +42,7 @@ const ShopServiceSchema = new Schema({
         default: false
     }
 })
+
+ShopServiceSchema.plugin(aggregatePaginate);
 
 module.exports = mongoose.model("shop_services", ShopServiceSchema);
