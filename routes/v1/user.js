@@ -133,8 +133,8 @@ router.post('/sellerbookhistoryrepo', SellerMyaccountController.reportViewAll);
 router.post('/servicereview', ServicereviewController.create);
 router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
 
-router.post('/searchSevice', SeaarchController.serviceSearch);
-router.post('/searchProduct', SeaarchController.productSearch);
+// router.post('/searchSevice', SeaarchController.serviceSearch);
+// router.post('/searchProduct', SeaarchController.productSearch);
 
 
 

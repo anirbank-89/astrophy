@@ -48,6 +48,10 @@ router.get('/user/shop/allprovidedServiceList/:id',ShopServiceController.viewAll
 
 router.post('/user/allrelatedServiceList',ShopServiceController.viewAllrelatedService);
 
+router.post('/user/searchSevice', SeaarchController.serviceSearch);
+
+router.post('/user/searchProduct', SeaarchController.productSearch);
+
 
 
 
