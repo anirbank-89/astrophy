@@ -8,6 +8,9 @@ var User = require('../../Models/user');
 var Product = require('../../Models/product');
 var emailVerify = require('../../service/emailsend');
 
+
+
+
 function createToken(data) {
     return jwt.sign(data, 'DonateSmile');
 }
@@ -169,7 +172,27 @@ const login = async(req,res) =>
 
 const viewProductList = async( req ,res )=>
 {
-    return Product.aggregate(
+    const myCustomLabels = {
+        totalDocs: 'itemCount',
+        docs: 'itemsList',
+        limit: 'perPage',
+        page: 'currentPage',
+        nextPage: 'next',
+        prevPage: 'prev',
+        totalPages: 'pageCount',
+        hasPrevPage: 'hasPrev',
+        hasNextPage: 'hasNext',
+        pagingCounter: 'pageCounter',
+        meta: 'paginator'
+      };
+      
+      const options = {
+          page: 2,
+          limit: 3,
+          customLabels: myCustomLabels
+      };
+
+    Product.aggregatePaginate(Product.aggregate(
         [
             {
                 $lookup:{
@@ -204,21 +227,23 @@ const viewProductList = async( req ,res )=>
                     _v:0,
                 //    avg : { $avg : '$review_data.rating' } 
                 }
-            }
+            },
+            
         ]
-    ).then((data)=>{
-        res.status(200).json({
-            status:true,
-            message:'Product Data Get Successfully',
-            data:data
-        })
-    })
-    .catch((err)=>{
-        res.status(500).json({
-            status: false,
-            message: "Server error. Please try again.",
-            error: err,
-          });
+    ), options, function(err, result) {
+        if(!err) {
+            return res.status(200).json({
+                        status:true,
+                        message:'Product Data Get Successfully',
+                        data:result
+                    })
+        } else {
+            return res.status(500).json({
+                        status: false,
+                        message: "Server error. Please try again.",
+                        error: err,
+                      });
+        }
     })
 }
 
