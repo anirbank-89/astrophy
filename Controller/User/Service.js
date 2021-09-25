@@ -82,7 +82,7 @@ const viewShopServicesPerService = async (req,res)=>{
       
       const options = {
           page: req.params.page,
-          limit: 3,
+          limit: 8,
           customLabels: myCustomLabels
       };
     let cat_data = await Service.find({_id: {$in: [mongoose.Types.ObjectId(id)]}}).exec();

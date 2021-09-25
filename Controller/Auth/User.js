@@ -188,7 +188,7 @@ const viewProductList = async( req ,res )=>
       
       const options = {
           page: req.params.page,
-          limit: 3,
+          limit: 8,
           customLabels: myCustomLabels
       };
 

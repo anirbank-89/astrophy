@@ -9,6 +9,7 @@ const ShopController = require("../../Controller/User/Shop");      // added by a
 const ShopServiceController = require("../../Controller/User/ShopServices"); // added by anirbank-93
 const CartController = require('../../Controller/User/Cart')
 const WishlistController = require('../../Controller/User/Wishlist')
+const Servicewishlist = require('../../Controller/User/Servicewishlist')
 const CheckoutController = require('../../Controller/User/Checkout')
 const MyaccountController = require('../../Controller/User/Myaccount')
 const ProductreviewController = require('../../Controller/User/ProductReview')
@@ -103,6 +104,10 @@ router.delete('/cartDelete/:id',CartController.Delete)
 router.post('/wishlist', WishlistController.create);
 router.get('/getWishlist/:user_id', WishlistController.getWish);
 router.delete('/deleteWishlist/:id', WishlistController.Delete);
+
+router.post('/servicewishlist', Servicewishlist.create);
+router.get('/servicegetWishlist/:user_id', Servicewishlist.getWish);
+router.delete('/servicedeleteWishlist/:id', Servicewishlist.Delete);
 
 router.post('/checkCoupon', CartController.checkCoupon);
 
