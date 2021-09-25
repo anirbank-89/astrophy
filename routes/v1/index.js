@@ -26,7 +26,7 @@ router.post('/user/email-verification', UserController.sendVerifyLink);// added 
 router.post('/user/verify-email', UserController.afterEmailVerify);    // added by anirbank-93
 router.post('/user/login', UserController.login);
 
-router.post('/user/listProducts', UserController.viewProductList);
+router.get('/user/listProducts/:page', UserController.viewProductList);
 router.get('/user/viewproduct/:id', UserProductController.viewSingleProduct);   // added by anirbank-93
 
 router.get('/user/service', ServiceController.viewAllServices);// added by anirbank-93
