@@ -90,7 +90,11 @@ const create = async (req, res) => {
       }
     );
   }
-*/
+*/ 
+    if(req.body.tokenid!='' && typeof req.body.tokenid!=undefined)
+    {
+      dataSubmit.tokenid = req.body.tokenid
+    }
   const saveData = new ServiceCheckout(dataSubmit);
   return saveData
     .save()

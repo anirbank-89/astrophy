@@ -73,6 +73,11 @@ const create = async (req, res) => {
   ) {
     dataSubmit.address2 = req.body.address2;
   }
+
+  if(req.body.tokenid!='' && typeof req.body.tokenid!=undefined)
+    {
+      dataSubmit.tokenid = req.body.tokenid
+    }
   console.log(dataSubmit);
   //   return false;
   if (

@@ -86,6 +86,10 @@ const ServiceCheckoutSchema = new mongoose.Schema({
     status:{
         type:String,
         default:true
+    },
+    tokenid:{
+        type:String,
+        default:null
     }
 })
 
