@@ -12,6 +12,8 @@ const UserProductController = require('../../Controller/User/Product');// added 
 const ServiceController = require('../../Controller/User/Service');    // added by anirbank-93
 const SeaarchController = require('../../Controller/User/Search')
 const ShopServiceController = require("../../Controller/User/ShopServices");
+const PaypalPaymentController = require("../../Controller/User/Paypalpayment");
+
 const middleware  = require('../../service/middleware').middleware;
 
 const AdminRoute = require('./admin');
@@ -51,6 +53,15 @@ router.post('/user/allrelatedServiceList',ShopServiceController.viewAllrelatedSe
 router.post('/user/searchSevice', SeaarchController.serviceSearch);
 
 router.post('/user/searchProduct', SeaarchController.productSearch);
+
+router.post('/user/paypalpay', PaypalPaymentController.pay);
+
+router.get('/user/paypalsuccess', PaypalPaymentController.success);
+
+router.get('/user/paypalcancel', PaypalPaymentController.cancel);
+
+
+
 
 
 
