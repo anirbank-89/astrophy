@@ -33,6 +33,10 @@ const UserSubsriptionSchema = new mongoose.Schema({
     required: false,
     default: true,
   },
+  tokenid:{
+    type:String,
+    default:null
+}
 });
 
 module.exports = mongoose.model("UserSubscription", UserSubsriptionSchema);
