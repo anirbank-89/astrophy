@@ -77,7 +77,9 @@ const pay = async(req,res)=>{
           console.log("error",error.response);
           throw error;
       } else {
-          res.sendFile(__dirname + "/success.html")
+          // res.sendFile(__dirname + "/success.html")
+          res.sendFile("/var/www/html/astrophyBack/success.html")
+
       }
   });
 }
