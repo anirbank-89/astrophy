@@ -11,7 +11,7 @@ paypal.configure({
 
 const pay = async(req,res)=>{
    
-    amt = req.body.amt;
+    amt = 1;
 
     console.log(req.body)
 
@@ -26,7 +26,13 @@ const pay = async(req,res)=>{
       },
       "transactions": [{
           "item_list": {
-              "items": req.body.itemlist
+              "items": [{
+                "name": "Red Hat",
+                "sku": "001",
+                "price": amt,
+                "currency": "INR",
+                "quantity": 1
+            }]
           },
           "amount": {
               "currency": "INR",
