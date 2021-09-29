@@ -62,13 +62,13 @@ router.get('/user/paypalsuccess', PaypalPaymentController.success);
 
 router.get('/user/paypalcancel', PaypalPaymentController.cancel);
 
-router.post('/stripe/create-payment', StripesubscriptionController.create_payment);
+router.post('/user/stripe/create-payment', StripesubscriptionController.create_payment);
 
-router.post('/stripe/subs-new', StripesubscriptionController.subs_new);
+router.post('/user/stripe/subs-new', StripesubscriptionController.subs_new);
 
-router.post('/stripe/subs-retrive', StripesubscriptionController.subsretrive);
+router.post('/user/stripe/subs-retrive', StripesubscriptionController.subsretrive);
 
-router.post('/stripe/subs-cancel', StripesubscriptionController.subcancel);
+router.post('/user/stripe/subs-cancel', StripesubscriptionController.subcancel);
 
 
 
