@@ -3,8 +3,8 @@ const paypal = require('paypal-rest-sdk');
 
 paypal.configure({
     'mode': 'sandbox', //sandbox or live
-    'client_id': 'AchDHzqlzc9vba33DbYMYzU9ejnPC5211sTZ_yvtIZuz2Q9m3LyqWBHzzAt1JToq--0eWW9ijhGhvRSC',
-    'client_secret': 'EEg0w2hdiB4k1qDADeO00NsxzI1Vh8ehfiLMT2kIh_5MOMwJvz10YD1O1jsvJGeXqyfzg9g5ps_idCbd'
+    'client_id': 'ARqzRnPyToy4PkQLCLzh2LSujG13HZSkSvvUIEzQ42kPeY1JDqGuLYgAEQBPpZJncE2_nuoU_EBK6L1D',
+    'client_secret': 'xkX1MRFlrcxtEtak_FpRR5FFomx2Lj0u6ExwoKoUvBZcuwbZRm2hfAPiG8nAB1jVcu2d5Th2'
   });
 
   var amt = null;
