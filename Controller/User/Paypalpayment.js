@@ -30,12 +30,12 @@ const pay = async(req,res)=>{
                 "name": "Red Hat",
                 "sku": "001",
                 "price": amt,
-                "currency": "INR",
+                "currency": "USD",
                 "quantity": 1
             }]
           },
           "amount": {
-              "currency": "INR",
+              "currency": "USD",
               "total": amt
           },
           "description": "Hat for the best team ever"
