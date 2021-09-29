@@ -15,11 +15,13 @@ const paypal = require('paypal-rest-sdk');
 
   var amt = null;
 
-const pay = async(req,res)=>{
-   
-    amt = req.body.amt;
+const pay = async(req,res)=>{    
 
-    console.log(req.body)
+    const data = JSON.parse(req.body.data)
+    // console.log(data.itemlist);
+
+    amt = data.amt;
+    // return false
 
     const create_payment_json = {
       "intent": "sale",
@@ -32,7 +34,7 @@ const pay = async(req,res)=>{
       },
       "transactions": [{
           "item_list": {
-              "items": JSON.parse(req.body.itemlist)
+              "items": data.itemlist
           },
           "amount": {
               "currency": "USD",
@@ -41,6 +43,7 @@ const pay = async(req,res)=>{
           "description": "Hat for the best team ever"
       }]
   };
+  // return res.send(create_payment_json)
   paypal.payment.create(create_payment_json, function (error, payment) {
     if (error) {
         throw error;
