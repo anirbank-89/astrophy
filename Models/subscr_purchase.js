@@ -36,6 +36,10 @@ const UserSubsriptionSchema = new mongoose.Schema({
   tokenid:{
     type:String,
     default:null
+},
+overdate: {
+  type: Date,
+  default: null,
 }
 });
 

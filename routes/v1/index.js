@@ -13,6 +13,8 @@ const ServiceController = require('../../Controller/User/Service');    // added 
 const SeaarchController = require('../../Controller/User/Search')
 const ShopServiceController = require("../../Controller/User/ShopServices");
 const PaypalPaymentController = require("../../Controller/User/Paypalpayment");
+const StripesubscriptionController = require("../../Controller/User/Stripesubscription");
+
 
 const middleware  = require('../../service/middleware').middleware;
 
@@ -59,6 +61,18 @@ router.post('/user/paypalpay', PaypalPaymentController.pay);
 router.get('/user/paypalsuccess', PaypalPaymentController.success);
 
 router.get('/user/paypalcancel', PaypalPaymentController.cancel);
+
+router.post('/stripe/create-payment', StripesubscriptionController.create_payment);
+
+router.post('/stripe/subs-new', StripesubscriptionController.subs_new);
+
+router.post('/stripe/subs-retrive', StripesubscriptionController.subsretrive);
+
+router.post('/stripe/subs-cancel', StripesubscriptionController.subcancel);
+
+
+
+
 
 
 
