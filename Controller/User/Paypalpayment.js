@@ -32,7 +32,7 @@ const pay = async(req,res)=>{
       },
       "transactions": [{
           "item_list": {
-              "items": req.body.itemlist
+              "items": JSON.parse(req.body.itemlist)
           },
           "amount": {
               "currency": "USD",
