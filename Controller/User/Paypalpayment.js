@@ -17,10 +17,10 @@ const paypal = require('paypal-rest-sdk');
 
 const pay = async(req,res)=>{    
 
-    const data = JSON.parse(req.body.itemlist)
+    // const data = JSON.parse(req.body.itemlist)
     // console.log(data.itemlist);
 
-    amt = req.body.amt;
+    amt = req.params.amt;
     // return false
 
     const create_payment_json = {
@@ -34,7 +34,7 @@ const pay = async(req,res)=>{
       },
       "transactions": [{
           "item_list": {
-              "items": JSON.parse(req.body.itemlist)
+              "items": []
           },
           "amount": {
               "currency": "USD",

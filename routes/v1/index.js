@@ -56,7 +56,7 @@ router.post('/user/searchSevice', SeaarchController.serviceSearch);
 
 router.post('/user/searchProduct', SeaarchController.productSearch);
 
-router.post('/user/paypalpay', PaypalPaymentController.pay);
+router.get('/user/paypalpay/:amt', PaypalPaymentController.pay);
 
 router.get('/user/paypalsuccess', PaypalPaymentController.success);
 
