@@ -29,8 +29,8 @@ const pay = async(req,res)=>{
           "payment_method": "paypal"
       },
       "redirect_urls": {
-          "return_url": "http://128.199.25.86:5008/success",
-          "cancel_url": "http://128.199.25.86:5008/cancel"
+          "return_url": "http://128.199.25.86:5008/v1/user/paypalsuccess",
+          "cancel_url": "http://128.199.25.86:5008/v1/user/paypalcancel"
       },
       "transactions": [{
           "item_list": {
