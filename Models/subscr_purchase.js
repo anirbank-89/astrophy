@@ -40,6 +40,11 @@ const UserSubsriptionSchema = new mongoose.Schema({
 overdate: {
   type: Date,
   default: null,
+},
+subs_id:{
+  type: String,
+  required: false,
+  default:null
 }
 });
 

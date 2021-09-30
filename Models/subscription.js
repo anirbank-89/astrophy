@@ -30,6 +30,11 @@ const SubscriptionSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  plan_id:{
+    type: String,
+    required: false,
+    default:null
+  },
   status: {
     type: Boolean,
     required: false,

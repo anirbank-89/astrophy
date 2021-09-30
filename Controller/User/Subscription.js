@@ -72,9 +72,15 @@ const newSubscription = async (req, res) => {
     // listing_info = subscription.no_of_listing
     // console.log(listing_info)
     // userData.no_of_listing = listing_info
+    
     if(req.body.tokenid!='' && typeof req.body.tokenid!=undefined)
     {
       userData.tokenid = req.body.tokenid
+    }
+
+    if(req.body.subs_id!='' && typeof req.body.subs_id!=undefined)
+    {
+      userData.subs_id = req.body.subs_id
     }
 
     let new_subscription = new SubscribedBy(userData);
