@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const stripe = require("stripe")(process.env.STRIPE_TEST);
 var SubscribedBy = require("../../Models/subscr_purchase");
+var User = require('../../Models/user');
 
 const create_payment = async(req,res)=>{
   const { card, billing_details } = req.body;
@@ -109,6 +110,12 @@ const subcancel = async (req, res) => {
             let userSubsUpdate = await SubscribedBy.findOneAndUpdate(
                 {_id: {$in: [mongoose.Types.ObjectId(sub_id)]}},
                 update
+              );
+
+            let update1 = { type: 'User' };
+            let userUpdate = await SubscribedBy.findOneAndUpdate(
+                {_id: {$in: [mongoose.Types.ObjectId(userid)]}},
+                update1
               );
             return res.send({
                 status:true,
