@@ -32,11 +32,20 @@ const viewAllsubscription = async (req, res) => {
     },
     {
       $project: {
-        _v: 0,
+        _v: 0
       },
     },
   ])
     .then((data) => {
+      var arr = [];
+      data.forEach(function(item) { 
+        console.log(item.speakers.length)
+        if(item.speakers.length>0)
+        {
+          item.purchase = item.speakers;
+        }
+        
+      })
       res.status(200).json({
         status: true,
         message: "Subscription Data Get Successfully",
