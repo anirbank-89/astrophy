@@ -114,7 +114,7 @@ const subcancel = async (req, res) => {
 
             let update1 = { type: 'User' };
             let userUpdate = await User.findOneAndUpdate(
-                {_id: {$in: [mongoose.Types.ObjectId(userid)]}},
+                {_id: {$in: [mongoose.Types.ObjectId(req.body.userid)]}},
                 update1
               );
             return res.send({
