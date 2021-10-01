@@ -14,6 +14,8 @@ const viewAllsubscription = async (req, res) => {
         from: "usersubscriptions",
         let: {
           subscr_id: "$_id",
+          status :true
+
         },
         pipeline: [
           {
@@ -22,10 +24,13 @@ const viewAllsubscription = async (req, res) => {
                 $and: [
                   { $eq: ["$userid", mongoose.Types.ObjectId(req.params.id)] },
                   { $eq: ["$subscr_id", "$$subscr_id"] },
+                  { $eq: ["$status", "$$status"] }
+                  
                 ],
               },
             },
           },
+          
         ],
         as: "speakers",
       },
