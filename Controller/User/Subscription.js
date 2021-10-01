@@ -61,6 +61,17 @@ const viewAllsubscription = async (req, res) => {
     });
 };
 
+
+const viewUsersubscription = async (req, res) => {
+  let userData = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(req.body.userid),status:true }).exec();
+  // console.log('adminData', adminData);
+  return res.send({
+    status:true,
+    data:userData,
+    error:null
+  });
+};
+
 const newSubscription = async (req, res) => {
   let subData = await SubscribedBy.findOne({
     userid: mongoose.Types.ObjectId(req.body.userid),
@@ -135,4 +146,5 @@ const newSubscription = async (req, res) => {
 module.exports = {
   viewAllsubscription,
   newSubscription,
+  viewUsersubscription
 };

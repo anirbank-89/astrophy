@@ -65,6 +65,7 @@ router.use((req, res, next) => {
 /** ================================= with login url ================================= */
 // router.get('/product/viewall',ProductController.viewProductList)
 router.get("/listSubs/:id", SubscriptionController.viewAllsubscription);
+router.post("/userSubs", SubscriptionController.viewUsersubscription);
 router.post("/subscription-purchase", SubscriptionController.newSubscription);// added by anirbank-93
 
 router.get('/seller/:id', UserSellerController.viewUser);   // added by anirbank-93
