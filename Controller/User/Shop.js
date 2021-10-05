@@ -84,29 +84,24 @@ const createNUpdate = async (req,res)=>{
             //     console.log("notok")
             //   }
             //   return false;
-              if (Object.keys(req.files).length === 0) {
-                return res.status(200).send({
-                    status:true,
-                    error:{
-                        "images":{
-                            "message": "The image fields are mandatory.",
-                            "rule": "required"
-                        }
-                    }
-                });
+            let updateObj = {
+                name: req.body.name,
+                title: req.body.title,
+                tags: req.body.tags,
+                description: req.body.description,
+                personalization: req.body.personalization,
+                userid: req.body.userid
+            }
+              if (typeof req.files.file1!='undefined' && req.files.file1.length>0) {
+                updateObj.banner_img = "uploads/shop_services/"+"banner_"+req.files.file1[0].originalname
+              }
+
+              if (typeof req.files.file2!='undefined' && req.files.file2.length>0) {
+                updateObj.shop_img = "uploads/shop_services/"+"shop_"+req.files.file2[0].originalname
               }
             Shop.findOneAndUpdate(
                 {userid: { $in : [mongoose.Types.ObjectId(req.body.userid)] } }, 
-                {
-                    banner_img: "uploads/shop_services/"+"banner_"+req.files.file1[0].originalname,
-                    shop_img: "uploads/shop_services/"+"shop_"+req.files.file2[0].originalname,
-                    name: req.body.name,
-                    title: req.body.title,
-                    tags: req.body.tags,
-                    description: req.body.description,
-                    personalization: req.body.personalization,
-                    userid: req.body.userid
-                },
+                updateObj,
                 // req.body,
                 async (err,docs)=>{
                     if(err){
@@ -120,7 +115,7 @@ const createNUpdate = async (req,res)=>{
                         res.status(200).json({
                             status: true,
                             message: "Shop data updated successfully!",
-                            data: docs
+                            data: await docs
                         });
                     }
                 }
