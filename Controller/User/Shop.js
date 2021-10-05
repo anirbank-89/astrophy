@@ -17,14 +17,17 @@ const createNUpdate = async (req,res)=>{
     if(!matched){
         res.status(200).send({ status: false, error: v.errors });
     }
-    console.log(req.files)
-    console.log(req.body);
     
-    Shop.find({userid: {$in: [mongoose.Types.ObjectId(req.body.userid)]}})
-      .then((data)=>{
-          if (data == null || data == '') {
+    console.log(req.body);
+    // return false;
+    let shopData = await Shop.find({userid: {$in: [mongoose.Types.ObjectId(req.body.userid)]}}).exec();
+    console.log(shopData.length)
+    // return false;
+    //   .then((data)=>{
+          if (shopData.length==0) {
               //bn
-              if (typeof(req.files)=='undefined' || req.files == null) {
+            //   if (typeof(req.files)=='undefined' || req.files == null) {
+              if (Object.keys(req.files).length === 0) {
                 return res.status(200).send({
                     status:true,
                     error:{
@@ -38,8 +41,8 @@ const createNUpdate = async (req,res)=>{
 
             let shopData = {
                 _id: mongoose.Types.ObjectId(),
-                banner_img: "uploads/shop_banner_n_image/"+"banner_"+req.files.banner_img[0].originalname,// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
-                shop_img: "uploads/shop_banner_n_image/"+"shop_"+req.files.shop_img[0].originalname,// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
+                banner_img: "uploads/shop_banner_n_image/"+"banner_"+req.files.file1[0].originalname,// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
+                shop_img: "uploads/shop_banner_n_image/"+"shop_"+req.files.file2[0].originalname,// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
                 name: req.body.name,
                 title: req.body.title,
                 description: req.body.description,
@@ -71,11 +74,32 @@ const createNUpdate = async (req,res)=>{
           }
           else {
               //b
+            //   console.log(req.files)
+            //   if(Object.keys(req.files).length === 0 )
+            //   {
+            //     console.log("ok")
+            //   }
+            //   else
+            //   {
+            //     console.log("notok")
+            //   }
+            //   return false;
+              if (Object.keys(req.files).length === 0) {
+                return res.status(200).send({
+                    status:true,
+                    error:{
+                        "images":{
+                            "message": "The image fields are mandatory.",
+                            "rule": "required"
+                        }
+                    }
+                });
+              }
             Shop.findOneAndUpdate(
                 {userid: { $in : [mongoose.Types.ObjectId(req.body.userid)] } }, 
                 {
-                    banner_img: "uploads/shop_banner_n_image/"+"banner_"+req.files.banner_img[0].originalname,
-                    shop_img: "uploads/shop_banner_n_image/"+"shop_"+req.files.shop_img[0].originalname,
+                    banner_img: "uploads/shop_banner_n_image/"+"banner_"+req.files.file1[0].originalname,
+                    shop_img: "uploads/shop_banner_n_image/"+"shop_"+req.files.file2[0].originalname,
                     name: req.body.name,
                     title: req.body.title,
                     tags: req.body.tags,
@@ -102,13 +126,13 @@ const createNUpdate = async (req,res)=>{
                 }
             )
           }
-      })
-      .catch((err)=>{
-          res.status(500).json({
-              status: false,
-              message: "Server error. Please provide images"
-          });
-      });
+    //   })
+    //   .catch((err)=>{
+    //       res.status(500).json({
+    //           status: false,
+    //           message: "Server error. Please provide images"
+    //       });
+    //   });
 }
 
 const viewAllShops = async (req,res)=>{
