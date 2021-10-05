@@ -32,7 +32,10 @@ const ShopServiceSchema = new Schema({
         required: false,
         default: null
     },
-    shop_id: mongoose.Schema.Types.ObjectId,
+    shop_id: {
+        type:mongoose.Schema.Types.ObjectId,
+        required:true
+    },
     status:{
         type: Boolean,
         default: true

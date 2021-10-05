@@ -14,7 +14,8 @@ const register = async (req,res)=>{
     const v = new Validator(req.body,{
         name: "required",
         price: "required",
-        details: "required"
+        details: "required",
+        shop_id : "required"
     })
     let matched = v.check().then((val)=>val)
     if(!matched){
