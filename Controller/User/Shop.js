@@ -41,8 +41,8 @@ const createNUpdate = async (req,res)=>{
 
             let shopData = {
                 _id: mongoose.Types.ObjectId(),
-                banner_img: "uploads/shop_banner_n_image/"+"banner_"+req.files.file1[0].originalname,// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
-                shop_img: "uploads/shop_banner_n_image/"+"shop_"+req.files.file2[0].originalname,// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
+                banner_img: "uploads/shop_services/"+"banner_"+req.files.file1[0].originalname,// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
+                shop_img: "uploads/shop_services/"+"shop_"+req.files.file2[0].originalname,// +Math.floor(100000+(Math.random()*900000))+"_"+Date.now()+"_"
                 name: req.body.name,
                 title: req.body.title,
                 description: req.body.description,
@@ -98,8 +98,8 @@ const createNUpdate = async (req,res)=>{
             Shop.findOneAndUpdate(
                 {userid: { $in : [mongoose.Types.ObjectId(req.body.userid)] } }, 
                 {
-                    banner_img: "uploads/shop_banner_n_image/"+"banner_"+req.files.file1[0].originalname,
-                    shop_img: "uploads/shop_banner_n_image/"+"shop_"+req.files.file2[0].originalname,
+                    banner_img: "uploads/shop_services/"+"banner_"+req.files.file1[0].originalname,
+                    shop_img: "uploads/shop_services/"+"shop_"+req.files.file2[0].originalname,
                     name: req.body.name,
                     title: req.body.title,
                     tags: req.body.tags,
