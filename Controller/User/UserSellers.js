@@ -28,7 +28,7 @@ const viewUser = async (req,res)=>{
                         status: true,
                         message: "User successfully get. User doesn't have a shop",
                         data: docs,
-                        shop_id: []
+                        shop_id: null
                     })
                   }
                   else{
