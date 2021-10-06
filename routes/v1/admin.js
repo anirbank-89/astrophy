@@ -10,6 +10,7 @@ const ServiceSubCategoryController = require('../../Controller/Admin/SubCategory
 const CouponController = require('../../Controller/Admin/Coupon');
 const OrderhistoryController = require('../../Controller/Admin/Orderhistory');
 const ServicehistoryController = require('../../Controller/Admin/Servicehistory');
+const UserController = require('../../Controller/Auth/User');
 
 
 const multer = require('multer');
@@ -84,6 +85,9 @@ router.post('/orderHistoryrepo', OrderhistoryController.productViewAllrepo)
 router.get('/servicedetails', ServicehistoryController.viewAll);
 
 router.post('/servicedetailsrepo', ServicehistoryController.reportViewAll);
+
+router.get('/contactlist', UserController.ViewAllcontact);
+
 
 
 module.exports = router;

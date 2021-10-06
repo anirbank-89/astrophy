@@ -16,6 +16,8 @@ const PaypalPaymentController = require("../../Controller/User/Paypalpayment");
 const StripesubscriptionController = require("../../Controller/User/Stripesubscription");
 
 
+
+
 const middleware  = require('../../service/middleware').middleware;
 
 const AdminRoute = require('./admin');
@@ -69,6 +71,9 @@ router.post('/user/stripe/subs-new', StripesubscriptionController.subs_new);
 router.post('/user/stripe/subs-retrive', StripesubscriptionController.subsretrive);
 
 router.post('/user/stripe/subs-cancel', StripesubscriptionController.subcancel);
+
+router.post('/user/contactus', UserController.contactus);
+
 
 
 

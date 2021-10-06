@@ -7,6 +7,8 @@ const { Validator } = require('node-input-validator');
 var User = require('../../Models/user');
 var Product = require('../../Models/product');
 var emailVerify = require('../../service/emailsend');
+var Contact = require('../../Models/contactus');
+
 
 
 
@@ -23,7 +25,7 @@ const getTokenData = async (token) => {
 
 const sendVerifyLink = async (req,res)=>{
     let data = {
-        url:'http://localhost:3000/after-verify',
+        url:'http://astrophy.com/after-verify',
         to_email: req.body.email,
         to_name: req.body.name
     };
@@ -273,6 +275,77 @@ const viewAllsubscription = async( req , res)=>{
     })
 }
 
+const contactus = async(req,res)=>{
+    const v = new Validator(req.body,{
+        email:'required|email'
+    })
+    let matched = await v.check().then((val)=>val)
+    if(!matched)
+    {
+        return res.status(200).send({ status: false, error: v.errors });
+    }
+    let userData = {
+        _id:mongoose.Types.ObjectId(),
+        email:req.body.email
+    }
+
+    const all_users = new Contact(userData)
+    let data2 = {
+        to_email: req.body.email
+    };
+    
+    superagent
+      .post('https://new.easytodb.com/astrophymail/sendcontact.php')
+      .send(data2) // sends a JSON post body
+      .set('Content-Type', 'application/json')
+      .end((err,info)=>{
+          
+      });
+    return all_users.save().then(async (data)=>{
+        
+        res.status(200).json({
+            status: true,
+            success: true,
+            message: 'Contacted successfully',
+            data: data,
+        })
+    })
+    .catch((error)=>{
+        res.status(200).json({
+            status: false,
+            success: false,
+            message: 'Server error. Please try again.',
+            error: error,
+        });
+    });
+}
+
+const ViewAllcontact = async( req , res)=>{
+    return Contact.aggregate(
+        [
+            {
+                $project:{
+                    _v:0
+                }
+            }
+        ]
+    )
+    .then((data)=>{
+        res.status(200).json({
+            status:true,
+            message:'Contact List Get Successfully',
+            data:data
+        })
+    })
+    .catch((err)=>{
+        res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            error: error,
+          });
+    })
+}
+
 module.exports = {
     getTokenData,
     sendVerifyLink,
@@ -280,5 +353,7 @@ module.exports = {
     afterEmailVerify,
     login,
     viewProductList,
-    viewAllsubscription
+    viewAllsubscription,
+    contactus,
+    ViewAllcontact
 }
