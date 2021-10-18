@@ -221,6 +221,7 @@ const subscriptionHistoryRepo = async (req, res) => {
       },
     },
     { $unwind: "$user_data" },
+    { $sort: { _id: -1 } },
   ])
     .then((data) => {
       if (data != null && data != "") {

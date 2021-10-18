@@ -72,7 +72,7 @@ const viewAllServices = async (req,res)=>{
               message: "Server error. Please try again.",
               errors: err
           });
-      });
+      }).sort({ _id: 'desc' });
 }
 
 const update = async (req,res)=>{

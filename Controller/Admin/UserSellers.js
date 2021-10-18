@@ -26,7 +26,7 @@ const viewUserList = async (req,res)=>{
                     data: docs
                 });
             }
-        });
+        }).sort({ _id: 'desc' });
 }
 
 const viewUser = async (req,res)=>{
@@ -69,7 +69,7 @@ const viewSellerList = async (req,res)=>{
                     data: docs
                 });
             }
-        });
+        }).sort({ _id: 'desc' });
 }
 
 const viewSeller = async (req,res)=>{
