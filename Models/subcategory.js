@@ -1,4 +1,6 @@
 var mongoose = require('mongoose')
+var moment = require("moment-timezone");
+var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 var Schema = mongoose.Schema
 
 var SubCategorySchema = new Schema({
@@ -17,6 +19,10 @@ var SubCategorySchema = new Schema({
     status:{
         type:Boolean,
         default:true
+    },
+    created_on: {
+        type: Date,
+        default: dateKolkata,
     }
 })
 

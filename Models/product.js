@@ -1,5 +1,7 @@
 var mongoose = require('mongoose');
 const aggregatePaginate = require("mongoose-aggregate-paginate-v2");
+var moment = require("moment-timezone");
+var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 
 const ProductSchema = new mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
@@ -42,6 +44,10 @@ const ProductSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    created_on: {
+        type: Date,
+        default: dateKolkata,
+    }
 
 
     

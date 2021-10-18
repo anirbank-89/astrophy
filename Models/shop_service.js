@@ -1,5 +1,7 @@
 var mongoose = require('mongoose')
 const shop = require('./shop')
+var moment = require("moment-timezone");
+var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 var Schema = mongoose.Schema
 const aggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
@@ -40,6 +42,10 @@ const ShopServiceSchema = new Schema({
     chataddstatus:{
         type: Boolean,
         default: false
+    },
+    created_on: {
+        type: Date,
+        default: dateKolkata,
     }
 })
 

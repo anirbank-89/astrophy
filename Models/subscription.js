@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+var moment = require("moment-timezone");
+var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 
 const SubscriptionSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -40,6 +42,10 @@ const SubscriptionSchema = new mongoose.Schema({
     required: false,
     default: true,
   },
+  created_on: {
+    type: Date,
+    default: dateKolkata,
+}
 });
 
 module.exports = mongoose.model("Subscription", SubscriptionSchema);

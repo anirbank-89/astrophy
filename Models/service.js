@@ -1,4 +1,6 @@
 var mongoose = require('mongoose');
+var moment = require("moment-timezone");
+var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 var Schema = mongoose.Schema;
 
 const ServiceSchema = new Schema({
@@ -19,7 +21,11 @@ const ServiceSchema = new Schema({
     image:{
         type: String,
         required: true
-    }
+    },
+    created_on: {
+        type: Date,
+        default: dateKolkata,
+    },
 });
 
 module.exports = mongoose.model("Service", ServiceSchema);
