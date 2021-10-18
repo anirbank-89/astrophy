@@ -63,6 +63,7 @@ const create = async (req, res) => {
 
 const viewAll = async (req, res) => {
   return Subsciption.aggregate([
+    { $sort: { _id: -1 } },
     {
       $project: {
         _v: 0,
@@ -160,6 +161,7 @@ const subscriptionHistory = async (req, res) => {
         as: "user_data",
       },
     },
+    { $sort: { _id: -1 } },
   ])
     .then((data) => {
       if (data != null && data != "") {

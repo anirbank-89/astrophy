@@ -60,6 +60,7 @@ const viewAll = async( req ,res )=>
 {
     return Coupon.aggregate(
         [
+            { $sort: { _id: -1 } },
             {
                 $project:{
                     _v:0

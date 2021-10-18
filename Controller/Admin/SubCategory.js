@@ -62,6 +62,7 @@ const viewAll = async (req,res)=>{
                     as:"category_data"//
                 }
             },
+            { $sort: { _id: -1 } },
             {
                 $project:{
                     _v:0

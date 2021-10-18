@@ -30,6 +30,7 @@ const viewAll = async (req,res)=>{
                     as:"cart_data"//
                 }
             },
+            { $sort: { _id: -1 } },
             {
                 $project:{
                     _v:0
@@ -84,6 +85,7 @@ const productViewAllrepo = async (req,res)=>{
                     as:"cart_data"//
                 }
             },
+            { $sort: { _id: -1 } },
             {
                 $project:{
                     _v:0

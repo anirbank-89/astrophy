@@ -24,6 +24,7 @@ const viewAll = async (req,res)=>{
                     as:"servicecart_data"//
                 }
             },
+            { $sort: { _id: -1 } },
             {
                 $project:{
                     _v:0
@@ -87,6 +88,7 @@ const reportViewAll = async (req,res)=>{
                 }
             },
             { $unwind : "$seller_data" },
+            { $sort: { _id: -1 } },
             {
                 $project:{
                     _v:0

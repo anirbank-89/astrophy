@@ -53,6 +53,7 @@ const viewAll = async( req ,res )=>
 {
     return Category.aggregate(
         [
+            { $sort: { _id: -1 } },
             {
                 $project:{
                     _v:0
