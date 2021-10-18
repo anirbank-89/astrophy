@@ -137,7 +137,14 @@ const updateProfile = async (req,res)=>{
     }
   }
 
+  const getProfile = async () => {
+    let userData = await Admin.findOne({_id: {$in:[mongoose.Types.ObjectId(req.params.id)]}}).exec();
+    // console.log('adminData', adminData);
+    return userData;
+}
+
   module.exports = {
     updateProfile,
-    updatePassword
+    updatePassword,
+    getProfile
 }

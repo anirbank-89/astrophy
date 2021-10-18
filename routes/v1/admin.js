@@ -92,6 +92,8 @@ router.get('/contactlist', UserController.ViewAllcontact);
 
 router.put('/update-profile/:id', upload.single("image"), MyaccountController.updateProfile);
 router.put('/update-password/:id', MyaccountController.updatePassword);
+router.get('/get-profile/:id', MyaccountController.getProfile);
+
 
 
 
