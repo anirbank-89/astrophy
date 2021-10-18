@@ -137,10 +137,25 @@ const updateProfile = async (req,res)=>{
     }
   }
 
-  const getProfile = async () => {
-    let userData = await Admin.findOne({_id: {$in:[mongoose.Types.ObjectId(req.params.id)]}}).exec();
-    // console.log('adminData', adminData);
-    return userData;
+  const getProfile = async (req,res) => {
+    console.log(req.params.id)
+    Admin.findOne({_id: {$in:[mongoose.Types.ObjectId(req.params.id)]}})
+        .then(admin =>{
+          
+            return res.status(200).json({
+              status: true,
+              data: admin
+            });
+                
+         
+        })
+        .catch(err =>{
+          return res.status(500).json({
+            status: false,
+            message: "No profile details found. Server error.",
+            error: err
+          });
+        })
 }
 
   module.exports = {
