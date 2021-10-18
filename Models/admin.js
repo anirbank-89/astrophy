@@ -17,6 +17,21 @@ const AdminSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    mobile:{
+        type:String,
+        required:false,
+        default:null
+    },
+    address:{
+        type:String,
+        required:false,
+        default:null
+    },
+    image:{
+        type:String,
+        required:false,
+        default:null
+    },
     token:{
         type:String,
         required:false,

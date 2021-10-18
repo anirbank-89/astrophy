@@ -11,6 +11,8 @@ const CouponController = require('../../Controller/Admin/Coupon');
 const OrderhistoryController = require('../../Controller/Admin/Orderhistory');
 const ServicehistoryController = require('../../Controller/Admin/Servicehistory');
 const UserController = require('../../Controller/Auth/User');
+const MyaccountController = require('../../Controller/Admin/Myaccount');
+
 
 
 const multer = require('multer');
@@ -87,6 +89,9 @@ router.get('/servicedetails', ServicehistoryController.viewAll);
 router.post('/servicedetailsrepo', ServicehistoryController.reportViewAll);
 
 router.get('/contactlist', UserController.ViewAllcontact);
+
+router.put('/update-profile/:id', upload.single("image"), MyaccountController.updateProfile);
+router.put('/update-password/:id', MyaccountController.updatePassword);
 
 
 
