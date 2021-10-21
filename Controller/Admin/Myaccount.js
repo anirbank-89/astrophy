@@ -1,6 +1,7 @@
 var mongoose = require('mongoose')
 var Admin = require('../../Models/admin')
 var passwordHash = require('password-hash');
+var Upload = require('../../service/upload')
 
 var jwt = require('jsonwebtoken');
 const { Validator } = require('node-input-validator');
