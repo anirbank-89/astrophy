@@ -6,24 +6,24 @@ var Upload = require("../../service/upload");
 
 const { Validator } = require('node-input-validator');
 
-const create = async (req,res)=>{
-    const v = new Validator(req.body,{
+const create = async (req, res) => {
+    const v = new Validator(req.body, {
         name: "required",
         description: "required"
     });
 
-    let matched = await v.check().then((val)=>val);
+    let matched = await v.check().then((val) => val);
     if (!matched) {
         return res.status(200).send({
             status: false,
             error: v.errors
         });
     }
-    if (typeof(req.file)=='undefined' || req.file == null) {
+    if (typeof (req.file) == 'undefined' || req.file == null) {
         return res.status(200).send({
-            status:true,
-            error:{
-                "image":{
+            status: true,
+            error: {
+                "image": {
                     "message": "The image field is mandatory.",
                     "rule": "required"
                 }
@@ -32,57 +32,57 @@ const create = async (req,res)=>{
     }
     let image_url = await Upload.uploadFile(req, "services");
     let serviceData = {
-        _id : mongoose.Types.ObjectId(),
-        name : req.body.name,
-        description : req.body.description,
+        _id: mongoose.Types.ObjectId(),
+        name: req.body.name,
+        description: req.body.description,
         image: image_url
     }
 
     let service_category = await new Service(serviceData);
 
     return service_category.save()
-      .then((data)=>{
-          res.status(200).json({
-              status: true,
-              data: data,
-              message: "Service category added successfully!"
-          });
-      })
-      .catch((err)=>{
-          res.status(500).json({
-              status: false,
-              message: "Server error. Please try again.",
-              error: err
-          });
-      });
+        .then((data) => {
+            res.status(200).json({
+                status: true,
+                data: data,
+                message: "Service category added successfully!"
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err
+            });
+        });
 }
 
-const viewAllServices = async (req,res)=>{
+const viewAllServices = async (req, res) => {
     return Service.find()
-      .then((docs)=>{
-          res.status(200).json({
-              status: true,
-              message: "All services get successfully.",
-              data: docs
-          });
-      })
-      .catch((err)=>{
-          res.status(500).json({
-              status: false,
-              message: "Server error. Please try again.",
-              errors: err
-          });
-      }).sort({ _id: 'desc' });
+        .then((docs) => {
+            res.status(200).json({
+                status: true,
+                message: "All services get successfully.",
+                data: docs
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                errors: err
+            });
+        }).sort({ _id: 'desc' });
 }
 
-const update = async (req,res)=>{
+const update = async (req, res) => {
     const v = new Validator({
         name: "required",
         description: "required",
     });
 
-    let matched = await v.check().then((val)=>val);
-    if(!matched){
+    let matched = await v.check().then((val) => val);
+    if (!matched) {
         return res.status(200).send({
             status: false,
             error: v.errors
@@ -95,9 +95,9 @@ const update = async (req,res)=>{
     }
 
     return Service.findOneAndUpdate(
-        { _id: { $in : [mongoose.Types.ObjectId(req.params.id) ] } }, 
-        req.body, 
-        async (err, docs)=>{
+        { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+        req.body,
+        async (err, docs) => {
             if (err) {
                 res.status(500).json({
                     status: false,
@@ -105,7 +105,7 @@ const update = async (req,res)=>{
                     error: err
                 });
             }
-            else if(docs != null){
+            else if (docs != null) {
                 res.status(200).json({
                     status: true,
                     message: "Service category updated successfully!",
@@ -123,22 +123,78 @@ const update = async (req,res)=>{
     );
 }
 
-const Delete = async (req,res)=>{
-    return Service.remove({_id: { $in : [mongoose.Types.ObjectId(req.params.id)]}})
-      .then((docs)=>{
-          res.status(200).json({
-              status: true,
-              message: "Service category deleted successfully!",
-              data: docs
-          });
-      })
-      .catch((err)=>{
-          res.status(500).json({
-              status: false,
-              message: "Server error. Please try again.",
-              error: err
-          });
-      });
+const Delete = async (req, res) => {
+    return Service.remove({ _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } })
+        .then((docs) => {
+            res.status(200).json({
+                status: true,
+                message: "Service category deleted successfully!",
+                data: docs
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err
+            });
+        });
+}
+
+const setStatus = async (req, res) => {
+    var id = req.params.id;
+
+    var current_status = await Service.findById({ _id: id }).exec();
+
+    console.log("Category data", current_status);
+
+    if (current_status.status === true) {
+        console.log(true);
+        return Service.findByIdAndUpdate(
+            { _id: id },
+            { $set: { status: false } },
+            { new: true },
+            (err, docs) => {
+                if (!err) {
+                    res.status(200).json({
+                        status: true,
+                        message: "Category has been made inactive.",
+                        data: docs
+                    });
+                }
+                else {
+                    res.status(500).json({
+                        status: false,
+                        message: "Invalid id. Server error.",
+                        error: err
+                    });
+                }
+            }
+        );
+    }
+    else {
+        return Service.findByIdAndUpdate(
+            { _id: id },
+            { $set: { status: true } },
+            { new: true },
+            (err, docs) => {
+                if (!err) {
+                    res.status(200).json({
+                        status: true,
+                        message: "Category has been activated.",
+                        data: docs
+                    });
+                }
+                else {
+                    res.status(500).json({
+                        status: false,
+                        message: "Invalid id. Server error.",
+                        error: err
+                    });
+                }
+            }
+        );
+    }
 }
 
 module.exports = {
@@ -146,4 +202,5 @@ module.exports = {
     viewAllServices,
     update,
     Delete,
+    setStatus
 }

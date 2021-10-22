@@ -59,21 +59,25 @@ router.post('/category/Category',CategoryController.create)
 router.get('/category/Category',CategoryController.viewAll)
 router.put('/category/Category/:id',CategoryController.update)
 router.delete('/category/Category/:id',CategoryController.Delete)
+router.put('/category/set-status/:id', CategoryController.setStatus)
 
 router.get('/userlist', UserSellersController.viewUserList)     // added by anirbank-93
 router.get('/viewuser/:id', UserSellersController.viewUser)     // added by anirbank-93
 router.get('/sellerlist', UserSellersController.viewSellerList) // added by anirbank-93
 router.get('/viewseller/:id', UserSellersController.viewSeller)  // added by anirbank-93
 
+
 router.post('/service',upload.single("image"),ServiceController.create)// added by anirbank-93
 router.get('/service', ServiceController.viewAllServices)              // added by anirbank-93
 router.put('/service/:id',upload.single("image"),ServiceController.update)// added by anirbank-93
 router.delete('/service/:id', ServiceController.Delete)                   // added by anirbank-93
+router.put('/service/set-status/:id',ServiceController.setStatus)// added by anirbank-93
 
 router.post('/service/subcategory',ServiceSubCategoryController.create)    // added by anirbank-93
 router.get('/service/subcategory', ServiceSubCategoryController.viewAll)   // added by anirbank-93
 router.put('/service/subcategory/:id', ServiceSubCategoryController.update)// added by anirbank-93
 router.delete('/service/subcategory/:id', ServiceSubCategoryController.Delete)// added by anirbank-93
+router.put('/service/subcategory/set-status/:id', ServiceSubCategoryController.setStatus)// added by anirbank-93
 
 router.post('/coupon',CouponController.create)   
 router.get('/coupon', CouponController.viewAll)  
