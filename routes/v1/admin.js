@@ -40,11 +40,13 @@ router.post('/product/Product',upload.single("image"),ProductController.create)
 router.get('/product/Product',ProductController.viewAll)
 router.put('/product/Product/:id',upload.single("image"),ProductController.update)
 router.delete('/product/Product/:id',ProductController.Delete)
+router.put('/product/set-status/:id',ProductController.setStatus)
 
 router.post('/subscription',SubscriptionController.create)
 router.get('/subscription',SubscriptionController.viewAll)
 router.put('/subscription/:id',SubscriptionController.update)
 router.delete('/subscription/:id',SubscriptionController.Delete)
+router.put('/subscription/set-status/:id',SubscriptionController.setStatus)
 
 router.get('/subscription/purchasehistory',SubscriptionController.subscriptionHistory)
 
@@ -83,6 +85,7 @@ router.post('/coupon',CouponController.create)
 router.get('/coupon', CouponController.viewAll)  
 router.put('/coupon/:id', CouponController.update)
 router.delete('/coupon/:id', CouponController.Delete)
+router.put('/coupon/set-status/:id', CouponController.setStatus)
 
 router.get('/orderHistory', OrderhistoryController.viewAll)  
 router.post('/orderHistoryrepo', OrderhistoryController.productViewAllrepo)  
