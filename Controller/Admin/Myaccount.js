@@ -6,6 +6,7 @@ var Upload = require('../../service/upload')
 var jwt = require('jsonwebtoken');
 const { Validator } = require('node-input-validator');
 
+// Admin update profile of user
 const updateProfile = async (req,res)=>{
 
     let editData = {
