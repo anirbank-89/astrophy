@@ -67,6 +67,7 @@ router.get('/userlist', UserSellersController.viewUserList)     // added by anir
 router.get('/viewuser/:id', UserSellersController.viewUser)     // added by anirbank-93
 router.get('/sellerlist', UserSellersController.viewSellerList) // added by anirbank-93
 router.get('/viewseller/:id', UserSellersController.viewSeller)  // added by anirbank-93
+router.put('/user/set-status/:id', UserSellersController.setStatus)// added by anirbank-93
 
 
 router.post('/service',upload.single("image"),ServiceController.create)// added by anirbank-93
