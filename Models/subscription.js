@@ -18,14 +18,12 @@ const SubscriptionSchema = new mongoose.Schema({
   },
   duration: {
     start_date:{
-      type: Date,
+      type: String,
       required: true,
-      default: dateKolkata
     },
     end_date:{
-      type: Date,
+      type: String,
       required: true,
-      default: dateKolkata
     },
   },
   price: {
