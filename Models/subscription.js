@@ -12,9 +12,13 @@ const SubscriptionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  seller_comission: {
-    type: Number,
+  seller_comission_type: {
+    type: String,
     required: true,
+  },
+  seller_commission_value: {
+    type: Number,
+    required: true
   },
   duration: {
     start_date:{
