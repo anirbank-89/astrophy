@@ -6,12 +6,12 @@ const AdminSchema = new mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
     fullname:{
         type:String,
-        required:false
+        required:true // false
     },
     email:{
         type:String,
-        required:false,
-        unique:true
+        required:false
+        // unique: true
     },
     password:{
         type:String,

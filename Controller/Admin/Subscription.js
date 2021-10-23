@@ -16,9 +16,9 @@ const create = async (req, res) => {
     name: "required",
     description: "required",
     seller_comission: "required",
-    duration: "required",
+    start_date: "required",
+    end_date: "required",
     price: "required",
-    type: "required",
     no_of_listing: "required",
   });
 
@@ -35,9 +35,9 @@ const create = async (req, res) => {
     name: req.body.name,
     description: req.body.description,
     seller_comission: req.body.seller_comission,
-    duration: req.body.duration,
+    start_date: req.body.start_date,
+    end_date: req.body.end_date,
     price: req.body.price,
-    type: req.body.type,
     no_of_listing: req.body.no_of_listing,
   };
 

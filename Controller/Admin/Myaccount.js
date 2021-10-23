@@ -10,11 +10,12 @@ const { Validator } = require('node-input-validator');
 const updateProfile = async (req, res) => {
 
   let editData = {
-    fullname: req.body.firstName,
+    fullname: req.body.fullname,
     email: req.body.email,
     password: req.body.password, // hidden
     address: req.body.address
   }
+  log
 
   if (
     req.body.mobile != "" ||
