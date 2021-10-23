@@ -113,7 +113,7 @@ const update = async (req, res) => {
         });
       }
 
-      console.log(doc);
+      // console.log(doc);
     }
   );
 };
