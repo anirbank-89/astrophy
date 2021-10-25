@@ -14,7 +14,7 @@ const create = async (req, res) => {
         percent: "required",
         expdate: "required",
         discount_type:"required",
-        discount_value:"discount_type",
+        discount_value:"required",
         // applicable_date:"required",
         times: "required",
 
