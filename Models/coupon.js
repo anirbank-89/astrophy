@@ -29,10 +29,10 @@ const CouponSchema = new mongoose.Schema({
         type: Number,
         required: true
       }, 
-    applicable_date:{
-        type:String,
-        required:false,
-    },
+    // applicable_date:{
+    //     type:String,
+    //     required:false,
+    // },
     times:{
         type:Number,
         required:true,

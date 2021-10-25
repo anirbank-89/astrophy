@@ -15,7 +15,7 @@ const create = async (req, res) => {
         expdate: "required",
         discount_type:"required",
         discount_value:"discount_type",
-        applicable_date:"required",
+        // applicable_date:"required",
         times: "required",
 
     })
@@ -36,7 +36,7 @@ const create = async (req, res) => {
         expdate: req.body.expdate,
         discount_type:req.body.discount_type,
         discount_value:req.body.discount_value,
-        applicable_date:req.body.applicable_date,
+        // applicable_date:req.body.applicable_date,
         times: req.body.times
     }
 
