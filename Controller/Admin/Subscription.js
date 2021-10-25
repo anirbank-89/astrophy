@@ -17,8 +17,8 @@ const create = async (req, res) => {
     description: "required",
     seller_comission_type: "required",
     seller_commission_value: "required",
-    start_date: "required",
-    end_date: "required",
+    range: "required",
+    // end_date: "required",
     price: "required",
     no_of_listing: "required",
   });
@@ -37,8 +37,8 @@ const create = async (req, res) => {
     description: req.body.description,
     seller_comission_type: req.body.seller_comission_type,
     seller_commission_value: req.body.seller_commission_value,
-    start_date: req.body.start_date,
-    end_date: req.body.end_date,
+    range: req.body.range,
+    // end_date: req.body.end_date,
     price: req.body.price,
     no_of_listing: req.body.no_of_listing,
   };

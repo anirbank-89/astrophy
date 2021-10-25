@@ -20,12 +20,8 @@ const SubscriptionSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  start_date:{
-      type: String,
-      required: true,
-    },
-  end_date:{
-      type: String,
+  range:{
+      type: Object,
       required: true,
     },
   price: {
