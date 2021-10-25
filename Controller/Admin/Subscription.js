@@ -43,6 +43,9 @@ const create = async (req, res) => {
     no_of_listing: req.body.no_of_listing,
   };
 
+  console.log(subdata);
+  // return false;
+
   let subscriptionSchema = new Subsciption(subdata);
 
   return subscriptionSchema

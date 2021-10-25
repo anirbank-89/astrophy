@@ -20,16 +20,14 @@ const SubscriptionSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  duration: {
-    start_date:{
+  start_date:{
       type: String,
       required: true,
     },
-    end_date:{
+  end_date:{
       type: String,
       required: true,
     },
-  },
   price: {
     type: Number,
     required: true,
