@@ -20,18 +20,22 @@ const SubscriptionSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  range:{
-      type: Object,
-      required: true,
-    },
+  // range:{
+  //     type: Object,
+  //     required: true,
+  //   },
   price: {
     type: Number,
     required: true,
   },
-  // type: {
-  //   type: String,
-  //   required: false,
-  // },
+  type: {
+    type: String,
+    required: false,
+  },
+  duration: {
+    type: String,
+    required: false,
+  },
   no_of_listing:{
     type: Number,
     required: true
