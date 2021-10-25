@@ -19,7 +19,7 @@ const create = async (req, res) => {
     seller_commission_value: "required",
     // range: "required",
     type:"required",
-    duration:"duration",
+    duration:"required",
     // end_date: "required",
     price: "required",
     no_of_listing: "required",
