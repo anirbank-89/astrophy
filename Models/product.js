@@ -27,7 +27,7 @@ const ProductSchema = new mongoose.Schema({
         required:true
     },
     image:{
-        type:String,
+        type:Array,
         required:false
     },
     status: {
@@ -41,6 +41,10 @@ const ProductSchema = new mongoose.Schema({
     default: true
     },
     delivery:{
+        type:String,
+        required:true
+    },
+    delivery_time:{
         type:String,
         required:true
     },

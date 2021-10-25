@@ -17,7 +17,8 @@ const create = async( req , res ) =>
         description : "required",
         mrp : "required",
         selling_price : "required",
-        delivery :"required"
+        delivery :"required",
+        delivery_time
 
     })
 
@@ -29,20 +30,20 @@ const create = async( req , res ) =>
             error:v.errors
         })
     }
-    if( typeof(req.file)=='undefined' || req.file ==null)
-    {
-        return res.status(200).send({
-            status:true,
-            error:{
-                "image":{
-                    "message": "The image field is mandatory.",
-                    "rule": "required"
-                }
-            }
+    // if( typeof(req.file)=='undefined' || req.file ==null)
+    // {
+    //     return res.status(200).send({
+    //         status:true,
+    //         error:{
+    //             "image":{
+    //                 "message": "The image field is mandatory.",
+    //                 "rule": "required"
+    //             }
+    //         }
 
-        })
-    }
-    let image_url = await Upload.uploadFile(req, "products");
+    //     })
+    // }
+    // let image_url = await Upload.uploadFile(req, "products");
     let prductData = {
         _id : mongoose.Types.ObjectId(),
         name : req.body.name,
@@ -50,7 +51,7 @@ const create = async( req , res ) =>
         description : req.body.description,
         mrp : Number(req.body.mrp),
         selling_price : Number(req.body.selling_price),
-        image: image_url,
+        image: req.body.image,
         delivery:req.body.delivery
     }
 
@@ -112,10 +113,10 @@ const viewAll = async( req ,res )=>
 const update = async( req , res)=>
 {
     console.log(req.file)
-    if (typeof (req.file) != "undefined" || req.file != null) {
-        let image_url = await Upload.uploadFile(req, "products");
-        req.body.image = image_url;
-      }
+    // if (typeof (req.file) != "undefined" || req.file != null) {
+    //     let image_url = await Upload.uploadFile(req, "products");
+    //     req.body.image = image_url;
+    //   }
 
     return Product.findOneAndUpdate(
         { _id: { $in : [mongoose.Types.ObjectId(req.params.id) ] } },
@@ -226,10 +227,25 @@ const setStatus = async (req, res) => {
     }
 }
 
+const productImageUrl = async(req,res)=>{
+    let imagUrl = '';
+    let image_url = await Upload.uploadFile(req, "products")
+    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
+        imagUrl = image_url
+    }
+
+    return res.status(200).send({
+        status : true,
+        data : imagUrl,
+        error : null
+    })
+}
+
 module.exports = {
     create,
     viewAll,
     update,
     Delete,
-    setStatus
+    setStatus,
+    productImageUrl
 }

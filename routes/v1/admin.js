@@ -36,11 +36,16 @@ router.use((req,res,next)=>{
     }
 })
 
-router.post('/product/Product',upload.single("image"),ProductController.create)
+// router.post('/product/Product',upload.single("image"),ProductController.create)
+router.post('/product/Product',ProductController.create)
+
 router.get('/product/Product',ProductController.viewAll)
-router.put('/product/Product/:id',upload.single("image"),ProductController.update)
+// router.put('/product/Product/:id',upload.single("image"),ProductController.update)
+router.put('/product/Product/:id',ProductController.update)
+
 router.delete('/product/Product/:id',ProductController.Delete)
 router.put('/product/set-status/:id',ProductController.setStatus)
+router.post('/product-uploadurl', upload.single("image"), ProductController.productImageUrl);
 
 router.post('/subscription',SubscriptionController.create)
 router.get('/subscription',SubscriptionController.viewAll)
