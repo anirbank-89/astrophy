@@ -150,10 +150,67 @@ const setStatus = async (req, res) => {
     }
 }
 
+const setBlock = async (req, res) => {
+    var id = req.params.id;
+
+    var current_status = await User.findById({ _id: id }).exec();
+
+    console.log("user data", current_status);
+
+    if (current_status.block === true) {
+        console.log(true);
+        return User.findByIdAndUpdate(
+            { _id: id },
+            { $set: { block: false } },
+            { new: true },
+            (err, docs) => {
+                if (!err) {
+                    res.status(200).json({
+                        status: true,
+                        message: "User has been made unblocked.",
+                        data: docs
+                    });
+                }
+                else {
+                    res.status(500).json({
+                        status: false,
+                        message: "Invalid id. Server error.",
+                        error: err
+                    });
+                }
+            }
+        );
+    }
+    else {
+        return User.findByIdAndUpdate(
+            { _id: id },
+            { $set: { block: true } },
+            { new: true },
+            (err, docs) => {
+                if (!err) {
+                    res.status(200).json({
+                        status: true,
+                        message: "User has been blocked.",
+                        data: docs
+                    });
+                }
+                else {
+                    res.status(500).json({
+                        status: false,
+                        message: "Invalid id. Server error.",
+                        error: err
+                    });
+                }
+            }
+        );
+    }
+}
+
 module.exports = {
     viewUserList,
     viewUser,
     viewSellerList,
     viewSeller,
-    setStatus
+    setStatus,
+    setBlock
 }

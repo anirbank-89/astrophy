@@ -43,6 +43,11 @@ let UserSchema = new mongoose.Schema({
         type: Boolean,
         required: false,
         default: false//
+    },
+    block: {
+        type: Boolean,
+        required: false,
+        default: false//
     }
 });
 
