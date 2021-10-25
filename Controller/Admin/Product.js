@@ -18,7 +18,7 @@ const create = async( req , res ) =>
         mrp : "required",
         selling_price : "required",
         delivery :"required",
-        delivery_time
+        delivery_time:"required"
 
     })
 
@@ -52,7 +52,8 @@ const create = async( req , res ) =>
         mrp : Number(req.body.mrp),
         selling_price : Number(req.body.selling_price),
         image: req.body.image,
-        delivery:req.body.delivery
+        delivery:req.body.delivery,
+        delivery_time:req.body.delivery_time
     }
 
     const productSave = await new Product(prductData)
