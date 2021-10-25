@@ -20,7 +20,19 @@ const CouponSchema = new mongoose.Schema({
     expdate:{
         type:String,
         required:false,
-    }, 
+    },
+    discount_type: {
+        type: String,
+        required: true,
+      },
+    discount_value: {
+        type: Number,
+        required: true
+      }, 
+    applicable_date:{
+        type:String,
+        required:false,
+    },
     times:{
         type:Number,
         required:true,

@@ -13,6 +13,9 @@ const create = async (req, res) => {
         minprice: "required",
         percent: "required",
         expdate: "required",
+        discount_type:"required",
+        discount_value:"discount_type",
+        applicable_date:"required",
         times: "required",
 
     })
@@ -31,6 +34,9 @@ const create = async (req, res) => {
         minprice: req.body.minprice,
         percent: req.body.percent,
         expdate: req.body.expdate,
+        discount_type:req.body.discount_type,
+        discount_value:req.body.discount_value,
+        applicable_date:req.body.applicable_date,
         times: req.body.times
     }
 
