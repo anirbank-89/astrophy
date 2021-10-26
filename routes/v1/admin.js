@@ -65,11 +65,6 @@ router.get('/subscription/purchasehistory',SubscriptionController.subscriptionHi
 
 router.post('/subscription/purchasehistoryRepo',SubscriptionController.subscriptionHistoryRepo)
 
-
-
-
-
-
 router.post('/category/Category',CategoryController.create)
 router.get('/category/Category',CategoryController.viewAll)
 router.put('/category/Category/:id',CategoryController.update)
@@ -140,6 +135,12 @@ router.post('/cms/About',upload.single("image"),CmsController.createNUpdatecms)
 router.post('/cms/Blog',upload.single("image"),CmsController.createNUpdateblog)
 router.get('/cms/Blog',CmsController.viewAllBlog)
 router.get('/cms/About',CmsController.getAbout)
+router.post('/cms/Privacy',CmsController.createNUpdateprivacy)
+router.post('/cms/Cookie',CmsController.cookie)
+router.post('/cms/Return',CmsController.returnpolicy)
+
+
+
 
 
 

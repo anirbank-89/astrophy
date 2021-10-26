@@ -56,7 +56,7 @@ const create = async( req , res ) =>
                res.status(200).json({
                    status:true,
                    data:data,
-                   message:"Product added successfully"
+                   message:"Faq added successfully"
                })
            })
            .catch((err) => {
@@ -74,10 +74,18 @@ const viewAll = async( req ,res )=>
         [
             {
                 $lookup:{
-                    from:"categories",
-                    localField:"catID",
+                    from:"faqcats",
+                    localField:"category_id",
                     foreignField: "_id",
                     as:"category_data"
+                }
+            },
+            {
+                $lookup:{
+                    from:"faqsubcats",
+                    localField:"subcategory_id",
+                    foreignField: "_id",
+                    as:"subcategory_data"
                 }
             },
             { $sort: { _id: -1 } },
@@ -90,7 +98,7 @@ const viewAll = async( req ,res )=>
     ).then((data)=>{
         res.status(200).json({
             status:true,
-            message:'Product Data Get Successfully',
+            message:'Faq Data Get Successfully',
             data:data
         })
     })
