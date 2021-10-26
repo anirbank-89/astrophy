@@ -12,6 +12,8 @@ const OrderhistoryController = require('../../Controller/Admin/Orderhistory');
 const ServicehistoryController = require('../../Controller/Admin/Servicehistory');
 const UserController = require('../../Controller/Auth/User');
 const MyaccountController = require('../../Controller/Admin/Myaccount');
+const CmsController = require('../../Controller/Admin/Cms');
+
 
 
 
@@ -108,6 +110,11 @@ router.get('/contactlist', UserController.ViewAllcontact);
 router.put('/update-profile/:id', upload.single("image"), MyaccountController.updateProfile);
 router.put('/update-password/:id', MyaccountController.updatePassword);
 router.get('/get-profile/:id', MyaccountController.getProfile);
+
+router.post('/cms/About',upload.single("image"),CmsController.createNUpdatecms)
+router.post('/cms/Blog',upload.single("image"),CmsController.createNUpdateblog)
+
+
 
 
 
