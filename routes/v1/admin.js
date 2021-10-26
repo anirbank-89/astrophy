@@ -15,6 +15,8 @@ const MyaccountController = require('../../Controller/Admin/Myaccount');
 const CmsController = require('../../Controller/Admin/Cms');
 const FaqcatController = require('../../Controller/Admin/Faqcategory');
 const FaqsubcatController = require('../../Controller/Admin/Faqsubcategory');
+const FaqController = require('../../Controller/Admin/Faq');
+
 
 
 
@@ -79,6 +81,12 @@ router.get('/faq/Category',FaqcatController.viewAll)
 router.put('/faq/Category/:id',FaqcatController.update)
 router.delete('/faq/Category/:id',FaqcatController.Delete)
 router.put('/faq/set-status/:id', FaqcatController.setStatus)
+
+router.post('/faq/Faq',FaqController.create)
+router.get('/faq/Faq',FaqController.viewAll)
+router.put('/faq/Faq/:id',FaqController.update)
+router.delete('/faq/Faq/:id',FaqController.Delete)
+router.put('/faq/Faq/:id',FaqController.setStatus)
 
 router.post('/faq/subcategory',FaqsubcatController.create)    // added by anirbank-93
 router.get('/faq/subcategory', FaqsubcatController.viewAll)   // added by anirbank-93

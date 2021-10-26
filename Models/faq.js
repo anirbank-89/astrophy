@@ -27,4 +27,4 @@ const FaqsubcatSchema = new mongoose.Schema({
 
 })
 
-module.exports = mongoose.model("Faqsubcat",FaqsubcatSchema)
+module.exports = mongoose.model("Faq",FaqsubcatSchema)
