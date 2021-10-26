@@ -113,6 +113,10 @@ router.get('/get-profile/:id', MyaccountController.getProfile);
 
 router.post('/cms/About',upload.single("image"),CmsController.createNUpdatecms)
 router.post('/cms/Blog',upload.single("image"),CmsController.createNUpdateblog)
+router.get('/cms/Blog',CmsController.viewAllBlog)
+router.get('/cms/About',CmsController.getAbout)
+
+
 
 
 

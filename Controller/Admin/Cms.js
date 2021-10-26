@@ -101,6 +101,32 @@ const createNUpdatecms = async (req,res)=>{
           }
 }
 
+const getAbout = async (req, res) => {
+    return About.aggregate(
+        [
+            {
+                $project: {
+                    _v: 0
+                }
+            }
+        ]
+    )
+        .then((docs) => {
+            res.status(200).json({
+                status: true,
+                message: "About get successfully",
+                data: docs
+            })
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err
+            })
+        })
+}
+
 const createNUpdateblog = async (req,res)=>{
     const v = new Validator(req.body,{
         heading:"required",
@@ -144,7 +170,36 @@ const createNUpdateblog = async (req,res)=>{
         
 }
 
+const viewAllBlog = async (req, res) => {
+    return Blog.aggregate(
+        [
+            { $sort: { _id: -1 } },
+            {
+                $project: {
+                    _v: 0
+                }
+            }
+        ]
+    )
+        .then((docs) => {
+            res.status(200).json({
+                status: true,
+                message: "Blog get successfully",
+                data: docs
+            })
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err
+            })
+        })
+}
+
 module.exports = {
     createNUpdatecms,
-    createNUpdateblog
+    createNUpdateblog,
+    viewAllBlog,
+    getAbout
 }
