@@ -138,6 +138,8 @@ router.get('/cms/About',CmsController.getAbout)
 router.post('/cms/Privacy',CmsController.createNUpdateprivacy)
 router.post('/cms/Cookie',CmsController.cookie)
 router.post('/cms/Return',CmsController.returnpolicy)
+router.post('/cms/Condition',CmsController.conditionpolicy)
+
 
 
 
