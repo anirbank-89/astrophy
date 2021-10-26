@@ -13,6 +13,10 @@ const ServicehistoryController = require('../../Controller/Admin/Servicehistory'
 const UserController = require('../../Controller/Auth/User');
 const MyaccountController = require('../../Controller/Admin/Myaccount');
 const CmsController = require('../../Controller/Admin/Cms');
+const FaqcatController = require('../../Controller/Admin/Faqcategory');
+const FaqsubcatController = require('../../Controller/Admin/Faqsubcategory');
+
+
 
 
 
@@ -69,6 +73,19 @@ router.get('/category/Category',CategoryController.viewAll)
 router.put('/category/Category/:id',CategoryController.update)
 router.delete('/category/Category/:id',CategoryController.Delete)
 router.put('/category/set-status/:id', CategoryController.setStatus)
+
+router.post('/faq/Category',FaqcatController.create)
+router.get('/faq/Category',FaqcatController.viewAll)
+router.put('/faq/Category/:id',FaqcatController.update)
+router.delete('/faq/Category/:id',FaqcatController.Delete)
+router.put('/faq/set-status/:id', FaqcatController.setStatus)
+
+router.post('/faq/subcategory',FaqsubcatController.create)    // added by anirbank-93
+router.get('/faq/subcategory', FaqsubcatController.viewAll)   // added by anirbank-93
+router.put('/faq/subcategory/:id', FaqsubcatController.update)// added by anirbank-93
+router.delete('/faq/subcategory/:id', FaqsubcatController.Delete)// added by anirbank-93
+router.put('/faq/subcategory/set-status/:id', FaqsubcatController.setStatus)// added by anirbank-93
+
 
 router.get('/userlist', UserSellersController.viewUserList)     // added by anirbank-93
 router.get('/viewuser/:id', UserSellersController.viewUser)     // added by anirbank-93
