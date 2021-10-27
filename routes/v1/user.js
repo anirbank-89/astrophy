@@ -138,6 +138,9 @@ router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
 router.post('/sellerbookhistoryrepo', SellerMyaccountController.reportViewAll);
 router.post('/servicereview', ServicereviewController.create);
 router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
+router.get('/sellercomission/:id',UserSellerController.sellercomHistory)
+router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingcomission)
+
 
 // router.post('/searchSevice', SeaarchController.serviceSearch);
 // router.post('/searchProduct', SeaarchController.productSearch);

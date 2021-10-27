@@ -19,7 +19,17 @@ const SellercomissionSchema = new mongoose.Schema({
     seller_commission:{
         type:Number,
         required:true
-    },    
+    }, 
+    image:{
+        type:String,
+        required:false,
+        default:null
+    },  
+    txnid:{
+        type:String,
+        required:false,
+        default:null
+    },   
     status:{
         type:Boolean,
         default:false

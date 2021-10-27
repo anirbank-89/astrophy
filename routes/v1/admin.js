@@ -142,7 +142,9 @@ router.get('/cms/Cookie',CmsController.getCookie)
 router.post('/cms/Return',CmsController.returnpolicy)
 router.get('/cms/Return',CmsController.getReturn)
 router.post('/cms/Condition',CmsController.conditionpolicy)
-router.get('/cms/Condition',CmsController.getCondition)
+router.get('/sellercomission/:id',UserSellersController.sellercomHistory)
+router.post('/paycomission',upload.single("image"),UserSellersController.paycomsion)
+
 
 
 

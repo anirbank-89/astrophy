@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var User = require("../../Models/user");
 var Shop = require("../../Models/shop");
 var ShopServices = require('../../Models/shop_service');
+const Servicecommission = require("../../Models/servicecommission");
 
 const { Validator } = require('node-input-validator');
 // const { stringify } = require('uuid');
@@ -99,8 +100,85 @@ const viewSellerList = async (req,res)=>{
         });
 }
 
+const sellercomHistory = async (req, res) => {
+    return Servicecommission.aggregate([
+        {
+            $match: { seller_id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+          },
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+      {
+        $lookup: {
+          from: "servicecheckouts",
+          localField: "order_id",
+          foreignField: "_id",
+          as: "booking_data",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "seller_id",
+          foreignField: "_id",
+          as: "seller_data",
+        },
+      },
+      { $sort: { _id: -1 } },
+    ])
+      .then((data) => {
+        if (data != null && data != "") {
+          res.status(200).send({
+            status: true,
+            data: data,
+            error: null,
+            message: "Comission history Get Successfully",
+          });
+        } else {
+          res.status(400).send({
+            status: false,
+            data: null,
+            error: "No Data",
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          status: false,
+          data: null,
+          error: err,
+          message: "Server Error",
+        });
+      });
+  };
+
+  const totalandpendingcomission = async (req, res) => {
+    let com = await Servicecommission.find({ seller_id: { $in: [mongoose.Types.ObjectId(req.params.id)] } }).exec();
+    // console.log(com)
+    let total_com = 0;
+    let settled_com = 0;
+
+    com.forEach(element=>{
+        total_com = parseInt(total_com)+parseInt(element.seller_commission);
+        if(element.status === true)
+        {
+            settled_com = parseInt(settled_com)+parseInt(element.seller_commission);
+        }
+    })
+
+    return res.send({
+        status:true,
+        total_comission:total_com,
+        setteld_commission:settled_com
+    })
+  };
+
 module.exports = {
     viewUser,
     viewUserList,
-    viewSellerList
+    viewSellerList,
+    sellercomHistory,
+    totalandpendingcomission
 }
