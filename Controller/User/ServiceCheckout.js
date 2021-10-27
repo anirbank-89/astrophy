@@ -3,6 +3,7 @@ const ServiceCart = require("../../Models/servicecart");
 //var Coupon = require("../../Models/coupon");
 const ServiceCheckout = require("../../Models/servicecheckout");
 const Servicecommission = require("../../Models/servicecommission");
+var SubscribedBy = require("../../Models/subscr_purchase");
 
 const { Validator } = require("node-input-validator");
 
@@ -49,18 +50,27 @@ const create = async (req, res) => {
     paymenttype: req.body.paymenttype,
   };
 
-
+  let subDataf = await SubscribedBy.findOne({userid:mongoose.Types.ObjectId(req.body.seller_id),status:true}).exec();
+  
   let sellerCom = 0;
 
+  let comType = subDataf.comission_type
 
-  if(req.body.commision_type=="Flat comission")
+  let comValue = subDataf.seller_comission
+
+
+
+  if(subDataf.comission_type=="Flat comission")
   {
-    sellerCom = req.body.commision_value
+    sellerCom = subDataf.seller_comission
   }
   else
   {
-    sellerCom = (req.body.total * req.body.commision_value )/100;
+    sellerCom = (req.body.total * subDataf.seller_comission )/100;
   }
+
+  // console.log(sellerCom);
+  // return false;
   
   //  if (
   //   req.body.coupon_id != "" &&
@@ -126,11 +136,14 @@ const create = async (req, res) => {
         _id: mongoose.Types.ObjectId(),
         order_id: mongoose.Types.ObjectId(data._id),
         seller_id: mongoose.Types.ObjectId(req.body.seller_id),
-        commision_type: req.body.commision_type,        
-        commision_value: req.body.commision_value,
+        commision_type: comType,        
+        commision_value: comValue,
         price: req.body.total,
         seller_commission: sellerCom        
       };
+
+  //     console.log(dataComision);
+  // return false;
       const saveCom = new Servicecommission(dataComision);
       saveCom.save()
 
