@@ -257,6 +257,30 @@ const createNUpdateprivacy = async (req, res) => {
   }
 };
 
+const getPrivacy = async (req, res) => {
+    return Privacy.aggregate([
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+    ])
+      .then((docs) => {
+        res.status(200).json({
+          status: true,
+          message: "Privacy get successfully",
+          data: docs,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again.",
+          error: err,
+        });
+      });
+  };
+
 const cookie = async (req, res) => {
   const v = new Validator(req.body, {
     content1: "required",
@@ -325,6 +349,30 @@ const cookie = async (req, res) => {
     );
   }
 };
+
+const getCookie = async (req, res) => {
+    return Cookie.aggregate([
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+    ])
+      .then((docs) => {
+        res.status(200).json({
+          status: true,
+          message: "Cookie get successfully",
+          data: docs,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again.",
+          error: err,
+        });
+      });
+  };
 
 const returnpolicy = async (req, res) => {
     const v = new Validator(req.body, {
@@ -395,6 +443,30 @@ const returnpolicy = async (req, res) => {
     }
   };
 
+  const getReturn = async (req, res) => {
+    return Return.aggregate([
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+    ])
+      .then((docs) => {
+        res.status(200).json({
+          status: true,
+          message: "Return get successfully",
+          data: docs,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again.",
+          error: err,
+        });
+      });
+  }; 
+
   const conditionpolicy = async (req, res) => {
     const v = new Validator(req.body, {
       content1: "required",
@@ -464,6 +536,30 @@ const returnpolicy = async (req, res) => {
     }
   };
 
+  const getCondition = async (req, res) => {
+    return Condition.aggregate([
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+    ])
+      .then((docs) => {
+        res.status(200).json({
+          status: true,
+          message: "Condition get successfully",
+          data: docs,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again.",
+          error: err,
+        });
+      });
+  }; 
+
 module.exports = {
   createNUpdatecms,
   createNUpdateblog,
@@ -472,5 +568,9 @@ module.exports = {
   createNUpdateprivacy,
   cookie,
   returnpolicy,
-  conditionpolicy
+  conditionpolicy,
+  getPrivacy,
+  getCookie,
+  getCondition,
+  getReturn
 };

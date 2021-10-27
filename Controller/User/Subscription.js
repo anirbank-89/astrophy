@@ -87,6 +87,7 @@ const newSubscription = async (req, res) => {
       _id: mongoose.Types.ObjectId(),
       userid: mongoose.Types.ObjectId(req.body.userid),
       subscr_id: mongoose.Types.ObjectId(req.body.subscr_id),
+      comission_type:req.body.comission_type,
       seller_comission: req.body.seller_comission,
       price: req.body.price,
       subscribed_on: moment.tz(Date.now(), "Asia/Kolkata"),

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const ServiceCart = require("../../Models/servicecart");
 //var Coupon = require("../../Models/coupon");
 const ServiceCheckout = require("../../Models/servicecheckout");
+const Servicecommission = require("../../Models/servicecommission");
 
 const { Validator } = require("node-input-validator");
 
@@ -47,6 +48,19 @@ const create = async (req, res) => {
     zip: req.body.zip,
     paymenttype: req.body.paymenttype,
   };
+
+
+  let sellerCom = 0;
+
+
+  if(req.body.commision_type=="Flat comission")
+  {
+    sellerCom = req.body.commision_value
+  }
+  else
+  {
+    sellerCom = (req.body.total * req.body.commision_value )/100;
+  }
   
   //  if (
   //   req.body.coupon_id != "" &&
@@ -107,6 +121,18 @@ const create = async (req, res) => {
           // console.log(err);
         }
       );
+
+      let dataComision = {
+        _id: mongoose.Types.ObjectId(),
+        order_id: mongoose.Types.ObjectId(data._id),
+        seller_id: mongoose.Types.ObjectId(req.body.seller_id),
+        commision_type: req.body.commision_type,        
+        commision_value: req.body.commision_value,
+        price: req.body.total,
+        seller_commission: sellerCom        
+      };
+      const saveCom = new Servicecommission(dataComision);
+      saveCom.save()
 
       res.status(200).json({
         status: true,

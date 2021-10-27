@@ -136,9 +136,14 @@ router.post('/cms/Blog',upload.single("image"),CmsController.createNUpdateblog)
 router.get('/cms/Blog',CmsController.viewAllBlog)
 router.get('/cms/About',CmsController.getAbout)
 router.post('/cms/Privacy',CmsController.createNUpdateprivacy)
+router.get('/cms/Privacy',CmsController.getPrivacy)
 router.post('/cms/Cookie',CmsController.cookie)
+router.get('/cms/Cookie',CmsController.getCookie)
 router.post('/cms/Return',CmsController.returnpolicy)
+router.get('/cms/Return',CmsController.getReturn)
 router.post('/cms/Condition',CmsController.conditionpolicy)
+router.get('/cms/Condition',CmsController.getCondition)
+
 
 
 
