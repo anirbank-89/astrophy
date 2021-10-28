@@ -60,6 +60,13 @@ const create = async (req, res) => {
     dataSubmit.discount_percent = req.body.discount_percent;
   }
   if (
+    req.body.coupon_type != "" &&
+    req.body.coupon_type != null &&
+    typeof req.body.coupon_type != undefined
+  ) {
+    dataSubmit.coupon_type = req.body.coupon_type;
+  }
+  if (
     req.body.coupon != "" &&
     req.body.coupon != null &&
     typeof req.body.coupon != undefined

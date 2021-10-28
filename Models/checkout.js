@@ -18,6 +18,10 @@ const CheckoutSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
+    coupon_type:{
+        type:Number,
+        required:false
+    },
     discount_percent:{
         type:Number,
         required:false
