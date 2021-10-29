@@ -83,6 +83,14 @@ const viewSingleProduct = async (req,res)=>{
                 }
             },
             {
+                $lookup:{
+                    from:"wishlists",
+                    localField:"_id",
+                    foreignField: "prod_id",
+                    as:"wishlist_data",
+                }
+            },
+            {
                 $addFields: {
                     avgRating: {
                         $avg: {
