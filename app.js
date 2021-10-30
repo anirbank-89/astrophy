@@ -36,17 +36,18 @@ app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
 
-
+app.use(express.static(path.join(__dirname, "build")));
 app.use("/uploads",express.static(path.join(__dirname, 'uploads')));
-// app.use(express.static(path.join(__dirname, 'build')));
-// app.use((req, res, next) => {
-//     res.sendFile(path.join(__dirname, "build", "index.html"));
-// });
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use((req, res, next) => {
-    res.sendFile(path.join(__dirname, "public"));
-});
+app.use(function(req, res, next) {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
+    // next(createError(404));
+  });
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// app.use((req, res, next) => {
+//     res.sendFile(path.join(__dirname, "public"));
+// });
 app.use(function(req, res, next) {
     next(createError(404));
   });
