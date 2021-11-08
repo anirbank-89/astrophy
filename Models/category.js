@@ -9,6 +9,10 @@ const CategorySchema = new mongoose.Schema({
         required:true,
         unique:true
     }, //
+    content:{
+        type:String,
+        required:true,
+    }, //
     status:{
         type:Boolean,
         default:true

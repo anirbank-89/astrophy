@@ -12,7 +12,8 @@ function createtoken(data) {
 
 const create = async (req, res) => {
     const v = new Validator(req.body, {
-        name: "required"
+        name: "required",
+        content:"required"
     });
 
     let matched = await v.check().then((val) => val)
@@ -25,7 +26,8 @@ const create = async (req, res) => {
 
     let categoryDate = {
         _id: mongoose.Types.ObjectId(),
-        name: req.body.name
+        name: req.body.name,
+        content:req.body.name
     }
 
     const category = await new Category(categoryDate)
