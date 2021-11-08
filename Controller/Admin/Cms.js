@@ -671,7 +671,7 @@ const returnpolicy = async (req, res) => {
       content1: req.body.content1,
     };
     if (req.file != null && req.file != "" && typeof req.file != "undefined") {
-      let image_url = await Upload.uploadFile(req, "associate");
+      let image_url = await Upload.uploadFile(req, "blog");
       cms.image = image_url;
     }
     const cmsdt = new AssoSchema(cms);
@@ -730,7 +730,7 @@ const returnpolicy = async (req, res) => {
       content1: req.body.content1,
     };
     if (req.file != null && req.file != "" && typeof req.file != "undefined") {
-      let image_url = await Upload.uploadFile(req, "associate");
+      let image_url = await Upload.uploadFile(req, "blog");
       updateObj.image = image_url;
     }
     AssoSchema.findOneAndUpdate(
