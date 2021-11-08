@@ -7,6 +7,8 @@ var Cookie = require("../../Models/cookie");
 var Return = require("../../Models/return");
 var Condition = require("../../Models/condition");
 var SafetySchema = require("../../Models/safetyguide");
+var AssoSchema = require("../../Models/associate");
+
 
 const { Validator } = require("node-input-validator");
 
@@ -653,6 +655,108 @@ const returnpolicy = async (req, res) => {
       });
   }; 
 
+  const createassociate = async (req, res) => {
+    const v = new Validator(req.body, {
+      heading: "required",
+      content1: "required",
+    });
+    let matched = await v.check().then((val) => val);
+    if (!matched) {
+      res.status(200).send({ status: false, error: v.errors });
+    }
+  
+    let cms = {
+      _id: mongoose.Types.ObjectId(),
+      heading: req.body.heading,
+      content1: req.body.content1,
+    };
+    if (req.file != null && req.file != "" && typeof req.file != "undefined") {
+      let image_url = await Upload.uploadFile(req, "associate");
+      cms.image = image_url;
+    }
+    const cmsdt = new AssoSchema(cms);
+  
+    cmsdt
+      .save()
+      .then((docs) => {
+        res.status(200).json({
+          status: true,
+          success: true,
+          message: "Associate successfully created",
+          data: docs,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again",
+          error: err,
+        });
+      });
+  };
+  
+  const viewAllAsso = async (req, res) => {
+    return AssoSchema.aggregate([
+      { $sort: { _id: -1 } },
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+    ])
+      .then((docs) => {
+        res.status(200).json({
+          status: true,
+          message: "Associates get successfully",
+          data: docs,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again.",
+          error: err,
+        });
+      });
+  };
+
+  const updateassociate = async (req, res) => {
+    const v = new Validator(req.body, {
+      heading: "required",
+      content1: "required",
+    });
+    let updateObj = {
+      heading: req.body.heading,
+      content1: req.body.content1,
+    };
+    if (req.file != null && req.file != "" && typeof req.file != "undefined") {
+      let image_url = await Upload.uploadFile(req, "associate");
+      updateObj.image = image_url;
+    }
+    AssoSchema.findOneAndUpdate(
+      { _id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
+      updateObj,
+      { new: true },
+      // req.body,
+      async (err, docs) => {
+        if (err) {
+          res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            error: err,
+          });
+        } else {
+          res.status(200).json({
+            status: true,
+            message: "Associate updated successfully!",
+            data: await docs,
+          });
+        }
+      }
+    );
+  };
+  
+
 module.exports = {
   createNUpdatecms,
   createNUpdateblog,
@@ -667,5 +771,8 @@ module.exports = {
   getCondition,
   getReturn,
   saftyguide,
-  getsaftyguide
+  getsaftyguide,
+  createassociate,
+  viewAllAsso,
+  updateassociate
 };
