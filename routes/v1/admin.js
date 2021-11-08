@@ -151,6 +151,10 @@ router.put('/cms/Associates/:id',upload.single("image"),CmsController.updateasso
 router.delete('/cms/Associates/:id',CmsController.Deleteassociate)
 router.get('/sellercomission/:id',UserSellersController.sellercomHistory)
 router.post('/paycomission',upload.single("image"),UserSellersController.paycomsion)
+router.post('/cms/Banner',upload.single("image"),CmsController.createBanner)
+router.get('/cms/Banner',CmsController.viewAllBanner)
+router.put('/cms/Banner/:id',upload.single("image"),CmsController.updateBanner)
+router.delete('/cms/Banner/:id',CmsController.Deletebanner)
 
 
 

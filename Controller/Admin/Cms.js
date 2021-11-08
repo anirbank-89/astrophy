@@ -8,6 +8,8 @@ var Return = require("../../Models/return");
 var Condition = require("../../Models/condition");
 var SafetySchema = require("../../Models/safetyguide");
 var AssoSchema = require("../../Models/associate");
+var Banner = require("../../Models/banner");
+
 
 
 const { Validator } = require("node-input-validator");
@@ -775,6 +777,109 @@ const returnpolicy = async (req, res) => {
         })
 
 }
+
+const createBanner = async (req, res) => {
+  let cms = {
+    _id: mongoose.Types.ObjectId()
+  };
+  if (req.file != null && req.file != "" && typeof req.file != "undefined") {
+    let image_url = await Upload.uploadFile(req, "banner");
+    cms.image = image_url;
+  }
+  const cmsdt = new Banner(cms);
+
+  cmsdt
+    .save()
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        success: true,
+        message: "Banner Saved Successfully",
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again",
+        error: err,
+      });
+    });
+};
+
+const viewAllBanner = async (req, res) => {
+  return Banner.aggregate([
+    { $sort: { _id: -1 } },
+    {
+      $project: {
+        _v: 0,
+      },
+    },
+  ])
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        message: "Banner get successfully",
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err,
+      });
+    });
+};
+
+const updateBanner = async (req, res) => {
+  let updateObj = {};
+  if (req.file != null && req.file != "" && typeof req.file != "undefined") {
+    let image_url = await Upload.uploadFile(req, "banner");
+    updateObj.image = image_url;
+  }
+  Banner.findOneAndUpdate(
+    { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+    updateObj,
+    { new: true },
+    // req.body,
+    async (err, docs) => {
+      if (err) {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again.",
+          error: err,
+        });
+      } else {
+        res.status(200).json({
+          status: true,
+          message: "Banner updated successfully!",
+          data: await docs,
+        });
+      }
+    }
+  );
+};
+
+const Deletebanner = async (req, res) => {
+  return Banner.remove(
+      { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } })
+      .then((data) => {
+          return res.status(200).json({
+              status: true,
+              message: 'Banner delete successfully',
+              data: data
+          });
+      })
+      .catch((err) => {
+          res.status(500).json({
+              status: false,
+              message: 'Server error. Please try again.',
+              error: error,
+          });
+      })
+
+}
   
 
 module.exports = {
@@ -795,5 +900,9 @@ module.exports = {
   createassociate,
   viewAllAsso,
   updateassociate,
-  Deleteassociate
+  Deleteassociate,
+  createBanner,
+  viewAllBanner,
+  updateBanner,
+  Deletebanner
 };
