@@ -734,7 +734,7 @@ const returnpolicy = async (req, res) => {
       updateObj.image = image_url;
     }
     AssoSchema.findOneAndUpdate(
-      { _id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
+      { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
       updateObj,
       { new: true },
       // req.body,
