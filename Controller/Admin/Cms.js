@@ -6,7 +6,7 @@ var Upload = require("../../service/upload");
 var Cookie = require("../../Models/cookie");
 var Return = require("../../Models/return");
 var Condition = require("../../Models/condition");
-
+var SafetySchema = require("../../Models/safetyguide");
 
 const { Validator } = require("node-input-validator");
 
@@ -560,6 +560,99 @@ const returnpolicy = async (req, res) => {
       });
   }; 
 
+  const saftyguide = async (req, res) => {
+    const v = new Validator(req.body, {
+      content1: "required",
+    });
+    let matched = await v.check().then((val) => val);
+    if (!matched) {
+      res.status(200).send({ status: false, error: v.errors });
+    }
+  
+    console.log(req.body);
+    // return false;
+    let cmsData = await SafetySchema.find().exec();
+    console.log(cmsData.length);
+    // return false;
+    //   .then((data)=>{
+    if (cmsData.length == 0) {
+      let cms = {
+        _id: mongoose.Types.ObjectId(),
+        content1: req.body.content1,
+      };
+  
+      const cmsdt = new SafetySchema(cms);
+  
+      cmsdt
+        .save()
+        .then((docs) => {
+          res.status(200).json({
+            status: true,
+            success: true,
+            message: "Safety Guide successfully created",
+            data: docs,
+          });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            status: false,
+            message: "Server error. Please try again",
+            error: err,
+          });
+        });
+    } else {
+      let updateObj = {
+        content1: req.body.content1,
+      };
+  
+      SafetySchema.findOneAndUpdate(
+        { _id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
+        updateObj,
+        { new: true },
+        // req.body,
+        async (err, docs) => {
+          if (err) {
+            res.status(500).json({
+              status: false,
+              message: "Server error. Please try again.",
+              error: err,
+            });
+          } else {
+            res.status(200).json({
+              status: true,
+              message: "Safety Guide updated successfully!",
+              data: await docs,
+            });
+          }
+        }
+      );
+    }
+  };
+
+  const getsaftyguide = async (req, res) => {
+    return SafetySchema.aggregate([
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+    ])
+      .then((docs) => {
+        res.status(200).json({
+          status: true,
+          message: "Safety Guide get successfully",
+          data: docs,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again.",
+          error: err,
+        });
+      });
+  }; 
+
 module.exports = {
   createNUpdatecms,
   createNUpdateblog,
@@ -572,5 +665,7 @@ module.exports = {
   getPrivacy,
   getCookie,
   getCondition,
-  getReturn
+  getReturn,
+  saftyguide,
+  getsaftyguide
 };
