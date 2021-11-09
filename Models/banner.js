@@ -3,7 +3,19 @@ var moment = require("moment-timezone");
 var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 
 const BannerSchema = new mongoose.Schema({
-    _id:mongoose.Schema.Types.ObjectId,   
+    _id:mongoose.Schema.Types.ObjectId,
+    name:{
+        type:String,
+        required:true
+    },
+    description:{
+        type:String,
+        required:true
+    }, 
+    link:{
+        type:String,
+        required:true
+    },  
     image:{
         type:String
     },

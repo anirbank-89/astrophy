@@ -780,7 +780,10 @@ const returnpolicy = async (req, res) => {
 
 const createBanner = async (req, res) => {
   let cms = {
-    _id: mongoose.Types.ObjectId()
+    _id: mongoose.Types.ObjectId(),
+    name:req.body.name,
+    description:req.body.description,
+    link:req.body.link
   };
   if (req.file != null && req.file != "" && typeof req.file != "undefined") {
     let image_url = await Upload.uploadFile(req, "banner");
@@ -833,7 +836,11 @@ const viewAllBanner = async (req, res) => {
 };
 
 const updateBanner = async (req, res) => {
-  let updateObj = {};
+  let updateObj = {
+    name:req.body.name,
+    description:req.body.description,
+    link:req.body.link
+  };
   if (req.file != null && req.file != "" && typeof req.file != "undefined") {
     let image_url = await Upload.uploadFile(req, "banner");
     updateObj.image = image_url;
