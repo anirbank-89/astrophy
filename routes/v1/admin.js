@@ -155,6 +155,8 @@ router.post('/cms/Banner',upload.single("image"),CmsController.createBanner)
 router.get('/cms/Banner',CmsController.viewAllBanner)
 router.put('/cms/Banner/:id',upload.single("image"),CmsController.updateBanner)
 router.delete('/cms/Banner/:id',CmsController.Deletebanner)
+router.put('/cms/Banner/setStatus/:id',CmsController.setBannerStatus)
+
 
 
 
