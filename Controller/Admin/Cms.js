@@ -9,7 +9,7 @@ var Condition = require("../../Models/condition");
 var SafetySchema = require("../../Models/safetyguide");
 var AssoSchema = require("../../Models/associate");
 var Banner = require("../../Models/banner");
-
+var Achievements = require('../../Models/achievements');
 
 
 const { Validator } = require("node-input-validator");
@@ -262,28 +262,28 @@ const createNUpdateprivacy = async (req, res) => {
 };
 
 const getPrivacy = async (req, res) => {
-    return Privacy.aggregate([
-      {
-        $project: {
-          _v: 0,
-        },
+  return Privacy.aggregate([
+    {
+      $project: {
+        _v: 0,
       },
-    ])
-      .then((docs) => {
-        res.status(200).json({
-          status: true,
-          message: "Privacy get successfully",
-          data: docs,
-        });
-      })
-      .catch((err) => {
-        res.status(500).json({
-          status: false,
-          message: "Server error. Please try again.",
-          error: err,
-        });
+    },
+  ])
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        message: "Privacy get successfully",
+        data: docs,
       });
-  };
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err,
+      });
+    });
+};
 
 const cookie = async (req, res) => {
   const v = new Validator(req.body, {
@@ -355,336 +355,59 @@ const cookie = async (req, res) => {
 };
 
 const getCookie = async (req, res) => {
-    return Cookie.aggregate([
-      {
-        $project: {
-          _v: 0,
-        },
+  return Cookie.aggregate([
+    {
+      $project: {
+        _v: 0,
       },
-    ])
-      .then((docs) => {
-        res.status(200).json({
-          status: true,
-          message: "Cookie get successfully",
-          data: docs,
-        });
-      })
-      .catch((err) => {
-        res.status(500).json({
-          status: false,
-          message: "Server error. Please try again.",
-          error: err,
-        });
+    },
+  ])
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        message: "Cookie get successfully",
+        data: docs,
       });
-  };
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err,
+      });
+    });
+};
 
 const returnpolicy = async (req, res) => {
-    const v = new Validator(req.body, {
-      content1: "required",
-    });
-    let matched = await v.check().then((val) => val);
-    if (!matched) {
-      res.status(200).send({ status: false, error: v.errors });
-    }
-  
-    console.log(req.body);
-    // return false;
-    let cmsData = await Return.find().exec();
-    console.log(cmsData.length);
-    // return false;
-    //   .then((data)=>{
-    if (cmsData.length == 0) {
-      let cms = {
-        _id: mongoose.Types.ObjectId(),
-        content1: req.body.content1,
-      };
-  
-      const cmsdt = new Return(cms);
-  
-      cmsdt
-        .save()
-        .then((docs) => {
-          res.status(200).json({
-            status: true,
-            success: true,
-            message: "Return Policy successfully created",
-            data: docs,
-          });
-        })
-        .catch((err) => {
-          res.status(500).json({
-            status: false,
-            message: "Server error. Please try again",
-            error: err,
-          });
-        });
-    } else {
-      let updateObj = {
-        content1: req.body.content1,
-      };
-  
-      Return.findOneAndUpdate(
-        { _id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
-        updateObj,
-        { new: true },
-        // req.body,
-        async (err, docs) => {
-          if (err) {
-            res.status(500).json({
-              status: false,
-              message: "Server error. Please try again.",
-              error: err,
-            });
-          } else {
-            res.status(200).json({
-              status: true,
-              message: "Return Policy updated successfully!",
-              data: await docs,
-            });
-          }
-        }
-      );
-    }
-  };
+  const v = new Validator(req.body, {
+    content1: "required",
+  });
+  let matched = await v.check().then((val) => val);
+  if (!matched) {
+    res.status(200).send({ status: false, error: v.errors });
+  }
 
-  const getReturn = async (req, res) => {
-    return Return.aggregate([
-      {
-        $project: {
-          _v: 0,
-        },
-      },
-    ])
-      .then((docs) => {
-        res.status(200).json({
-          status: true,
-          message: "Return get successfully",
-          data: docs,
-        });
-      })
-      .catch((err) => {
-        res.status(500).json({
-          status: false,
-          message: "Server error. Please try again.",
-          error: err,
-        });
-      });
-  }; 
-
-  const conditionpolicy = async (req, res) => {
-    const v = new Validator(req.body, {
-      content1: "required",
-    });
-    let matched = await v.check().then((val) => val);
-    if (!matched) {
-      res.status(200).send({ status: false, error: v.errors });
-    }
-  
-    console.log(req.body);
-    // return false;
-    let cmsData = await Condition.find().exec();
-    console.log(cmsData.length);
-    // return false;
-    //   .then((data)=>{
-    if (cmsData.length == 0) {
-      let cms = {
-        _id: mongoose.Types.ObjectId(),
-        content1: req.body.content1,
-      };
-  
-      const cmsdt = new Condition(cms);
-  
-      cmsdt
-        .save()
-        .then((docs) => {
-          res.status(200).json({
-            status: true,
-            success: true,
-            message: "Condition Policy successfully created",
-            data: docs,
-          });
-        })
-        .catch((err) => {
-          res.status(500).json({
-            status: false,
-            message: "Server error. Please try again",
-            error: err,
-          });
-        });
-    } else {
-      let updateObj = {
-        content1: req.body.content1,
-      };
-  
-      Condition.findOneAndUpdate(
-        { _id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
-        updateObj,
-        { new: true },
-        // req.body,
-        async (err, docs) => {
-          if (err) {
-            res.status(500).json({
-              status: false,
-              message: "Server error. Please try again.",
-              error: err,
-            });
-          } else {
-            res.status(200).json({
-              status: true,
-              message: "Condition Policy updated successfully!",
-              data: await docs,
-            });
-          }
-        }
-      );
-    }
-  };
-
-  const getCondition = async (req, res) => {
-    return Condition.aggregate([
-      {
-        $project: {
-          _v: 0,
-        },
-      },
-    ])
-      .then((docs) => {
-        res.status(200).json({
-          status: true,
-          message: "Condition get successfully",
-          data: docs,
-        });
-      })
-      .catch((err) => {
-        res.status(500).json({
-          status: false,
-          message: "Server error. Please try again.",
-          error: err,
-        });
-      });
-  }; 
-
-  const saftyguide = async (req, res) => {
-    const v = new Validator(req.body, {
-      content1: "required",
-    });
-    let matched = await v.check().then((val) => val);
-    if (!matched) {
-      res.status(200).send({ status: false, error: v.errors });
-    }
-  
-    console.log(req.body);
-    // return false;
-    let cmsData = await SafetySchema.find().exec();
-    console.log(cmsData.length);
-    // return false;
-    //   .then((data)=>{
-    if (cmsData.length == 0) {
-      let cms = {
-        _id: mongoose.Types.ObjectId(),
-        content1: req.body.content1,
-      };
-  
-      const cmsdt = new SafetySchema(cms);
-  
-      cmsdt
-        .save()
-        .then((docs) => {
-          res.status(200).json({
-            status: true,
-            success: true,
-            message: "Safety Guide successfully created",
-            data: docs,
-          });
-        })
-        .catch((err) => {
-          res.status(500).json({
-            status: false,
-            message: "Server error. Please try again",
-            error: err,
-          });
-        });
-    } else {
-      let updateObj = {
-        content1: req.body.content1,
-      };
-  
-      SafetySchema.findOneAndUpdate(
-        { _id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
-        updateObj,
-        { new: true },
-        // req.body,
-        async (err, docs) => {
-          if (err) {
-            res.status(500).json({
-              status: false,
-              message: "Server error. Please try again.",
-              error: err,
-            });
-          } else {
-            res.status(200).json({
-              status: true,
-              message: "Safety Guide updated successfully!",
-              data: await docs,
-            });
-          }
-        }
-      );
-    }
-  };
-
-  const getsaftyguide = async (req, res) => {
-    return SafetySchema.aggregate([
-      {
-        $project: {
-          _v: 0,
-        },
-      },
-    ])
-      .then((docs) => {
-        res.status(200).json({
-          status: true,
-          message: "Safety Guide get successfully",
-          data: docs,
-        });
-      })
-      .catch((err) => {
-        res.status(500).json({
-          status: false,
-          message: "Server error. Please try again.",
-          error: err,
-        });
-      });
-  }; 
-
-  const createassociate = async (req, res) => {
-    const v = new Validator(req.body, {
-      heading: "required",
-      content1: "required",
-    });
-    let matched = await v.check().then((val) => val);
-    if (!matched) {
-      res.status(200).send({ status: false, error: v.errors });
-    }
-  
+  console.log(req.body);
+  // return false;
+  let cmsData = await Return.find().exec();
+  console.log(cmsData.length);
+  // return false;
+  //   .then((data)=>{
+  if (cmsData.length == 0) {
     let cms = {
       _id: mongoose.Types.ObjectId(),
-      heading: req.body.heading,
       content1: req.body.content1,
     };
-    if (req.file != null && req.file != "" && typeof req.file != "undefined") {
-      let image_url = await Upload.uploadFile(req, "blog");
-      cms.image = image_url;
-    }
-    const cmsdt = new AssoSchema(cms);
-  
+
+    const cmsdt = new Return(cms);
+
     cmsdt
       .save()
       .then((docs) => {
         res.status(200).json({
           status: true,
           success: true,
-          message: "Associate successfully created",
+          message: "Return Policy successfully created",
           data: docs,
         });
       })
@@ -695,48 +418,13 @@ const returnpolicy = async (req, res) => {
           error: err,
         });
       });
-  };
-  
-  const viewAllAsso = async (req, res) => {
-    return AssoSchema.aggregate([
-      { $sort: { _id: -1 } },
-      {
-        $project: {
-          _v: 0,
-        },
-      },
-    ])
-      .then((docs) => {
-        res.status(200).json({
-          status: true,
-          message: "Associates get successfully",
-          data: docs,
-        });
-      })
-      .catch((err) => {
-        res.status(500).json({
-          status: false,
-          message: "Server error. Please try again.",
-          error: err,
-        });
-      });
-  };
-
-  const updateassociate = async (req, res) => {
-    const v = new Validator(req.body, {
-      heading: "required",
-      content1: "required",
-    });
+  } else {
     let updateObj = {
-      heading: req.body.heading,
       content1: req.body.content1,
     };
-    if (req.file != null && req.file != "" && typeof req.file != "undefined") {
-      let image_url = await Upload.uploadFile(req, "blog");
-      updateObj.image = image_url;
-    }
-    AssoSchema.findOneAndUpdate(
-      { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+
+    Return.findOneAndUpdate(
+      { _id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
       updateObj,
       { new: true },
       // req.body,
@@ -750,40 +438,352 @@ const returnpolicy = async (req, res) => {
         } else {
           res.status(200).json({
             status: true,
-            message: "Associate updated successfully!",
+            message: "Return Policy updated successfully!",
             data: await docs,
           });
         }
       }
     );
-  };
+  }
+};
 
-  const Deleteassociate = async (req, res) => {
-    return AssoSchema.remove(
-        { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } })
-        .then((data) => {
-            return res.status(200).json({
-                status: true,
-                message: 'Associate delete successfully',
-                data: data
-            });
-        })
-        .catch((err) => {
-            res.status(500).json({
-                status: false,
-                message: 'Server error. Please try again.',
-                error: error,
-            });
-        })
+const getReturn = async (req, res) => {
+  return Return.aggregate([
+    {
+      $project: {
+        _v: 0,
+      },
+    },
+  ])
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        message: "Return get successfully",
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err,
+      });
+    });
+};
+
+const conditionpolicy = async (req, res) => {
+  const v = new Validator(req.body, {
+    content1: "required",
+  });
+  let matched = await v.check().then((val) => val);
+  if (!matched) {
+    res.status(200).send({ status: false, error: v.errors });
+  }
+
+  console.log(req.body);
+  // return false;
+  let cmsData = await Condition.find().exec();
+  console.log(cmsData.length);
+  // return false;
+  //   .then((data)=>{
+  if (cmsData.length == 0) {
+    let cms = {
+      _id: mongoose.Types.ObjectId(),
+      content1: req.body.content1,
+    };
+
+    const cmsdt = new Condition(cms);
+
+    cmsdt
+      .save()
+      .then((docs) => {
+        res.status(200).json({
+          status: true,
+          success: true,
+          message: "Condition Policy successfully created",
+          data: docs,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again",
+          error: err,
+        });
+      });
+  } else {
+    let updateObj = {
+      content1: req.body.content1,
+    };
+
+    Condition.findOneAndUpdate(
+      { _id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
+      updateObj,
+      { new: true },
+      // req.body,
+      async (err, docs) => {
+        if (err) {
+          res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            error: err,
+          });
+        } else {
+          res.status(200).json({
+            status: true,
+            message: "Condition Policy updated successfully!",
+            data: await docs,
+          });
+        }
+      }
+    );
+  }
+};
+
+const getCondition = async (req, res) => {
+  return Condition.aggregate([
+    {
+      $project: {
+        _v: 0,
+      },
+    },
+  ])
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        message: "Condition get successfully",
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err,
+      });
+    });
+};
+
+const saftyguide = async (req, res) => {
+  const v = new Validator(req.body, {
+    content1: "required",
+  });
+  let matched = await v.check().then((val) => val);
+  if (!matched) {
+    res.status(200).send({ status: false, error: v.errors });
+  }
+
+  console.log(req.body);
+  // return false;
+  let cmsData = await SafetySchema.find().exec();
+  console.log(cmsData.length);
+  // return false;
+  //   .then((data)=>{
+  if (cmsData.length == 0) {
+    let cms = {
+      _id: mongoose.Types.ObjectId(),
+      content1: req.body.content1,
+    };
+
+    const cmsdt = new SafetySchema(cms);
+
+    cmsdt
+      .save()
+      .then((docs) => {
+        res.status(200).json({
+          status: true,
+          success: true,
+          message: "Safety Guide successfully created",
+          data: docs,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again",
+          error: err,
+        });
+      });
+  } else {
+    let updateObj = {
+      content1: req.body.content1,
+    };
+
+    SafetySchema.findOneAndUpdate(
+      { _id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
+      updateObj,
+      { new: true },
+      // req.body,
+      async (err, docs) => {
+        if (err) {
+          res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            error: err,
+          });
+        } else {
+          res.status(200).json({
+            status: true,
+            message: "Safety Guide updated successfully!",
+            data: await docs,
+          });
+        }
+      }
+    );
+  }
+};
+
+const getsaftyguide = async (req, res) => {
+  return SafetySchema.aggregate([
+    {
+      $project: {
+        _v: 0,
+      },
+    },
+  ])
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        message: "Safety Guide get successfully",
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err,
+      });
+    });
+};
+
+const createassociate = async (req, res) => {
+  const v = new Validator(req.body, {
+    heading: "required",
+    content1: "required",
+  });
+  let matched = await v.check().then((val) => val);
+  if (!matched) {
+    res.status(200).send({ status: false, error: v.errors });
+  }
+
+  let cms = {
+    _id: mongoose.Types.ObjectId(),
+    heading: req.body.heading,
+    content1: req.body.content1,
+  };
+  if (req.file != null && req.file != "" && typeof req.file != "undefined") {
+    let image_url = await Upload.uploadFile(req, "blog");
+    cms.image = image_url;
+  }
+  const cmsdt = new AssoSchema(cms);
+
+  cmsdt
+    .save()
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        success: true,
+        message: "Associate successfully created",
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again",
+        error: err,
+      });
+    });
+};
+
+const viewAllAsso = async (req, res) => {
+  return AssoSchema.aggregate([
+    { $sort: { _id: -1 } },
+    {
+      $project: {
+        _v: 0,
+      },
+    },
+  ])
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        message: "Associates get successfully",
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err,
+      });
+    });
+};
+
+const updateassociate = async (req, res) => {
+  const v = new Validator(req.body, {
+    heading: "required",
+    content1: "required",
+  });
+  let updateObj = {
+    heading: req.body.heading,
+    content1: req.body.content1,
+  };
+  if (req.file != null && req.file != "" && typeof req.file != "undefined") {
+    let image_url = await Upload.uploadFile(req, "blog");
+    updateObj.image = image_url;
+  }
+  AssoSchema.findOneAndUpdate(
+    { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+    updateObj,
+    { new: true },
+    // req.body,
+    async (err, docs) => {
+      if (err) {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again.",
+          error: err,
+        });
+      } else {
+        res.status(200).json({
+          status: true,
+          message: "Associate updated successfully!",
+          data: await docs,
+        });
+      }
+    }
+  );
+};
+
+const Deleteassociate = async (req, res) => {
+  return AssoSchema.remove(
+    { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } })
+    .then((data) => {
+      return res.status(200).json({
+        status: true,
+        message: 'Associate delete successfully',
+        data: data
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: 'Server error. Please try again.',
+        error: error,
+      });
+    })
 
 }
 
 const createBanner = async (req, res) => {
   let cms = {
     _id: mongoose.Types.ObjectId(),
-    name:req.body.name,
-    description:req.body.description,
-    link:req.body.link
+    name: req.body.name,
+    description: req.body.description,
+    link: req.body.link
   };
   if (req.file != null && req.file != "" && typeof req.file != "undefined") {
     let image_url = await Upload.uploadFile(req, "banner");
@@ -837,9 +837,9 @@ const viewAllBanner = async (req, res) => {
 
 const updateBanner = async (req, res) => {
   let updateObj = {
-    name:req.body.name,
-    description:req.body.description,
-    link:req.body.link
+    name: req.body.name,
+    description: req.body.description,
+    link: req.body.link
   };
   if (req.file != null && req.file != "" && typeof req.file != "undefined") {
     let image_url = await Upload.uploadFile(req, "banner");
@@ -870,21 +870,21 @@ const updateBanner = async (req, res) => {
 
 const Deletebanner = async (req, res) => {
   return Banner.remove(
-      { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } })
-      .then((data) => {
-          return res.status(200).json({
-              status: true,
-              message: 'Banner delete successfully',
-              data: data
-          });
-      })
-      .catch((err) => {
-          res.status(500).json({
-              status: false,
-              message: 'Server error. Please try again.',
-              error: error,
-          });
-      })
+    { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } })
+    .then((data) => {
+      return res.status(200).json({
+        status: true,
+        message: 'Banner delete successfully',
+        data: data
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: 'Server error. Please try again.',
+        error: error,
+      });
+    })
 
 }
 
@@ -896,53 +896,202 @@ const setBannerStatus = async (req, res) => {
   console.log("Category data", current_status);
 
   if (current_status.status === true) {
-      return Banner.findByIdAndUpdate(
-          { _id: id },
-          { $set: { status: false } },
-          { new: true },
-          (err, docs) => {
-              if (!err) {
-                  res.status(200).json({
-                      status: true,
-                      message: "Banner has been made inactive.",
-                      data: docs
-                  });
-              }
-              else {
-                  res.status(500).json({
-                      status: false,
-                      message: "Invalid id. Server error.",
-                      error: err
-                  });
-              }
-          }
-      );
+    return Banner.findByIdAndUpdate(
+      { _id: id },
+      { $set: { status: false } },
+      { new: true },
+      (err, docs) => {
+        if (!err) {
+          res.status(200).json({
+            status: true,
+            message: "Banner has been made inactive.",
+            data: docs
+          });
+        }
+        else {
+          res.status(500).json({
+            status: false,
+            message: "Invalid id. Server error.",
+            error: err
+          });
+        }
+      }
+    );
   }
   else {
-      return Banner.findByIdAndUpdate(
-          { _id: id },
-          { $set: { status: true } },
-          { new: true },
-          (err, docs) => {
-              if (!err) {
-                  res.status(200).json({
-                      status: true,
-                      message: "Banner has been activated.",
-                      data: docs
-                  });
-              }
-              else {
-                  res.status(500).json({
-                      status: false,
-                      message: "Invalid id. Server error.",
-                      error: err
-                  });
-              }
-          }
-      );
+    return Banner.findByIdAndUpdate(
+      { _id: id },
+      { $set: { status: true } },
+      { new: true },
+      (err, docs) => {
+        if (!err) {
+          res.status(200).json({
+            status: true,
+            message: "Banner has been activated.",
+            data: docs
+          });
+        }
+        else {
+          res.status(500).json({
+            status: false,
+            message: "Invalid id. Server error.",
+            error: err
+          });
+        }
+      }
+    );
   }
 }
-  
+
+const addAchievement = async (req, res) => {
+  const v = new Validator(req.body, {
+    image: "required",
+    description: "required",
+  });
+  let matched = v.check().then((val) => val);
+  if (!matched) {
+    res.status(400).json({ status: false, errors: v.errors });
+  }
+
+  var image_url = await Upload.uploadFile(req, "cms/achievements");
+
+  let saveData = {
+    _id: mongoose.Types.ObjectId(),
+    image: image_url,
+    description: req.body.description
+  }
+
+  const NEW_ACHIEVEMENT = new Achievements(saveData);
+
+  return NEW_ACHIEVEMENT.save((err, docs) => {
+    if (!err) {
+      res.status(200).json({
+        status: true,
+        message: "Data added successfully!",
+        data: docs
+      });
+    }
+    else {
+      res.status(500).json({
+        status: false,
+        message: "Failed to add data. Server error.",
+        error: err.message
+      });
+    }
+  });
+}
+
+const viewAllAchievements = async (req, res) => {
+  var achievements = await Achievements.find().exec();
+
+  if (achievements.length > 0) {
+    return res.status(200).json({
+      status: true,
+      message: "Data get successfully!",
+      data: achievements
+    });
+  }
+  else {
+    return res.status(200).json({
+      status: true,
+      message: "No achievement data added.",
+      data: null
+    });
+  }
+}
+
+const viewAchievementById = async (req, res) => {
+  var id = req.params.id;
+
+  return Achievements.findById(
+    { _id: id },
+    (err, docs) => {
+      if (!err) {
+        res.status(200).json({
+          status: true,
+          message: "Data get successfully!",
+          data: docs
+        });
+      }
+      else {
+        res.status(500).json({
+          status: false,
+          message: "Invalid. Server error.",
+          error: err.message
+        });
+      }
+    }
+  );
+}
+
+const editAchievement = async (req, res) => {
+  const v = new Validator(req.body, {
+    image: "required",
+    description: "required",
+  });
+  let matched = v.check().then((val) => val);
+  if (!matched) {
+    res.status(400).json({ status: false, errors: v.errors });
+  }
+
+  var id = req.params.id;
+
+  var image_url = await Upload.uploadFile(req, "cms/achievements");
+
+  if (
+    req.file != "" || 
+    req.file != null || 
+    typeof req.file != "undefined"
+  ) {
+    req.body.image = image_url;
+  }
+
+  return Achievements.findByIdAndUpdate(
+    { _id: id },
+    req.body,
+    { new: true },
+    (err, docs) => {
+      if (!err) {
+        res.status(200).json({
+          status: true,
+          message: "Data updated successfully!",
+          data: docs
+        });
+      }
+      else {
+        res.status(500).json({
+          status: false,
+          message: "Invalid. Server error.",
+          error: err.message
+        });
+      }
+    }
+  );
+}
+
+const deleteAchievement = async (req,res)=>{
+  var id = req.params.id;
+
+  return Achievements.findByIdAndDelete(
+    { _id: id },
+    (err, docs) => {
+      if (!err) {
+        res.status(200).json({
+          status: true,
+          message: "Data deleted successfully!",
+          data: docs
+        });
+      }
+      else {
+        res.status(500).json({
+          status: false,
+          message: "Invalid. Server error.",
+          error: err.message
+        });
+      }
+    }
+  );
+}
 
 module.exports = {
   createNUpdatecms,
@@ -967,5 +1116,10 @@ module.exports = {
   viewAllBanner,
   updateBanner,
   Deletebanner,
-  setBannerStatus
+  setBannerStatus,
+  addAchievement,
+  viewAllAchievements,
+  viewAchievementById,
+  editAchievement,
+  deleteAchievement
 };

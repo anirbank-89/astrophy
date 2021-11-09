@@ -156,11 +156,11 @@ router.get('/cms/Banner',CmsController.viewAllBanner)
 router.put('/cms/Banner/:id',upload.single("image"),CmsController.updateBanner)
 router.delete('/cms/Banner/:id',CmsController.Deletebanner)
 router.put('/cms/Banner/setStatus/:id',CmsController.setBannerStatus)
-
-
-
-
-
+router.post('/cms/achievement', upload.single("image"), CmsController.addAchievement)
+router.get('/cms/achievement', CmsController.viewAllAchievements)
+router.get('/cms/achievement/:id', CmsController.viewAchievementById)
+router.put('/cms/achievement/:id', upload.single("image"), CmsController.editAchievement)
+router.delete('/cms/achievement/:id', CmsController.deleteAchievement)
 
 
 
