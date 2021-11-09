@@ -19,7 +19,7 @@ const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout
 const SellerMyaccountController = require('../../Controller/User/SellerMyaccount')//krittika
 const ServicereviewController = require('../../Controller/User/ServiceReview')
 const SeaarchController = require('../../Controller/User/Search')
-
+const GrievanceController = require('../../Controller/User/Grievance');
 
 
 
@@ -145,7 +145,7 @@ router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingc
 // router.post('/searchSevice', SeaarchController.serviceSearch);
 // router.post('/searchProduct', SeaarchController.productSearch);
 
-
+router.post('/complaint', upload1.single("attachment"), GrievanceController.addGrievance);
 
 
 
