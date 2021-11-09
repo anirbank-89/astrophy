@@ -12,6 +12,7 @@ const LEGAL_NOTICE_SCHEMA = new Schema({
         type: String,
         required: true
     },
+    phone: Number,
     url: String,
     report_against: {
         type: String,

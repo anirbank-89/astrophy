@@ -12,6 +12,7 @@ const COMPLAINT_SCHEMA = new Schema({
         type: String,
         required: true
     },
+    phone: Number,
     url: String,
     report_against: {
         type: String,

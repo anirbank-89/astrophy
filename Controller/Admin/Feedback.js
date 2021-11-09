@@ -1,4 +1,3 @@
-var mongoose = require('mongoose');
 const FEEDBACK_MODEL = require('../../Models/feedback');
 
 var viewAllFeedback = async (req, res) => {

@@ -15,6 +15,7 @@ const ShopServiceController = require("../../Controller/User/ShopServices");
 const PaypalPaymentController = require("../../Controller/User/Paypalpayment");
 const StripesubscriptionController = require("../../Controller/User/Stripesubscription");
 const FeedbackController = require('../../Controller/User/Feedback');
+const MailSubscription = require('../../Controller/User/MailSubscription');
 const CmsController = require('../../Controller/User/Cms');
 
 // new updates
@@ -82,8 +83,8 @@ router.get('/user/cms/achievement/:id', CmsController.viewAchievementById)
 
 router.post('/user/feedback', FeedbackController.addFeedback);
 
-
-
+router.post('/user/subscribe-us', MailSubscription.subscribe);
+router.post('/user/unsubscribe', MailSubscription.unsubscribe);
 
 
 

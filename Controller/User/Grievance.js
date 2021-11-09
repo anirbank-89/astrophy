@@ -4,14 +4,14 @@ const { Validator } = require('node-input-validator');
 const COMPLAINT_MODEL = require('../../Models/grievance');
 var Upload = require('../../service/upload');
 
-var addGrievance = async (req,res)=>{
+var addGrievance = async (req, res) => {
     const V = new Validator(req.body, {
         name: 'required',
         email: 'required|email',
         report_against: 'required',
         report_detail: 'required'
     });
-    let matched = V.check().then(val=>val);
+    let matched = V.check().then(val => val);
 
     if (!matched) {
         return res.status(400).json({ status: false, errors: V.errors });
@@ -26,15 +26,22 @@ var addGrievance = async (req,res)=>{
         report_detail: req.body.report_detail
     }
     if (
-        req.body.url != '' || 
-        req.body.url != null || 
+        req.body.phone != '' ||
+        req.body.phone != null ||
+        typeof req.body.phone != "undefined"
+    ) {
+        complaintData.phone = Number(req.body.phone);
+    }
+    if (
+        req.body.url != '' ||
+        req.body.url != null ||
         typeof req.body.url != "undefined"
     ) {
         complaintData.url = req.body.url;
     }
     if (
-        req.file != '' || 
-        req.file != null || 
+        req.file != '' ||
+        req.file != null ||
         typeof req.file != "undefined"
     ) {
         var attachment_url = await Upload.uploadFile(req, "grievances");
@@ -43,7 +50,7 @@ var addGrievance = async (req,res)=>{
 
     const NEW_COMPLAINT = new COMPLAINT_MODEL(complaintData);
 
-    return NEW_COMPLAINT.save((err,docs)=>{
+    return NEW_COMPLAINT.save((err, docs) => {
         if (!err) {
             res.status(200).json({
                 status: true,
