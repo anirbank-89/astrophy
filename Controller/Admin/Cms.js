@@ -1025,24 +1025,23 @@ const viewAchievementById = async (req, res) => {
 }
 
 const editAchievement = async (req, res) => {
-  const v = new Validator(req.body, {
-    image: "required",
-    description: "required",
-  });
-  let matched = v.check().then((val) => val);
-  if (!matched) {
-    res.status(400).json({ status: false, errors: v.errors });
-  }
+  // const v = new Validator(req.body, {
+  //   image: "required",
+  //   description: "required",
+  // });
+  // let matched = v.check().then((val) => val);
+  // if (!matched) {
+  //   res.status(400).json({ status: false, errors: v.errors });
+  // }
 
   var id = req.params.id;
-
-  var image_url = await Upload.uploadFile(req, "cms/achievements");
 
   if (
     req.file != "" || 
     req.file != null || 
     typeof req.file != "undefined"
   ) {
+    var image_url = await Upload.uploadFile(req, "cms/achievements");
     req.body.image = image_url;
   }
 
