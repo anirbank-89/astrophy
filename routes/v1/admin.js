@@ -16,7 +16,7 @@ const CmsController = require('../../Controller/Admin/Cms');
 const FaqcatController = require('../../Controller/Admin/Faqcategory');
 const FaqsubcatController = require('../../Controller/Admin/Faqsubcategory');
 const FaqController = require('../../Controller/Admin/Faq');
-
+const FeedbackController= require('../../Controller/Admin/Feedback');
 
 
 
@@ -130,6 +130,9 @@ router.get('/contactlist', UserController.ViewAllcontact);
 router.put('/update-profile/:id', upload.single("image"), MyaccountController.updateProfile);
 router.put('/update-password/:id', MyaccountController.updatePassword);
 router.get('/get-profile/:id', MyaccountController.getProfile);
+
+router.get('/feedback', FeedbackController.viewAllFeedback);
+router.get('/feedback/:id', FeedbackController.viewFeedbackById);
 
 router.post('/cms/About',upload.single("image"),CmsController.createNUpdatecms)
 router.post('/cms/Blog',upload.single("image"),CmsController.createNUpdateblog)
