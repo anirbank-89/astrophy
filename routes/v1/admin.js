@@ -18,7 +18,7 @@ const FaqsubcatController = require('../../Controller/Admin/Faqsubcategory');
 const FaqController = require('../../Controller/Admin/Faq');
 const FeedbackController= require('../../Controller/Admin/Feedback');
 const GrievanceController = require('../../Controller/Admin/Grievance');
-
+const LegalNoticeController = require('../../Controller/Admin/LegalNotice')
 
 
 
@@ -136,6 +136,9 @@ router.get('/feedback/:id', FeedbackController.viewFeedbackById);
 
 router.get('/complaint', GrievanceController.viewAllComplaints);
 router.get('/complaint/:id', GrievanceController.viewComplaintById);
+
+router.get('/legal-notice', LegalNoticeController.viewAllNotices);
+router.get('/legal-notice/:id', LegalNoticeController.viewNoticeById);
 
 router.post('/cms/About',upload.single("image"),CmsController.createNUpdatecms)
 router.post('/cms/Blog',upload.single("image"),CmsController.createNUpdateblog)

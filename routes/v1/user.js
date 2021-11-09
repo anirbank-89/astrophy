@@ -19,8 +19,8 @@ const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout
 const SellerMyaccountController = require('../../Controller/User/SellerMyaccount')//krittika
 const ServicereviewController = require('../../Controller/User/ServiceReview')
 const SeaarchController = require('../../Controller/User/Search')
-const GrievanceController = require('../../Controller/User/Grievance');
-
+const GrievanceController = require('../../Controller/User/Grievance')
+const LegalNoticeController = require('../../Controller/User/LegalNotice')
 
 
 
@@ -147,7 +147,7 @@ router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingc
 
 router.post('/complaint', upload1.single("attachment"), GrievanceController.addGrievance);
 
-
+router.post('/legal-notice', upload1.single("attachment"), LegalNoticeController.addLegalNotice);
 
 
 
