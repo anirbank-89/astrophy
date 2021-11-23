@@ -105,6 +105,8 @@ router.put('/service/:id',upload.single("image"),ServiceController.update)// add
 router.delete('/service/:id', ServiceController.Delete)                   // added by anirbank-93
 router.put('/service/set-status/:id',ServiceController.setStatus)// added by anirbank-93
 router.post('/sellerComission-history',ServiceController.sellercomHistory)
+router.put('/adminAccept',ServiceController.updateAdminaccept)
+
 
 router.post('/service/subcategory',ServiceSubCategoryController.create)    // added by anirbank-93
 router.get('/service/subcategory', ServiceSubCategoryController.viewAll)   // added by anirbank-93

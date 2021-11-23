@@ -252,11 +252,43 @@ const sellercomHistory = async (req, res) => {
       });
   };
 
+  const updateAdminaccept = async (req, res) => {
+
+    return Servicecommission.findOneAndUpdate(
+        { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+        req.body,
+        async (err, docs) => {
+            if (err) {
+                res.status(500).json({
+                    status: false,
+                    message: "Server error. Please try again.",
+                    error: err
+                });
+            }
+            else if (docs != null) {
+                res.status(200).json({
+                    status: true,
+                    message: "Service Comission updated successfully!",
+                    data: docs
+                });
+            }
+            else {
+                res.status(500).json({
+                    status: false,
+                    message: "User do not match",
+                    data: null
+                });
+            }
+        }
+    );
+}
+
 module.exports = {
     create,
     viewAllServices,
     update,
     Delete,
     setStatus,
-    sellercomHistory
+    sellercomHistory,
+    updateAdminaccept
 }

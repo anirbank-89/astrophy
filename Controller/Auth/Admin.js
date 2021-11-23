@@ -16,16 +16,6 @@ const getTokenData = async (token) => {
 }
 
 const register = async(req,res)=>{
-    const v = new Validator(req.body,{
-        email:'required|email',
-        password:'required',
-        fullname:'required'
-    })
-    let matched = await v.check().then((val)=>val)
-    if(!matched)
-    {
-        return res.status(200).send({ status: false, error: v.errors });
-    }
     let adminData = {
         _id:mongoose.Types.ObjectId(),
         email:req.body.email,
