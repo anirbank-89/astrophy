@@ -3,6 +3,7 @@ var jwt = require('jsonwebtoken');
 var uuidv1 = require('uuid').v1;
 var Service = require('../../Models/service');
 var Upload = require("../../service/upload");
+const Servicecommission = require("../../Models/servicecommission");
 
 const { Validator } = require('node-input-validator');
 
@@ -197,10 +198,65 @@ const setStatus = async (req, res) => {
     }
 }
 
+const sellercomHistory = async (req, res) => {
+    return Servicecommission.aggregate([
+        {
+            $match: { seller_id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
+          },
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+      {
+        $lookup: {
+          from: "servicecheckouts",
+          localField: "order_id",
+          foreignField: "_id",
+          as: "booking_data",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "seller_id",
+          foreignField: "_id",
+          as: "seller_data",
+        },
+      },
+      { $sort: { _id: -1 } },
+    ])
+      .then((data) => {
+        if (data != null && data != "") {
+          res.status(200).send({
+            status: true,
+            data: data,
+            error: null,
+            message: "Comission history Get Successfully",
+          });
+        } else {
+          res.status(400).send({
+            status: false,
+            data: null,
+            error: "No Data",
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          status: false,
+          data: null,
+          error: err,
+          message: "Server Error",
+        });
+      });
+  };
+
 module.exports = {
     create,
     viewAllServices,
     update,
     Delete,
-    setStatus
+    setStatus,
+    sellercomHistory
 }

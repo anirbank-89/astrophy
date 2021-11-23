@@ -33,7 +33,15 @@ const SellercomissionSchema = new mongoose.Schema({
     status:{
         type:Boolean,
         default:false
-    }
+    },
+    sellerapply:{
+        type:Boolean,
+        default:false
+    },
+    paystatus:{
+        type:Boolean,
+        default:false
+    },
 })
 
 module.exports = mongoose.model('Sellercomission',SellercomissionSchema);
