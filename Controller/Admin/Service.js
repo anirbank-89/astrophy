@@ -257,6 +257,7 @@ const sellercomHistory = async (req, res) => {
     return Servicecommission.findOneAndUpdate(
         { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
         req.body,
+        { new: true },
         async (err, docs) => {
             if (err) {
                 res.status(500).json({
