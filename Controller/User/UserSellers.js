@@ -158,7 +158,7 @@ const sellercomHistory = async (req, res) => {
   };
 
   const totalandpendingcomission = async (req, res) => {
-    let com = await totalcomissions.find({ seller_id: { $in: [mongoose.Types.ObjectId(req.params.id)] } }).exec();
+    let com = await Totalcomission.find({ seller_id: { $in: [mongoose.Types.ObjectId(req.params.id)] } }).exec();
     // console.log(com)
 
     return res.send({
