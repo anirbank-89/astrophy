@@ -316,6 +316,7 @@ const sellercomHistory = async (req, res) => {
         }
         req.body.transactionid = req.body.txnid
         req.body.paystatus = true
+        req.body.paydate_on = req.body.paydate_on
         // console.log(req.body);
         // return false;
         let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(req.body.seller_id)}).exec();

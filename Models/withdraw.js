@@ -22,7 +22,11 @@ const WithdrawSchema = new mongoose.Schema({
   created_on: {
     type: Date,
     default: dateKolkata,
-}
+  },
+  paydate_on: {
+    type: String,
+    default: null,
+  }
 });
 
 module.exports = mongoose.model("Withdraw", WithdrawSchema);
