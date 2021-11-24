@@ -4,6 +4,10 @@ var passwordHash = require('password-hash')
 const Servicecommission = require("../../Models/servicecommission");
 var jwt = require('jsonwebtoken');
 var Upload = require("../../service/upload");
+const Withdraw = require("../../Models/withdraw");
+const Kyc = require("../../Models/kyc");
+const Totalcomission = require("../../Models/totalcomission");
+
 
 const { Validator } = require('node-input-validator');
 
@@ -310,13 +314,16 @@ const sellercomHistory = async (req, res) => {
             let image_url = await Upload.uploadFile(req, "comision");
             req.body.image = image_url;
         }
-        req.body.status = true;
-        req.body.txnid = req.body.txnid
+        req.body.transactionid = req.body.txnid
+        req.body.paystatus = true
         // console.log(req.body);
         // return false;
-    return Servicecommission.findOneAndUpdate(
+        let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(req.body.seller_id)}).exec();
+
+    return Withdraw.findOneAndUpdate(
         { _id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
         req.body,
+        {new:true},
         async (err, docs) => {
             if (err) {
                 res.status(500).json({
@@ -326,9 +333,17 @@ const sellercomHistory = async (req, res) => {
                 });
             }
             else if (docs != null) {
+                let newAmt = parseInt(totalcomission.comission_total) - parseInt(docs.amount)
+                Totalcomission.findOneAndUpdate(
+                    { seller_id: mongoose.Types.ObjectId(docs.seller_id)},
+                    { $set: { comission_total: newAmt} },
+                    (err, writeResult) => {
+                      // console.log(err);
+                    }
+                  );
                 res.status(200).json({
                     status: true,
-                    message: "Service category updated successfully!",
+                    message: "Paid successfully!",
                     data: docs
                 });
             }
@@ -343,6 +358,56 @@ const sellercomHistory = async (req, res) => {
     );
 }
 
+const withdrawHistory = async (req, res) => {
+    return Withdraw.aggregate([
+        {
+            $match: { seller_id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+          },
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+      { $sort: { _id: -1 } },
+    ])
+      .then((data) => {
+        if (data != null && data != "") {
+          res.status(200).send({
+            status: true,
+            data: data,
+            error: null,
+            message: "Withdraw history Get Successfully",
+          });
+        } else {
+          res.status(400).send({
+            status: false,
+            data: null,
+            error: "No Data",
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          status: false,
+          data: null,
+          error: err,
+          message: "Server Error",
+        });
+      });
+  };
+
+  const getKyc = async (req,res)=>{
+
+    let shopData = await Kyc.find({seller_id: {$in: [mongoose.Types.ObjectId(req.body.seller_id)]}}).exec();
+   
+      res.status(200).json({
+          status: true,
+          message: "Kyc updated successfully!",
+          data: shopData
+      });
+                   
+  }
+
 module.exports = {
     viewUserList,
     viewUser,
@@ -351,5 +416,7 @@ module.exports = {
     setStatus,
     setBlock,
     sellercomHistory,
-    paycomsion
+    paycomsion,
+    withdrawHistory,
+    getKyc
 }
