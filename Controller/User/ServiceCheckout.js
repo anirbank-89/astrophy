@@ -3,8 +3,8 @@ const ServiceCart = require("../../Models/servicecart");
 //var Coupon = require("../../Models/coupon");
 const ServiceCheckout = require("../../Models/servicecheckout");
 const Servicecommission = require("../../Models/servicecommission");
-var SubscribedBy = require("../../Models/subscr_purchase");
-var Totalcomission = require("../../Models/totalcomission");
+const SubscribedBy = require("../../Models/subscr_purchase");
+const Totalcomission = require("../../Models/totalcomission");
 
 
 const { Validator } = require("node-input-validator");
@@ -117,6 +117,7 @@ const create = async (req, res) => {
     );
   }
 */ 
+    let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(req.body.seller_id)}).exec();
     if(req.body.tokenid!='' && typeof req.body.tokenid!=undefined)
     {
       dataSubmit.tokenid = req.body.tokenid
@@ -149,10 +150,15 @@ const create = async (req, res) => {
       const saveCom = new Servicecommission(dataComision);
       saveCom.save()
 
-      let Totalcomission = Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(req.body.seller_id)}).exec();
-      if(Totalcomission.length>0)
+      
+      console.log(totalcomission)
+
+      if(totalcomission!=null)
       {
-        let totalComcal = parseFloat(Totalcomission.comission_total) + parseFloat(sellerCom)
+        console.log('a')
+      
+    
+        let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
         Totalcomission.findOneAndUpdate(
           { seller_id: mongoose.Types.ObjectId(req.body.seller_id)},
           { $set: { comission_total: totalComcal,comission_all:totalComcal} },
@@ -163,16 +169,15 @@ const create = async (req, res) => {
       }
       else
       {
-        let dataComisionTotal = {
+        console.log('b')
+        let dataComisionTotalval = {
           _id: mongoose.Types.ObjectId(),
           seller_id: mongoose.Types.ObjectId(req.body.seller_id),
-          comission_total: totalComcal,        
-          comission_all: totalComcal     
+          comission_total: sellerCom,        
+          comission_all: sellerCom     
         };
-  
-    //     console.log(dataComision);
-    // return false;
-        const saveComTotal = new Totalcomission(dataComisionTotal);
+        console.log(dataComisionTotalval)
+        const saveComTotal = new Totalcomission(dataComisionTotalval);
         saveComTotal.save()
       }
 
