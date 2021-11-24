@@ -53,24 +53,69 @@ const viewUser = async (req, res) => {
 }
 
 const viewSellerList = async (req, res) => {
-    return User.find(
-        { type: { $in: "Seller" } },
-        (err, docs) => {
-            if (err) {
-                res.status(400).json({
-                    status: false,
-                    message: "Server error. Data not available",
-                    error: err
-                });
+    // return User.find(
+    //     { type: { $in: "Seller" } },
+    //     (err, docs) => {
+    //         if (err) {
+    //             res.status(400).json({
+    //                 status: false,
+    //                 message: "Server error. Data not available",
+    //                 error: err
+    //             });
+    //         }
+    //         else {
+    //             res.status(200).json({
+    //                 status: true,
+    //                 message: "Sellers get successfully",
+    //                 data: docs
+    //             });
+    //         }
+    //     }).sort({ _id: 'desc' });
+
+        return User.aggregate([
+            {
+                $match: { type: { $in: "Seller" } },
+              },
+          {
+            $project: {
+              _v: 0,
+            },
+          },
+          {
+            $lookup: {
+              from: "totalcomissions",
+              localField: "_id",
+              foreignField: "seller_id",
+              as: "comission_data",
+            },
+          },
+          { $unwind : "$comission_data" },         
+          { $sort: { _id: -1 } },
+        ])
+          .then((data) => {
+            if (data != null && data != "") {
+              res.status(200).send({
+                status: true,
+                data: data,
+                error: null,
+                message: "Sellers get successfully",
+              });
+            } else {
+              res.status(400).send({
+                status: false,
+                data: null,
+                error: "No Data",
+              });
             }
-            else {
-                res.status(200).json({
-                    status: true,
-                    message: "Sellers get successfully",
-                    data: docs
-                });
-            }
-        }).sort({ _id: 'desc' });
+          })
+          .catch((err) => {
+            res.status(500).send({
+              status: false,
+              data: null,
+              error: err,
+              message: "Server Error",
+            });
+          });
 }
 
 const viewSeller = async (req, res) => {
