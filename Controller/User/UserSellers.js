@@ -3,6 +3,9 @@ var User = require("../../Models/user");
 var Shop = require("../../Models/shop");
 var ShopServices = require('../../Models/shop_service');
 const Servicecommission = require("../../Models/servicecommission");
+const Withdraw = require("../../Models/withdraw");
+const Totalcomission = require("../../Models/totalcomission");
+
 
 const { Validator } = require('node-input-validator');
 // const { stringify } = require('uuid');
@@ -155,57 +158,103 @@ const sellercomHistory = async (req, res) => {
   };
 
   const totalandpendingcomission = async (req, res) => {
-    let com = await Servicecommission.find({ seller_id: { $in: [mongoose.Types.ObjectId(req.params.id)] } }).exec();
+    let com = await totalcomissions.find({ seller_id: { $in: [mongoose.Types.ObjectId(req.params.id)] } }).exec();
     // console.log(com)
-    let total_com = 0;
-    let settled_com = 0;
-
-    com.forEach(element=>{
-        total_com = parseInt(total_com)+parseInt(element.seller_commission);
-        if(element.status === true)
-        {
-            settled_com = parseInt(settled_com)+parseInt(element.seller_commission);
-        }
-    })
 
     return res.send({
         status:true,
-        total_comission:total_com,
-        setteld_commission:settled_com
+        data:com
     })
   };
 
   const applyWithdraw = async (req, res) => {
+    let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(req.body.seller_id)}).exec();
+    let pend_com = 0;
+    let withdrawcomission = await Withdraw.find({seller_id:mongoose.Types.ObjectId(req.body.seller_id),paystatus:false}).exec();
+    if(withdrawcomission.length>0)
+    {
+    withdrawcomission.forEach(element=>{
+      pend_com = parseInt(pend_com) + parseInt(element.amount)
+    })
+    }
 
-    return Servicecommission.findOneAndUpdate(
-        { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
-        req.body,
-        { new: true },
-        async (err, docs) => {
-            if (err) {
-                res.status(500).json({
-                    status: false,
-                    message: "Server error. Please try again.",
-                    error: err
-                });
-            }
-            else if (docs != null) {
-                res.status(200).json({
-                    status: true,
-                    message: "Withdrawl Request successfully!",
-                    data: docs
-                });
-            }
-            else {
-                res.status(500).json({
-                    status: false,
-                    message: "User do not match",
-                    data: null
-                });
-            }
+    let checkCom = parseInt(pend_com)+parseInt(req.body.amount)
+    console.log(pend_com)
+    // return false;
+    if(req.body.amount>totalcomission.comission_total)
+    {
+      return res.send({
+        status:false,
+        data:null,
+        error:true,
+        message:"Amount Exceeds Total Earning"
+    })
+    }
+    else if(checkCom > totalcomission.comission_total)
+    {
+      return res.send({
+        status:false,
+        data:null,
+        error:true,
+        message:"Amount Exceeds Total Earning"
+      })
+    }
+    else{
+        let obj = {
+          _id: mongoose.Types.ObjectId(),
+          seller_id: mongoose.Types.ObjectId(req.body.seller_id),
+          amount: req.body.amount,
+          paystatus:false
         }
-    );
-}
+        const saveCom = new Withdraw(obj);
+        saveCom.save()
+        return res.send({
+          status:true,
+          data:null,
+          error:false,
+          message:"Comission Saved Successfully"
+        })
+    }
+
+  }
+
+  const withdrawHistory = async (req, res) => {
+    return Withdraw.aggregate([
+        {
+            $match: { seller_id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+          },
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+      { $sort: { _id: -1 } },
+    ])
+      .then((data) => {
+        if (data != null && data != "") {
+          res.status(200).send({
+            status: true,
+            data: data,
+            error: null,
+            message: "Withdraw history Get Successfully",
+          });
+        } else {
+          res.status(400).send({
+            status: false,
+            data: null,
+            error: "No Data",
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          status: false,
+          data: null,
+          error: err,
+          message: "Server Error",
+        });
+      });
+  };
 
 module.exports = {
     viewUser,
@@ -213,5 +262,6 @@ module.exports = {
     viewSellerList,
     sellercomHistory,
     totalandpendingcomission,
-    applyWithdraw
+    applyWithdraw,
+    withdrawHistory
 }

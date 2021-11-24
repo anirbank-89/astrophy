@@ -140,7 +140,9 @@ router.post('/servicereview', ServicereviewController.create);
 router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
 router.get('/sellercomission/:id',UserSellerController.sellercomHistory);
 router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingcomission);
-router.put('/withdraw-request/:id',UserSellerController.applyWithdraw);
+router.post('/withdraw-request',UserSellerController.applyWithdraw);
+router.get('/withdraw-history/:id',UserSellerController.withdrawHistory);
+
 
 
 
