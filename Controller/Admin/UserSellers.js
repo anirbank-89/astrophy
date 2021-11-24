@@ -74,13 +74,8 @@ const viewSellerList = async (req, res) => {
 
         return User.aggregate([
             {
-                $match: { type: { $in: "Seller" } },
-              },
-          {
-            $project: {
-              _v: 0,
-            },
-          },
+                $match: { type: { $in: ["Seller"] } },
+              },          
           {
             $lookup: {
               from: "totalcomissions",
@@ -88,9 +83,13 @@ const viewSellerList = async (req, res) => {
               foreignField: "seller_id",
               as: "comission_data",
             },
-          },
-          { $unwind : "$comission_data" },         
+          },     
           { $sort: { _id: -1 } },
+          {
+            $project: {
+              _v: 0,
+            },
+          },
         ])
           .then((data) => {
             if (data != null && data != "") {
