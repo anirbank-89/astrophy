@@ -5,6 +5,8 @@ var ShopServices = require('../../Models/shop_service');
 const Servicecommission = require("../../Models/servicecommission");
 const Withdraw = require("../../Models/withdraw");
 const Totalcomission = require("../../Models/totalcomission");
+const Kyc = require("../../Models/kyc");
+
 
 
 const { Validator } = require('node-input-validator');
@@ -255,6 +257,116 @@ const sellercomHistory = async (req, res) => {
         });
       });
   };
+  
+  const kyccreateNUpdate = async (req,res)=>{
+    const v = new Validator(req.body,{
+      name: 'required',
+      account: 'required',
+      iifsc: 'required',
+      bank: 'required'
+    });
+    let matched = await v.check().then((val)=>val)
+    if(!matched){
+        res.status(200).send({ status: false, error: v.errors });
+    }
+    
+    console.log(req.body);
+    // return false;
+    let shopData = await Kyc.find({seller_id: {$in: [mongoose.Types.ObjectId(req.body.seller_id)]}}).exec();
+    console.log(shopData.length)
+    // return false;
+    //   .then((data)=>{
+          if (shopData.length==0) {
+              //bn
+           
+
+            let shopData = {
+                _id: mongoose.Types.ObjectId(),
+                name: req.body.name,
+                account: req.body.account,
+                iifsc: req.body.iifsc,
+                bank: req.body.bank
+            }
+
+            const shop_owner = new Kyc(shopData)
+            
+            shop_owner.save().then((docs)=>{
+                res.status(200).json({
+                    status: true,
+                    success: true,
+                    message: "Kyc successfully created",
+                    data: docs
+                });
+            })
+            .catch((err)=>{
+                res.status(500).json({
+                    status: false,
+                    message: "Server error. Please try again",
+                    error: err
+                });
+            });
+          }
+          else {
+              //b
+            //   console.log(req.files)
+            //   if(Object.keys(req.files).length === 0 )
+            //   {
+            //     console.log("ok")
+            //   }
+            //   else
+            //   {
+            //     console.log("notok")
+            //   }
+            //   return false;
+            let updateObj = {
+              name: req.body.name,
+              account: req.body.account,
+              iifsc: req.body.iifsc,
+              bank: req.body.bank
+            }
+            Kyc.findOneAndUpdate(
+                {seller_id: { $in : [mongoose.Types.ObjectId(req.body.seller_id)] } }, 
+                updateObj,
+                // req.body,
+                async (err,docs)=>{
+                    if(err){
+                        res.status(500).json({
+                            status: false,
+                            message: "Server error. Please try again.",
+                            error: err
+                        });
+                    }
+                    else{
+                        res.status(200).json({
+                            status: true,
+                            message: "Kyc updated successfully!",
+                            data: await docs
+                        });
+                    }
+                }
+            )
+          }
+    //   })
+    //   .catch((err)=>{
+    //       res.status(500).json({
+    //           status: false,
+    //           message: "Server error. Please provide images"
+    //       });
+    //   });
+}
+
+
+const getKyc = async (req,res)=>{
+
+  let shopData = await Kyc.find({seller_id: {$in: [mongoose.Types.ObjectId(req.body.seller_id)]}}).exec();
+ 
+    res.status(200).json({
+        status: true,
+        message: "Kyc updated successfully!",
+        data: shopData
+    });
+                 
+}
 
 module.exports = {
     viewUser,
@@ -263,5 +375,7 @@ module.exports = {
     sellercomHistory,
     totalandpendingcomission,
     applyWithdraw,
-    withdrawHistory
+    withdrawHistory,
+    kyccreateNUpdate,
+    getKyc
 }
