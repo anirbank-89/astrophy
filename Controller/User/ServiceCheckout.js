@@ -4,6 +4,8 @@ const ServiceCart = require("../../Models/servicecart");
 const ServiceCheckout = require("../../Models/servicecheckout");
 const Servicecommission = require("../../Models/servicecommission");
 var SubscribedBy = require("../../Models/subscr_purchase");
+var Totalcomission = require("../../Models/totalcomission");
+
 
 const { Validator } = require("node-input-validator");
 
@@ -146,6 +148,33 @@ const create = async (req, res) => {
   // return false;
       const saveCom = new Servicecommission(dataComision);
       saveCom.save()
+
+      let Totalcomission = Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(req.body.seller_id)}).exec();
+      if(Totalcomission.length>0)
+      {
+        let totalComcal = parseFloat(Totalcomission.comission_total) + parseFloat(sellerCom)
+        Totalcomission.findOneAndUpdate(
+          { seller_id: mongoose.Types.ObjectId(req.body.seller_id)},
+          { $set: { comission_total: totalComcal,comission_all:totalComcal} },
+          (err, writeResult) => {
+            // console.log(err);
+          }
+        );
+      }
+      else
+      {
+        let dataComisionTotal = {
+          _id: mongoose.Types.ObjectId(),
+          seller_id: mongoose.Types.ObjectId(req.body.seller_id),
+          comission_total: totalComcal,        
+          comission_all: totalComcal     
+        };
+  
+    //     console.log(dataComision);
+    // return false;
+        const saveComTotal = new Totalcomission(dataComisionTotal);
+        saveComTotal.save()
+      }
 
       res.status(200).json({
         status: true,
