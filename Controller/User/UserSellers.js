@@ -285,7 +285,8 @@ const sellercomHistory = async (req, res) => {
                 name: req.body.name,
                 account: req.body.account,
                 iifsc: req.body.iifsc,
-                bank: req.body.bank
+                bank: req.body.bank,
+                seller_id:mongoose.Types.ObjectId(req.body.seller_id)
             }
 
             const shop_owner = new Kyc(shopData)
