@@ -399,7 +399,7 @@ const withdrawHistory = async (req, res) => {
 
   const getKyc = async (req,res)=>{
 
-    let shopData = await Kyc.find({seller_id: {$in: [mongoose.Types.ObjectId(req.body.seller_id)]}}).exec();
+    let shopData = await Kyc.find({seller_id: {$in: [mongoose.Types.ObjectId(req.params.id)]}}).exec();
    
       res.status(200).json({
           status: true,

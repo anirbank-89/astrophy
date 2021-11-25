@@ -169,7 +169,7 @@ router.put('/cms/achievement/:id', upload.single("image"), CmsController.editAch
 router.delete('/cms/achievement/:id', CmsController.deleteAchievement)
 
 router.get('/withdraw-history/:id',UserSellersController.withdrawHistory);
-router.get('/Kyc',UserSellersController.getKyc);
+router.get('/Kyc/:id',UserSellersController.getKyc);
 
 
 
