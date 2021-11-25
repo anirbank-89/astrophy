@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+var moment = require("moment-timezone");
+var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 
 const SellercomissionSchema = new mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
@@ -42,6 +44,10 @@ const SellercomissionSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    created_on: {
+        type: Date,
+        default: dateKolkata,
+    }
 })
 
 module.exports = mongoose.model('Sellercomission',SellercomissionSchema);
