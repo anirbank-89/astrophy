@@ -144,6 +144,8 @@ router.post('/withdraw-request',UserSellerController.applyWithdraw);
 router.get('/withdraw-history/:id',UserSellerController.withdrawHistory);
 router.post('/Kyc',UserSellerController.kyccreateNUpdate);
 router.get('/Kyc/:id',UserSellerController.getKyc);
+router.post('/getGraphcomission',UserSellerController.getGraphcomission);
+
 
 
 

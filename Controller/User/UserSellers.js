@@ -6,6 +6,7 @@ const Servicecommission = require("../../Models/servicecommission");
 const Withdraw = require("../../Models/withdraw");
 const Totalcomission = require("../../Models/totalcomission");
 const Kyc = require("../../Models/kyc");
+const moment = require("moment");
 
 
 
@@ -369,6 +370,124 @@ const getKyc = async (req,res)=>{
                  
 }
 
+const getGraphcomission = async (req,res)=>{
+
+  var today = new Date();
+  var dd = today.getDate();
+
+  var mm = today.getMonth()+1; 
+  var yyyy = today.getFullYear();
+  if(dd<10) 
+  {
+      dd='0'+dd;
+  } 
+
+  if(mm<10) 
+  {
+      mm='0'+mm;
+  } 
+  today = dd+'/'+mm+'/'+yyyy;
+
+  var prev_date = new Date();
+  prev_date.setDate(prev_date.getDate() - 1);
+  var ddy = prev_date.getDate();
+  var mmy = prev_date.getMonth()+1; 
+  var yyyyy = prev_date.getFullYear();
+  if(ddy<10) 
+  {
+    ddy='0'+ddy;
+  } 
+
+  if(mmy<10) 
+  {
+    mmy='0'+mmy;
+  } 
+  prev_date = ddy+'/'+mmy+'/'+yyyyy;
+  // console.log(prev_date)
+
+  var prev_datesev = new Date();
+  prev_datesev.setDate(prev_datesev.getDate() - 7);
+  var ddsev = prev_datesev.getDate();
+  var mmsev = prev_datesev.getMonth()+1; 
+  var yyyysev = prev_datesev.getFullYear();
+  if(ddsev<10) 
+  {
+    ddsev='0'+ddsev;
+  } 
+
+  if(mmsev<10) 
+  {
+    mmsev='0'+mmsev;
+  } 
+  prev_datesev = ddsev+'/'+mmsev+'/'+yyyysev;
+  // console.log(prev_datesev)
+
+  var d = new Date();
+  console.log(d.toLocaleDateString());
+  d.setMonth(d.getMonth() - 1);
+  console.log(d.toLocaleDateString());
+
+  var dy = new Date();
+  console.log(dy.toLocaleDateString());
+  dy.setMonth(dy.getMonth() - 12);
+  console.log(dy.toLocaleDateString());
+
+  let servicecommission = await Servicecommission.find({seller_id: {$in: [mongoose.Types.ObjectId(req.body.id)]}}).exec();
+  var newdata = servicecommission
+  var newD = [];
+  var todaysTotal = 0;
+  var yestardayTotal = 0;
+  var sevendaysTotal = 0;
+  var monthTotal = 0;
+  var yearTotal = 0;
+
+
+
+  newdata.map((item, index) => {
+    let changeDate = moment(item.created_on).format('DD/MM/YYYY');
+    if(changeDate == today)
+    {
+      todaysTotal = parseInt(todaysTotal) + parseInt(item.seller_commission)
+    } 
+    if(changeDate == prev_date)
+    {
+      yestardayTotal = parseInt(yestardayTotal) + parseInt(item.seller_commission)
+    }  
+    if(changeDate>=prev_datesev && changeDate<=today)  
+    {
+      console.log(item._id)
+      sevendaysTotal = parseInt(sevendaysTotal) + parseInt(item.seller_commission)
+    }
+    if(changeDate>=d.toLocaleDateString() && changeDate<=today)  
+    {
+      console.log(item._id)
+      monthTotal = parseInt(monthTotal) + parseInt(item.seller_commission)
+    }
+    if(changeDate>=dy.toLocaleDateString() && changeDate<=today)  
+    {
+      console.log(item._id)
+      yearTotal = parseInt(yearTotal) + parseInt(item.seller_commission)
+    }
+
+  })
+
+  
+
+
+  res.status(200).json({
+    status: true,
+    todaysTotal: todaysTotal,
+    yestardayTotal: yestardayTotal,
+    sevendaysTotal: sevendaysTotal,
+    monthTotal: monthTotal,
+    yearTotal: yearTotal,
+
+
+
+});
+                 
+}
+
 module.exports = {
     viewUser,
     viewUserList,
@@ -378,5 +497,6 @@ module.exports = {
     applyWithdraw,
     withdrawHistory,
     kyccreateNUpdate,
-    getKyc
+    getKyc,
+    getGraphcomission
 }
