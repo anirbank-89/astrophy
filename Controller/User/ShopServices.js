@@ -664,6 +664,79 @@ const viewTopServiceProvider = async (req,res)=>{
     });
 }
 
+const viewSingleServiceProvider = async (req,res)=>{
+
+    User
+    .aggregate(
+        [
+            {
+                $match: { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+            }, 
+            {
+                $lookup:{
+                    from:"shops",
+                    localField:"_id",
+                    foreignField:"userid",
+                    as:"shop_data"
+                }
+            },
+            {
+                $unwind:"$shop_data"
+            },  
+            {
+                $lookup:{
+                    from:"shop_services",
+                    localField:"shop_data._id",
+                    foreignField:"shop_id",                    
+                    as:"service_data"
+                }
+            },
+            {
+                $project:{
+                    _v:0
+                }
+            },
+            {
+                $lookup:{
+                    from:"servicereviews",
+                    localField:"service_data._id",
+                    foreignField: "service_id",
+                    as:"rev_data",
+                }
+            },
+            {
+                $addFields: {
+                    avgRating: {
+                        $avg: {
+                            $map: {
+                                input: "$rev_data",
+                                in: "$$this.rating"
+                            }
+                        }
+                    }
+                }
+            },
+            { $sort: { priority: 1 } },
+            
+            
+        ]
+    )
+    .then((data)=>{
+        res.status(200).json({
+            status: true,
+            message: "Single Provider get successfully",
+            data: data
+        });
+    })
+    .catch((err)=>{
+        res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            error: err
+        });
+    });
+}
+
 const viewAllshopservicelist = async (req,res)=>{
     let id = req.params.id 
     ShopService.aggregate(
@@ -812,5 +885,6 @@ module.exports = {
     chatServiceregister,
     viewTopServiceProvider,
     viewAllshopservicelist,
-    viewAllrelatedService
+    viewAllrelatedService,
+    viewSingleServiceProvider
 }
