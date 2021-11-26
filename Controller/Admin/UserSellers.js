@@ -409,6 +409,36 @@ const withdrawHistory = async (req, res) => {
                    
   }
 
+  const setPriority = async (req,res)=>{    
+    
+    let editData = {
+      priority: req.body.priority
+    }
+  
+      User.findOneAndUpdate(
+        {_id: {$in:[mongoose.Types.ObjectId(req.body.seler_id)]}},
+        editData,
+        {new: true},
+        (err,docs)=>{
+          if (!err) {
+            res.status(200).json({
+              status: true,
+              message: "Profile successfully updated.",
+              data: docs
+            });
+          }
+          else {
+            res.status(500).json({
+              status: false,
+              message: "Failed to update profile. Server error.",
+              error: err
+            });
+          }
+        }
+      )
+    
+      }
+
 module.exports = {
     viewUserList,
     viewUser,
@@ -419,5 +449,6 @@ module.exports = {
     sellercomHistory,
     paycomsion,
     withdrawHistory,
-    getKyc
+    getKyc,
+    setPriority
 }

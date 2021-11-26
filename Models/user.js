@@ -48,6 +48,10 @@ let UserSchema = new mongoose.Schema({
         type: Boolean,
         required: false,
         default: false//
+    },
+    priority: {
+        type: Number,
+        default: 0//
     }
 });
 
