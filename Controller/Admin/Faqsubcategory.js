@@ -190,10 +190,40 @@ const setStatus = async (req, res) => {
     }
 }
 
+const viewsubcatOncat = async (req, res) => {
+    return SubCategory.aggregate(
+        [
+            {
+                $match: { category_id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+            },            
+            {
+                $project: {
+                    _v: 0
+                }
+            }
+        ]
+    )
+        .then((docs) => {
+            res.status(200).json({
+                status: true,
+                message: "Sub-categories get successfully",
+                data: docs
+            })
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err
+            })
+        })
+}
+
 module.exports = {
     create,
     viewAll,
     update,
     Delete,
-    setStatus
+    setStatus,
+    viewsubcatOncat
 }

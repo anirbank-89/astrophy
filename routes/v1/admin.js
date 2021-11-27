@@ -88,7 +88,7 @@ router.get('/faq/subcategory', FaqsubcatController.viewAll)   // added by anirba
 router.put('/faq/subcategory/:id', FaqsubcatController.update)// added by anirbank-93
 router.delete('/faq/subcategory/:id', FaqsubcatController.Delete)// added by anirbank-93
 router.put('/faq/subcategory/set-status/:id', FaqsubcatController.setStatus)// added by anirbank-93
-
+router.get('/faq/catsubcategory/:id', FaqsubcatController.viewsubcatOncat)
 
 router.get('/userlist', UserSellersController.viewUserList)     // added by anirbank-93
 router.get('/viewuser/:id', UserSellersController.viewUser)     // added by anirbank-93
