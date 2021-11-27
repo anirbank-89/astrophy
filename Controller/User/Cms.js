@@ -2,6 +2,7 @@ var mongoose = require("mongoose");
 var Achievements = require('../../Models/achievements');
 var Blog = require("../../Models/blog");
 var Faqcategory = require("../../Models/faqcat");
+var Faq = require("../../Models/faq");
 
 const viewAllAchievements = async (req, res) => {
     var achievements = await Achievements.find().exec();
@@ -129,10 +130,60 @@ const viewAllBlog = async (req, res) => {
         })
 }
 
+const viewAllfaq = async( req ,res )=>
+{
+    return Faq.aggregate(
+        [
+            {
+                $match: { category_id: { $in: [mongoose.Types.ObjectId(req.body.category_id)] } },
+            }, 
+            {
+                $match: { subcategory_id: { $in: [mongoose.Types.ObjectId(req.body.subcategory_id)] } },
+            }, 
+            {
+                $lookup:{
+                    from:"faqcats",
+                    localField:"category_id",
+                    foreignField: "_id",
+                    as:"category_data"
+                }
+            },
+            {
+                $lookup:{
+                    from:"faqsubcats",
+                    localField:"subcategory_id",
+                    foreignField: "_id",
+                    as:"subcategory_data"
+                }
+            },
+            { $sort: { _id: -1 } },
+            {
+                $project:{
+                    _v:0
+                }
+            }
+        ]
+    ).then((data)=>{
+        res.status(200).json({
+            status:true,
+            message:'Faq Data Get Successfully',
+            data:data
+        })
+    })
+    .catch((err)=>{
+        res.status(500).json({
+            status: false,
+            message: "Server error. Please try again.",
+            error: error,
+          });
+    })
+}
+
 module.exports = {
     viewAllAchievements,
     viewAchievementById,
     viewAllBlog,
     viewSingleBlog,
-    viewAllfaqcat
+    viewAllfaqcat,
+    viewAllfaq
 }
