@@ -15,7 +15,7 @@ const create = async (req, res) => {
     let subCategoryData = {
         _id: mongoose.Types.ObjectId(),
         name: req.body.name,
-        categoryid: mongoose.Types.ObjectId(req.body.categoryid)//
+        category_id: mongoose.Types.ObjectId(req.body.categoryid)//
     }
 
     const subcategory = new SubCategory(subCategoryData)
