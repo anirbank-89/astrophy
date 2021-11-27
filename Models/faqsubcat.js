@@ -9,7 +9,11 @@ const FaqsubcatSchema = new mongoose.Schema({
         required:true,
         unique:true
     }, //
-    category_id: mongoose.Schema.Types.ObjectId,
+    category_id:
+    {
+        type:mongoose.Schema.Types.ObjectId,
+        required:true
+    } ,
     status:{
         type:Boolean,
         default:true

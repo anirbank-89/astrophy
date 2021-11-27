@@ -25,20 +25,7 @@ const create = async( req , res ) =>
             error:v.errors
         })
     }
-    // if( typeof(req.file)=='undefined' || req.file ==null)
-    // {
-    //     return res.status(200).send({
-    //         status:true,
-    //         error:{
-    //             "image":{
-    //                 "message": "The image field is mandatory.",
-    //                 "rule": "required"
-    //             }
-    //         }
 
-    //     })
-    // }
-    // let image_url = await Upload.uploadFile(req, "products");
     let prductData = {
         _id : mongoose.Types.ObjectId(),
         qstn : req.body.qstn,

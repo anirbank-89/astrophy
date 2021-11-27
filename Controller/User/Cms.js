@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 var Achievements = require('../../Models/achievements');
 var Blog = require("../../Models/blog");
+var Faqcategory = require("../../Models/faqcat");
 
 const viewAllAchievements = async (req, res) => {
     var achievements = await Achievements.find().exec();
@@ -92,6 +93,41 @@ const viewAllBlog = async (req, res) => {
         }
     );
   };
+
+  const viewAllfaqcat = async (req, res) => {
+    return Faqcategory.aggregate(
+        [
+            {
+                $lookup: {
+                    from: "faqsubcats",//
+                    localField: "_id",//
+                    foreignField: "_id",
+                    as: "category_data"//
+                }
+            },
+            { $sort: { _id: -1 } },
+            {
+                $project: {
+                    _v: 0
+                }
+            }
+        ]
+    ).
+        then((data) => {
+            res.status(200).json({
+                status: true,
+                message: 'Category Data Get Successfully',
+                data: data
+            })
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: error,
+            });
+        })
+}
 
 module.exports = {
     viewAllAchievements,
