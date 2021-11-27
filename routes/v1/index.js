@@ -89,6 +89,8 @@ router.post('/user/feedback', FeedbackController.addFeedback);
 
 router.get('/user/Blog',CmsController.viewAllBlog)
 router.get('/user/singleBlog/:id',CmsController.viewSingleBlog)
+router.get('/user/viewallcat',CmsController.viewAllfaqcat)
+
 
 
 

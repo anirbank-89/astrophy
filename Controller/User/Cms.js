@@ -101,8 +101,8 @@ const viewAllBlog = async (req, res) => {
                 $lookup: {
                     from: "faqsubcats",//
                     localField: "_id",//
-                    foreignField: "_id",
-                    as: "category_data"//
+                    foreignField: "category_id",
+                    as: "subcategory_data"//
                 }
             },
             { $sort: { _id: -1 } },
@@ -133,5 +133,6 @@ module.exports = {
     viewAllAchievements,
     viewAchievementById,
     viewAllBlog,
-    viewSingleBlog
+    viewSingleBlog,
+    viewAllfaqcat
 }
