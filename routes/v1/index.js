@@ -87,6 +87,10 @@ router.get('/user/cms/achievement/:id', CmsController.viewAchievementById)
 
 router.post('/user/feedback', FeedbackController.addFeedback);
 
+router.get('/user/Blog',CmsController.viewAllBlog)
+router.get('/user/singleBlog/:id',CmsController.viewSingleBlog)
+
+
 
 
 
