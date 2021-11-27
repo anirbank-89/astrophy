@@ -8,6 +8,8 @@ var User = require('../../Models/user');
 var Product = require('../../Models/product');
 var emailVerify = require('../../service/emailsend');
 var Contact = require('../../Models/contactus');
+var ShopService = require('../../Models/shop_service')
+var Service = require('../../Models/service');
 
 
 
@@ -354,6 +356,33 @@ const ViewAllcontact = async( req , res)=>{
     })
 }
 
+const viewAllServices = async (req, res) => {
+    let sevives = await Service.find().exec()
+    let arr = [];
+    sevives.forEach(element=>{
+        if(element.name=='Love Spells' || element.name=='Protection Spells' || element.name== 'Cleansing Spells' || element.name== 'Custom Spells' || element.name== 'Obsession Spell' || element.name== 'Love Binding Spell' || element.name== 'Career Spell' || element.name== 'Finance Spell')
+        {
+            arr.push(element)
+        }
+    })
+    
+    res.status(200).json({
+        status:true,
+        message:'Service Category List Get Successfully',
+        data:arr
+    })
+}
+
+const viewSingleSpell = async (req, res) => {
+    let sevives = await Service.findOne({_id:mongoose.Types.ObjectId(req.params.id)}).exec()
+    
+    res.status(200).json({
+        status:true,
+        message:'Service Category List Get Successfully',
+        data:sevives
+    })
+}
+
 module.exports = {
     getTokenData,
     sendVerifyLink,
@@ -363,5 +392,7 @@ module.exports = {
     viewProductList,
     viewAllsubscription,
     contactus,
-    ViewAllcontact
+    ViewAllcontact,
+    viewAllServices,
+    viewSingleSpell
 }
