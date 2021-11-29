@@ -10,6 +10,7 @@ var SafetySchema = require("../../Models/safetyguide");
 var AssoSchema = require("../../Models/associate");
 var Banner = require("../../Models/banner");
 var Achievements = require('../../Models/achievements');
+var Cservice = require("../../Models/cservice");
 
 
 const { Validator } = require("node-input-validator");
@@ -1092,6 +1093,25 @@ const deleteAchievement = async (req,res)=>{
   );
 }
 
+const viewCustomerservice = async (req, res) => {
+  var achievements = await Cservice.find().exec();
+
+  if (achievements.length > 0) {
+    return res.status(200).json({
+      status: true,
+      message: "Data get successfully!",
+      data: achievements
+    });
+  }
+  else {
+    return res.status(200).json({
+      status: true,
+      message: "No achievement data added.",
+      data: null
+    });
+  }
+}
+
 module.exports = {
   createNUpdatecms,
   createNUpdateblog,
@@ -1120,5 +1140,6 @@ module.exports = {
   viewAllAchievements,
   viewAchievementById,
   editAchievement,
-  deleteAchievement
+  deleteAchievement,
+  viewCustomerservice
 };
