@@ -91,6 +91,7 @@ router.get('/user/Blog',CmsController.viewAllBlog)
 router.get('/user/singleBlog/:id',CmsController.viewSingleBlog)
 router.get('/user/viewallcat',CmsController.viewAllfaqcat)
 router.post('/user/allFaq',CmsController.viewAllfaq)
+router.post('user/createCservice',CmsController.createCservice);
 
 
 

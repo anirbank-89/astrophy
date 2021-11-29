@@ -3,6 +3,50 @@ var Achievements = require('../../Models/achievements');
 var Blog = require("../../Models/blog");
 var Faqcategory = require("../../Models/faqcat");
 var Faq = require("../../Models/faq");
+var Cservice = require("../../Models/cservice");
+
+const { Validator } = require("node-input-validator");
+
+const createCservice = async (req, res) => {
+  const v = new Validator(req.body, {
+    heading: "required",
+    email: "required",
+    qstn: "required"
+
+  });
+  let matched = await v.check().then((val) => val);
+  if (!matched) {
+    res.status(200).send({ status: false, error: v.errors });
+  }
+    let cms = {
+      _id: mongoose.Types.ObjectId(),
+      heading: req.body.heading,
+      email: req.body.email,
+      qstn : req.body.qstn
+    };
+
+    const cmsdt = new Cservice(cms);
+
+    cmsdt
+      .save()
+      .then((docs) => {
+        res.status(200).json({
+          status: true,
+          success: true,
+          message: "Customer Service successfully created",
+          data: docs,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          status: false,
+          message: "Server error. Please try again",
+          error: err,
+        });
+      });
+  
+};
+
 
 const viewAllAchievements = async (req, res) => {
     var achievements = await Achievements.find().exec();
@@ -185,5 +229,6 @@ module.exports = {
     viewAllBlog,
     viewSingleBlog,
     viewAllfaqcat,
-    viewAllfaq
+    viewAllfaq,
+    createCservice
 }
