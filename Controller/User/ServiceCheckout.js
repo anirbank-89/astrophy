@@ -88,6 +88,13 @@ const create = async (req, res) => {
   // ) {
   //   dataSubmit.coupon = req.body.coupon;
   // }
+    if (
+    req.body.tip != "" &&
+    req.body.tip != null &&
+    typeof req.body.tip != undefined
+  ) {
+    dataSubmit.tip = mongoose.Types.ObjectId(req.body.tip);
+  }
   if (
     req.body.address2 != "" &&
     req.body.address2 != null &&

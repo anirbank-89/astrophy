@@ -83,6 +83,10 @@ const ServiceCheckoutSchema = new mongoose.Schema({
         type:Number,
         required:false
     },
+    tip:{
+        type:Number,
+        required:false
+    },
     status:{
         type:String,
         default:true
