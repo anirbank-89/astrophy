@@ -4,6 +4,8 @@ var Blog = require("../../Models/blog");
 var Faqcategory = require("../../Models/faqcat");
 var Faq = require("../../Models/faq");
 var Cservice = require("../../Models/cservice");
+var Subscribe = require("../../Models/subscribe");
+
 
 const { Validator } = require("node-input-validator");
 
@@ -46,6 +48,43 @@ const createCservice = async (req, res) => {
       });
   
 };
+
+
+const createSubscribe = async (req, res) => {
+    const v = new Validator(req.body, {
+      email: "required",
+  
+    });
+    let matched = await v.check().then((val) => val);
+    if (!matched) {
+      res.status(200).send({ status: false, error: v.errors });
+    }
+      let cms = {
+        _id: mongoose.Types.ObjectId(),
+        email: req.body.email
+      };
+  
+      const cmsdt = new Subscribe(cms);
+  
+      cmsdt
+        .save()
+        .then((docs) => {
+          res.status(200).json({
+            status: true,
+            success: true,
+            message: "Subscribe successfully created",
+            data: docs,
+          });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            status: false,
+            message: "Server error. Please try again",
+            error: err,
+          });
+        });
+    
+  };
 
 
 const viewAllAchievements = async (req, res) => {
@@ -230,5 +269,6 @@ module.exports = {
     viewSingleBlog,
     viewAllfaqcat,
     viewAllfaq,
-    createCservice
+    createCservice,
+    createSubscribe
 }

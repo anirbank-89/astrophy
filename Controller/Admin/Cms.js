@@ -11,6 +11,7 @@ var AssoSchema = require("../../Models/associate");
 var Banner = require("../../Models/banner");
 var Achievements = require('../../Models/achievements');
 var Cservice = require("../../Models/cservice");
+var Subscribe = require("../../Models/subscribe");
 
 
 const { Validator } = require("node-input-validator");
@@ -1112,6 +1113,25 @@ const viewCustomerservice = async (req, res) => {
   }
 }
 
+const viewSubscribe = async (req, res) => {
+  var achievements = await Subscribe.find().exec();
+
+  if (achievements.length > 0) {
+    return res.status(200).json({
+      status: true,
+      message: "Data get successfully!",
+      data: achievements
+    });
+  }
+  else {
+    return res.status(200).json({
+      status: true,
+      message: "No Subscribe data added.",
+      data: null
+    });
+  }
+}
+
 module.exports = {
   createNUpdatecms,
   createNUpdateblog,
@@ -1141,5 +1161,6 @@ module.exports = {
   viewAchievementById,
   editAchievement,
   deleteAchievement,
-  viewCustomerservice
+  viewCustomerservice,
+  viewSubscribe
 };
