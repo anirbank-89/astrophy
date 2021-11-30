@@ -2,6 +2,7 @@ var mongoose = require("mongoose");
 var Achievements = require('../../Models/achievements');
 var Blog = require("../../Models/blog");
 var Faqcategory = require("../../Models/faqcat");
+var Faqsubcategory = require("../../Models/faqsubcat");
 var Faq = require("../../Models/faq");
 var Cservice = require("../../Models/cservice");
 var Subscribe = require("../../Models/subscribe");
@@ -213,6 +214,36 @@ const viewAllBlog = async (req, res) => {
         })
 }
 
+const viewAllfaqsubcat = async (req, res) => {
+  return Faqsubcategory.aggregate(
+      [
+        {
+          $match: { category_id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+        },           
+          { $sort: { _id: -1 } },
+          {
+              $project: {
+                  _v: 0
+              }
+          }
+      ]
+  ).
+      then((data) => {
+          res.status(200).json({
+              status: true,
+              message: 'Category Data Get Successfully',
+              data: data
+          })
+      })
+      .catch((err) => {
+          res.status(500).json({
+              status: false,
+              message: "Server error. Please try again.",
+              error: error,
+          });
+      })
+}
+
 const viewAllfaq = async( req ,res )=>
 {
     return Faq.aggregate(
@@ -270,5 +301,6 @@ module.exports = {
     viewAllfaqcat,
     viewAllfaq,
     createCservice,
-    createSubscribe
+    createSubscribe,
+    viewAllfaqsubcat
 }

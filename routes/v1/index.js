@@ -90,6 +90,7 @@ router.post('/user/feedback', FeedbackController.addFeedback);
 router.get('/user/Blog',CmsController.viewAllBlog)
 router.get('/user/singleBlog/:id',CmsController.viewSingleBlog)
 router.get('/user/viewallcat',CmsController.viewAllfaqcat)
+router.get('/user/viewallsubcat/:id',CmsController.viewAllfaqsubcat)
 router.post('/user/allFaq',CmsController.viewAllfaq)
 router.post('/user/createCservice',CmsController.createCservice);
 router.post('/user/createSubscribe',CmsController.createSubscribe);
