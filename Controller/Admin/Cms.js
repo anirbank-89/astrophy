@@ -12,7 +12,7 @@ var Banner = require("../../Models/banner");
 var Achievements = require('../../Models/achievements');
 var Cservice = require("../../Models/cservice");
 var Subscribe = require("../../Models/subscribe");
-
+var ContactUs = require("../../Models/seller_contactus");
 
 const { Validator } = require("node-input-validator");
 
@@ -1132,6 +1132,31 @@ const viewSubscribe = async (req, res) => {
   }
 }
 
+
+const getContactusInfo = async (req, res) => {
+  return ContactUs.aggregate([
+    {
+      $project: {
+        _v: 0,
+      },
+    },
+  ])
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        message: "Contactus Info get successfully",
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err,
+      });
+    });
+};
+
 module.exports = {
   createNUpdatecms,
   createNUpdateblog,
@@ -1162,5 +1187,6 @@ module.exports = {
   editAchievement,
   deleteAchievement,
   viewCustomerservice,
-  viewSubscribe
+  viewSubscribe,
+  getContactusInfo
 };

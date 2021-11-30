@@ -19,6 +19,7 @@ const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout
 const SellerMyaccountController = require('../../Controller/User/SellerMyaccount')//krittika
 const ServicereviewController = require('../../Controller/User/ServiceReview')
 const SeaarchController = require('../../Controller/User/Search')
+const SellerContactus = require('../../Controller/User/ContactUs')
 
 
 
@@ -133,11 +134,17 @@ router.delete('/servicecart/:id',ServiceCartController.Delete)
 
 router.post('/servicecheckout', ServiceCheckoutController.create);
 
+router.post('/accept_status', ServiceCheckoutController.setStatus);
+
 router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
 router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
 router.post('/sellerbookhistoryrepo', SellerMyaccountController.reportViewAll);
 router.post('/servicereview', ServicereviewController.create);
 router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
+
+// contact us
+router.post('/sellercontact', SellerContactus.create);
+// contact us
 router.get('/sellercomission/:id',UserSellerController.sellercomHistory);
 router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingcomission);
 router.post('/withdraw-request',UserSellerController.applyWithdraw);

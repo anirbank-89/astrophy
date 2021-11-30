@@ -170,6 +170,7 @@ router.delete('/cms/achievement/:id', CmsController.deleteAchievement)
 router.get('/cms/customerService', CmsController.viewCustomerservice)
 router.get('/cms/customerService', CmsController.viewCustomerservice)
 router.get('/cms/viewSubscribe', CmsController.viewSubscribe)
+router.get('/cms/ContactusInfo', CmsController.getContactusInfo)
 
 
 

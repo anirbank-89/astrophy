@@ -224,7 +224,45 @@ const create = async (req, res) => {
   }
 };*/
 
+const setStatus = async (req, res) => {
+  var id = req.body.id;
+  var acceptstatus = req.body.acceptstatus;
+
+  var current_status = await ServiceCheckout.findById({ _id: id }).exec();
+
+  console.log("Shop Service data", current_status);
+
+  if (current_status.acceptstatus === "pending") {
+      console.log(true);
+      return ServiceCheckout.findByIdAndUpdate(
+          { _id: id },
+          { $set: { acceptstatus: acceptstatus } },
+          // { new: true },
+          (err, docs) => {
+            docs = { ...docs._doc, ...req.body };
+              if (!err) {
+                  res.status(200).json({
+                      status: true,
+                      message: "Service Checkout has been made inactive.",
+                      data: docs
+                  });
+              }
+              else {
+                  res.status(500).json({
+                      status: false,
+                      message: "Invalid id. Server error.",
+                      error: err
+                  });
+              }
+          }
+      );
+  }
+}
+
+
+
 module.exports = {
-  create
+  create,
+  setStatus
   //checkCoupon,
 };
