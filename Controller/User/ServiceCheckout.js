@@ -88,13 +88,13 @@ const create = async (req, res) => {
   // ) {
   //   dataSubmit.coupon = req.body.coupon;
   // }
-    if (
-    req.body.tip != "" &&
-    req.body.tip != null &&
-    typeof req.body.tip != undefined
-  ) {
-    dataSubmit.tip = mongoose.Types.ObjectId(req.body.tip);
-  }
+  //   if (
+  //   req.body.tip != "" &&
+  //   req.body.tip != null &&
+  //   typeof req.body.tip != undefined
+  // ) {
+  //   dataSubmit.tip = mongoose.Types.ObjectId(req.body.tip);
+  // }
   if (
     req.body.address2 != "" &&
     req.body.address2 != null &&
@@ -259,10 +259,40 @@ const setStatus = async (req, res) => {
   }
 }
 
+const setTips = async (req, res) => {
+  var id = req.body.id;
+
+      console.log(true);
+      return ServiceCheckout.findByIdAndUpdate(
+          { _id: id },
+          { $set: { tip: req.body.tip } },
+          // { new: true },
+          (err, docs) => {
+            docs = { ...docs._doc, ...req.body };
+              if (!err) {
+                  res.status(200).json({
+                      status: true,
+                      message: "Tip paid successfully",
+                      data: docs
+                  });
+              }
+              else {
+                  res.status(500).json({
+                      status: false,
+                      message: "Invalid id. Server error.",
+                      error: err
+                  });
+              }
+          }
+      );
+  
+}
+
 
 
 module.exports = {
   create,
-  setStatus
+  setStatus,
+  setTips
   //checkCoupon,
 };

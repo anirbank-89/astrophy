@@ -136,6 +136,9 @@ router.post('/servicecheckout', ServiceCheckoutController.create);
 
 router.post('/accept_status', ServiceCheckoutController.setStatus);
 
+router.post('/tips', ServiceCheckoutController.setTips);
+
+
 router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
 router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
 router.post('/sellerbookhistoryrepo', SellerMyaccountController.reportViewAll);
