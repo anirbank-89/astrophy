@@ -6,8 +6,9 @@ var Faqsubcategory = require("../../Models/faqsubcat");
 var Faq = require("../../Models/faq");
 var Cservice = require("../../Models/cservice");
 var Subscribe = require("../../Models/subscribe");
-
-
+var About = require("../../Models/about");
+var Privacy = require("../../Models/privacy");
+var Condition = require("../../Models/condition");
 const { Validator } = require("node-input-validator");
 
 const createCservice = async (req, res) => {
@@ -293,6 +294,81 @@ const viewAllfaq = async( req ,res )=>
     })
 }
 
+
+const getAbout = async (req, res) => {
+  return About.aggregate([
+    {
+      $project: {
+        _v: 0,
+      },
+    },
+  ])
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        message: "About get successfully",
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err,
+      });
+    });
+};
+
+const getPrivacy = async (req, res) => {
+  return Privacy.aggregate([
+    {
+      $project: {
+        _v: 0,
+      },
+    },
+  ])
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        message: "Privacy get successfully",
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err,
+      });
+    });
+};
+
+
+
+const getCondition = async (req, res) => {
+  return Condition.aggregate([
+    {
+      $project: {
+        _v: 0,
+      },
+    },
+  ])
+    .then((docs) => {
+      res.status(200).json({
+        status: true,
+        message: "Condition get successfully",
+        data: docs,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: "Server error. Please try again.",
+        error: err,
+      });
+    });
+};
+
 module.exports = {
     viewAllAchievements,
     viewAchievementById,
@@ -302,5 +378,8 @@ module.exports = {
     viewAllfaq,
     createCservice,
     createSubscribe,
-    viewAllfaqsubcat
+    viewAllfaqsubcat,
+    getAbout,
+    getPrivacy,
+    getCondition
 }
