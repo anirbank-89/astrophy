@@ -15,7 +15,7 @@ const create = async( req , res ) =>
     const v = new Validator(req.body,{
         name : "required",
         email : "required",
-        cat_id : "required",
+        // cat_id : "required",
         message : "required"
 
     })
@@ -33,7 +33,7 @@ const create = async( req , res ) =>
         _id : mongoose.Types.ObjectId(),
         name : req.body.name,
         email : req.body.email,
-        cat_id : req.body.cat_id,
+        // cat_id : req.body.cat_id,
         message : req.body.message
         
     }

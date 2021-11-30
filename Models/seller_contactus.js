@@ -12,10 +12,10 @@ const ContactusSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    cat_id:{
-        type:String,
-        required:true,
-    },
+    // cat_id:{
+    //     type:String,
+    //     required:true,
+    // },
     message:{
         type:String,
         required:true,
