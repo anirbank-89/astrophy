@@ -144,6 +144,8 @@ router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
 router.post('/sellerbookhistoryrepo', SellerMyaccountController.reportViewAll);
 router.post('/servicereview', ServicereviewController.create);
 router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
+router.get('/sellersingleBookinghis/:id', SellerMyaccountController.viewSingleOrder);
+
 
 // contact us
 router.post('/sellercontact', SellerContactus.create);
