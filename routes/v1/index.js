@@ -35,7 +35,7 @@ router.post('/user/email-verification', UserController.sendVerifyLink);// added 
 router.post('/user/verify-email', UserController.afterEmailVerify);    // added by anirbank-93
 router.post('/user/login', UserController.login);
 
-router.get('/user/listProducts/:page', UserController.viewProductList);
+router.get('/user/listProducts/:page/:userid', UserController.viewProductList);
 router.get('/user/spellCasting', UserController.viewAllServices);
 router.get('/user/singlespellCasting/:id', UserController.viewSingleSpell);
 router.get('/user/viewproduct/:id', UserProductController.viewSingleProduct);   // added by anirbank-93

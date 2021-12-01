@@ -222,13 +222,13 @@ const viewProductList = async( req ,res )=>
                         as:"wishlist_data",
                     }
                 },
-                (req.body.userid!='' && typeof req.body.userid!=='undefined')?
+                (req.params.userid!='' && typeof req.params.userid!=='undefined')?
                 {
                     $lookup: {
                     from: "carts",
                     let: {
                         product_id: "$_id",
-                        user_id:mongoose.Types.ObjectId(req.body.userid),
+                        user_id:mongoose.Types.ObjectId(req.params.userid),
                         status:true
                     },
                     pipeline: [
