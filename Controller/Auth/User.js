@@ -195,68 +195,89 @@ const viewProductList = async( req ,res )=>
           limit: 8,
           customLabels: myCustomLabels
       };
-
-    Product.aggregatePaginate(Product.aggregate(
-        [
-            {
-                $lookup:{
-                    from:"categories",
-                    localField:"catID",
-                    foreignField: "_id",
-                    as:"category_data"
-                }
-            },
-            {
-                $lookup:{
-                    from:"reviews",
-                    localField:"_id",
-                    foreignField: "product_id",
-                    as:"review_data",
-                }
-            },
-            {
-                $lookup:{
-                    from:"wishlists",
-                    localField:"_id",
-                    foreignField: "prod_id",
-                    as:"wishlist_data",
-                }
-            },
-            {
-                $addFields: {
-                    avgRating: {
-                        $avg: {
-                            $map: {
-                                input: "$review_data",
-                                in: "$$this.rating"
+      
+        Product.aggregatePaginate(Product.aggregate(
+            [
+                {
+                    $lookup:{
+                        from:"categories",
+                        localField:"catID",
+                        foreignField: "_id",
+                        as:"category_data"
+                    }
+                },
+                {
+                    $lookup:{
+                        from:"reviews",
+                        localField:"_id",
+                        foreignField: "product_id",
+                        as:"review_data",
+                    }
+                },
+                {
+                    $lookup:{
+                        from:"wishlists",
+                        localField:"_id",
+                        foreignField: "prod_id",
+                        as:"wishlist_data",
+                    }
+                },
+                (req.body.userid!='' && typeof req.body.userid!=='undefined')?
+                {
+                    $lookup: {
+                    from: "carts",
+                    let: {
+                        product_id: "$_id",
+                        user_id:mongoose.Types.ObjectId(req.body.userid)
+                    },
+                    pipeline: [
+                        {
+                        $match: {
+                            $expr: {
+                            $and: [{ $eq: ["$prod_id", "$$product_id"] }&&{ $eq: ["$user_id", "$$user_id"] }],
+                            },
+                        },
+                        },
+                    ],
+                    as: "cart_details",
+                    },
+                }:{ $project: { __v: 0 } },
+                {
+                    $addFields: {
+                        avgRating: {
+                            $avg: {
+                                $map: {
+                                    input: "$review_data",
+                                    in: "$$this.rating"
+                                }
                             }
                         }
                     }
-                }
-            },    
-            {
-                $project:{
-                    _v:0,
-                //    avg : { $avg : '$review_data.rating' } 
-                }
-            },
-            
-        ]
-    ), options, function(err, result) {
-        if(!err) {
-            return res.status(200).json({
-                        status:true,
-                        message:'Product Data Get Successfully',
-                        data:result
-                    })
-        } else {
-            return res.status(500).json({
-                        status: false,
-                        message: "Server error. Please try again.",
-                        error: err,
-                      });
-        }
-    })
+                },    
+                {
+                    $project:{
+                        _v:0,
+                    //    avg : { $avg : '$review_data.rating' } 
+                    }
+                },
+                
+            ]
+        ), options, function(err, result) {
+            if(!err) {
+                return res.status(200).json({
+                            status:true,
+                            message:'Product Data Get Successfully',
+                            data:result
+                        })
+            } else {
+                return res.status(500).json({
+                            status: false,
+                            message: "Server error. Please try again.",
+                            error: err,
+                        });
+            }
+        })
+      
 }
 
 const viewAllsubscription = async( req , res)=>{
