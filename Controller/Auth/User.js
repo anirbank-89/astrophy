@@ -228,13 +228,14 @@ const viewProductList = async( req ,res )=>
                     from: "carts",
                     let: {
                         product_id: "$_id",
-                        user_id:mongoose.Types.ObjectId(req.body.userid)
+                        user_id:mongoose.Types.ObjectId(req.body.userid),
+                        status:true
                     },
                     pipeline: [
                         {
                         $match: {
                             $expr: {
-                            $and: [{ $eq: ["$prod_id", "$$product_id"] }&&{ $eq: ["$user_id", "$$user_id"] }],
+                            $and: [{ $eq: ["$prod_id", "$$product_id"] },{ $eq: ["$user_id", "$$user_id"] },{ $eq: ["$status","$$status"]}],
                             },
                         },
                         },
