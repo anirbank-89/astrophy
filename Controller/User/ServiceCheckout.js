@@ -54,22 +54,22 @@ const create = async (req, res) => {
 
   let subDataf = await SubscribedBy.findOne({userid:mongoose.Types.ObjectId(req.body.seller_id),status:true}).exec();
   
-  let sellerCom = 0;
+  // let sellerCom = 0;
 
-  let comType = subDataf.comission_type
+  // let comType = subDataf.comission_type
 
-  let comValue = subDataf.seller_comission
+  // let comValue = subDataf.seller_comission
 
 
 
-  if(subDataf.comission_type=="Flat comission")
-  {
-    sellerCom = subDataf.seller_comission
-  }
-  else
-  {
-    sellerCom = (req.body.total * subDataf.seller_comission )/100;
-  }
+  // if(subDataf.comission_type=="Flat comission")
+  // {
+  //   sellerCom = subDataf.seller_comission
+  // }
+  // else
+  // {
+  //   sellerCom = (req.body.total * subDataf.seller_comission )/100;
+  // }
 
   // console.log(sellerCom);
   // return false;
@@ -124,7 +124,7 @@ const create = async (req, res) => {
     );
   }
 */ 
-    let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(req.body.seller_id)}).exec();
+    // let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(req.body.seller_id)}).exec();
     if(req.body.tokenid!='' && typeof req.body.tokenid!=undefined)
     {
       dataSubmit.tokenid = req.body.tokenid
@@ -142,51 +142,51 @@ const create = async (req, res) => {
         }
       );
 
-      let dataComision = {
-        _id: mongoose.Types.ObjectId(),
-        order_id: mongoose.Types.ObjectId(data._id),
-        seller_id: mongoose.Types.ObjectId(req.body.seller_id),
-        commision_type: comType,        
-        commision_value: comValue,
-        price: req.body.total,
-        seller_commission: sellerCom        
-      };
+      // let dataComision = {
+      //   _id: mongoose.Types.ObjectId(),
+      //   order_id: mongoose.Types.ObjectId(data._id),
+      //   seller_id: mongoose.Types.ObjectId(req.body.seller_id),
+      //   commision_type: comType,        
+      //   commision_value: comValue,
+      //   price: req.body.total,
+      //   seller_commission: sellerCom        
+      // };
 
   //     console.log(dataComision);
   // return false;
-      const saveCom = new Servicecommission(dataComision);
-      saveCom.save()
+      // const saveCom = new Servicecommission(dataComision);
+      // saveCom.save()
 
       
-      console.log(totalcomission)
+      // console.log(totalcomission)
 
-      if(totalcomission!=null)
-      {
-        console.log('a')
+      // if(totalcomission!=null)
+      // {
+      //   console.log('a')
       
     
-        let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
-        Totalcomission.findOneAndUpdate(
-          { seller_id: mongoose.Types.ObjectId(req.body.seller_id)},
-          { $set: { comission_total: totalComcal,comission_all:totalComcal} },
-          (err, writeResult) => {
-            // console.log(err);
-          }
-        );
-      }
-      else
-      {
-        console.log('b')
-        let dataComisionTotalval = {
-          _id: mongoose.Types.ObjectId(),
-          seller_id: mongoose.Types.ObjectId(req.body.seller_id),
-          comission_total: sellerCom,        
-          comission_all: sellerCom     
-        };
-        console.log(dataComisionTotalval)
-        const saveComTotal = new Totalcomission(dataComisionTotalval);
-        saveComTotal.save()
-      }
+      //   let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
+      //   Totalcomission.findOneAndUpdate(
+      //     { seller_id: mongoose.Types.ObjectId(req.body.seller_id)},
+      //     { $set: { comission_total: totalComcal,comission_all:totalComcal} },
+      //     (err, writeResult) => {
+      //       // console.log(err);
+      //     }
+      //   );
+      // }
+      // else
+      // {
+      //   console.log('b')
+      //   let dataComisionTotalval = {
+      //     _id: mongoose.Types.ObjectId(),
+      //     seller_id: mongoose.Types.ObjectId(req.body.seller_id),
+      //     comission_total: sellerCom,        
+      //     comission_all: sellerCom     
+      //   };
+      //   console.log(dataComisionTotalval)
+      //   const saveComTotal = new Totalcomission(dataComisionTotalval);
+      //   saveComTotal.save()
+      // }
 
       res.status(200).json({
         status: true,
@@ -228,7 +228,79 @@ const setStatus = async (req, res) => {
   var id = req.body.id;
   var acceptstatus = req.body.acceptstatus;
 
+  
+
   var current_status = await ServiceCheckout.findById({ _id: id }).exec();
+
+  if(req.body.acceptstatus == 'accept')
+  {
+    let subDataf = await SubscribedBy.findOne({userid:mongoose.Types.ObjectId(current_status.seller_id),status:true}).exec();
+  
+    let sellerCom = 0;
+
+    let comType = subDataf.comission_type
+
+    let comValue = subDataf.seller_comission
+
+
+
+    if(subDataf.comission_type=="Flat comission")
+    {
+      sellerCom = subDataf.seller_comission
+    }
+    else
+    {
+      sellerCom = (current_status.total * subDataf.seller_comission )/100;
+    }
+
+    let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(current_status.seller_id)}).exec();
+    let dataComision = {
+      _id: mongoose.Types.ObjectId(),
+      order_id: mongoose.Types.ObjectId(current_status._id),
+      seller_id: mongoose.Types.ObjectId(current_status.seller_id),
+      commision_type: comType,        
+      commision_value: comValue,
+      price: current_status.total,
+      seller_commission: sellerCom        
+    };
+
+//     console.log(dataComision);
+// return false;
+    const saveCom = new Servicecommission(dataComision);
+    saveCom.save()
+
+    
+    console.log(totalcomission)
+
+    if(totalcomission!=null)
+    {
+      console.log('a')
+    
+  
+      let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
+      Totalcomission.findOneAndUpdate(
+        { seller_id: mongoose.Types.ObjectId(current_status.seller_id)},
+        { $set: { comission_total: totalComcal,comission_all:totalComcal} },
+        (err, writeResult) => {
+          // console.log(err);
+        }
+      );
+    }
+    else
+    {
+      console.log('b')
+      let dataComisionTotalval = {
+        _id: mongoose.Types.ObjectId(),
+        seller_id: mongoose.Types.ObjectId(current_status.seller_id),
+        comission_total: sellerCom,        
+        comission_all: sellerCom     
+      };
+      console.log(dataComisionTotalval)
+      const saveComTotal = new Totalcomission(dataComisionTotalval);
+      saveComTotal.save()
+    }
+  
+  }
 
   console.log("Shop Service data", current_status);
 
