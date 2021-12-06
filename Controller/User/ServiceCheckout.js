@@ -360,11 +360,26 @@ const setTips = async (req, res) => {
   
 }
 
+const setSellersettlement = async (req, res) => {
+  var id = req.params.id;
+
+  let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(id)}).exec();
+  let totalEarning = totalcomission.comission_all
+  let totalSettlement = parseInt(totalcomission.comission_all) - parseInt(totalcomission.comission_total)
+  res.status(200).json({
+    status: true,
+    totalEarning: totalEarning,
+    totalSettlement:totalSettlement
+});
+  
+}
+
 
 
 module.exports = {
   create,
   setStatus,
-  setTips
+  setTips,
+  setSellersettlement
   //checkCoupon,
 };
