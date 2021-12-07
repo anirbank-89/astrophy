@@ -142,9 +142,9 @@ const update = async (req,res)=>{
         });
     }
     console.log(req.file)
-    if(typeof(req.body.image)!='undefined' || req.body.image!='' || req.body.image!=null){
-        req.body.image = JSON.parse(req.body.image)
-    }
+    // if(typeof(req.body.image)!='undefined' || req.body.image!='' || req.body.image!=null){
+    //     req.body.image = JSON.parse(req.body.image)
+    // }
     if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
         req.body.personalization = req.body.personalization
     }
