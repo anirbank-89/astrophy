@@ -145,6 +145,17 @@ const update = async (req,res)=>{
     if(typeof(req.body.image)!='undefined' || req.body.image!='' || req.body.image!=null){
         req.body.image = JSON.parse(req.body.image)
     }
+    if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
+        req.body.personalization = req.body.personalization
+    }
+    if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
+        req.body.hashtags = req.body.hashtags
+    }
+    if(typeof(req.body.image)=='undefined' || req.body.image=='' || req.body.image==null){
+        req.body.image = null
+    } else {
+        req.body.image = JSON.parse(req.body.image)
+    }
 
     let id = req.params.id
     return ShopService.findOneAndUpdate(
