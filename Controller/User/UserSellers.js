@@ -504,8 +504,11 @@ var applyForSeller = async (req, res) => {
 
   var image_url = await Upload.uploadFile(req, "sellers");
 
-  if (req.body.image == "" || req.body.image == null || typeof req.body.image == "undefined") {
+  if (req.body.image != "" || req.body.image != null || typeof req.body.image != "undefined") {
     req.body.image = image_url;
+  }
+  if (req.body.seller_id != "" || req.body.seller_id != null || typeof req.body.seller_id != "undefined") {
+    req.body.seller_id = mongoose.Types.ObjectId(req.body.seller_id);
   }
 
   const NEW_SELLER = new SELLER(req.body);
