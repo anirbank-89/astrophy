@@ -32,6 +32,10 @@ const SELLER = new Schema({
         type: String,
         required: true,
     },
+    ask_permission: {
+        type: Boolean,
+        default: true
+    },
     approved: {
         type: Boolean,
         default: false

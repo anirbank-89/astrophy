@@ -6,6 +6,7 @@ const CategoryController = require('../../Controller/Admin/Category');
 const SubscriptionController = require('../../Controller/Admin/Subscription');
 const UserSellersController = require('../../Controller/Admin/UserSellers'); // added by anirbank-93
 const ServiceController = require('../../Controller/Admin/Service');         // added by anirbank-93
+const ShopServiceController = require('../../Controller/Admin/ShopServices');// added by anirbank-93
 const ServiceSubCategoryController = require('../../Controller/Admin/SubCategory');// added by anirbank-93
 const CouponController = require('../../Controller/Admin/Coupon');
 const OrderhistoryController = require('../../Controller/Admin/Orderhistory');
@@ -107,6 +108,7 @@ router.put('/service/set-status/:id',ServiceController.setStatus)// added by ani
 router.post('/sellerComission-history',ServiceController.sellercomHistory)
 router.put('/adminAccept/:id',ServiceController.updateAdminaccept)
 
+router.get('/topProviders', ShopServiceController.viewTopServiceProvider); // added by anirbank-93
 
 router.post('/service/subcategory',ServiceSubCategoryController.create)    // added by anirbank-93
 router.get('/service/subcategory', ServiceSubCategoryController.viewAll)   // added by anirbank-93

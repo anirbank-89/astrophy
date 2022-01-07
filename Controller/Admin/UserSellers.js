@@ -440,7 +440,7 @@ const setPriority = async (req, res) => {
 }
 
 var getSellerRequest = async (req, res) => {
-  let requests = await SELLER.find({ approved: false }).exec();
+  let requests = await SELLER.find({}).exec();
 
   if (requests.length > 0) {
     return res.status(200).json({
@@ -463,7 +463,7 @@ var giveSellerApproval = async (req, res) => {
 
   return SELLER.findOneAndUpdate(
     { _id: mongoose.Types.ObjectId(id) },
-    { $set: { approved: true } },
+    { $set: { ask_permission: false, approved: true } },
     { new: true }
   )
       .then(data => {
