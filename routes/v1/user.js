@@ -160,8 +160,8 @@ router.post('/Kyc',UserSellerController.kyccreateNUpdate);
 router.get('/Kyc/:id',UserSellerController.getKyc);
 router.post('/getGraphcomission',UserSellerController.getGraphcomission);
 
-
-
+router.post('/apply-for-seller', upload1.single("image"), UserSellerController.applyForSeller); 
+router.get('/seller-approval-status/:id', UserSellerController.getSellerApprovalStatus);
 
 
 

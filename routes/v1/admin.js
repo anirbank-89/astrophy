@@ -179,8 +179,8 @@ router.get('/withdraw-history/:id',UserSellersController.withdrawHistory);
 router.get('/Kyc/:id',UserSellersController.getKyc);
 router.post('/Priority',UserSellersController.setPriority);
 
-
-
+router.get('/seller-requests', UserSellersController.getSellerRequest);
+router.put('/seller-requests/:id', UserSellersController.giveSellerApproval);
 
 
 
