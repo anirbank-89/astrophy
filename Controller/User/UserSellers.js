@@ -476,58 +476,70 @@ const getGraphcomission = async (req, res) => {
 }
 
 var applyForSeller = async (req, res) => {
-  const V = new Validator(req.body, {
-    name: 'required',
-    address: 'required',
-    email: 'required',
-    phone: 'required',
-    govt_id_name: 'required',
-    govt_id: 'required'
-  });
-  let matched = await V.check().then(val => val);
+  var adminCheck = await SELLER.findOne({ seller_id: mongoose.Types.ObjectId(req.body.seller_id) }).exec();
+  console.log(adminCheck);
 
-  if (!matched) {
-    return res.status(400).json({ status: false, errors: V.errors });
-  }
-
-  if (req.file == "" || req.file == null || typeof req.file == "undefined") {
-    return res.status(400).send({
-      status: false,
-      error: {
-        "image": {
-          "message": "The image field is mandatory.",
-          "rule": "required"
-        }
-      }
+  if (adminCheck == null || adminCheck == "") {
+    const V = new Validator(req.body, {
+      name: 'required',
+      address: 'required',
+      email: 'required',
+      phone: 'required',
+      govt_id_name: 'required',
+      govt_id: 'required'
     });
-  }
+    let matched = await V.check().then(val => val);
 
-  var image_url = await Upload.uploadFile(req, "sellers");
+    if (!matched) {
+      return res.status(400).json({ status: false, errors: V.errors });
+    }
 
-  if (req.body.image != "" || req.body.image != null || typeof req.body.image != "undefined") {
-    req.body.image = image_url;
-  }
-  if (req.body.seller_id != "" || req.body.seller_id != null || typeof req.body.seller_id != "undefined") {
-    req.body.seller_id = mongoose.Types.ObjectId(req.body.seller_id);
-  }
-
-  const NEW_SELLER = new SELLER(req.body);
-
-  return NEW_SELLER.save()
-    .then(data => {
-      res.status(200).json({
-        status: true,
-        message: "Data saved successfully.",
-        data: data
-      });
-    })
-    .catch(err => {
-      res.status(500).json({
+    if (req.file == "" || req.file == null || typeof req.file == "undefined") {
+      return res.status(400).send({
         status: false,
-        message: "Failed to save data. Server error.",
-        error: err
+        error: {
+          "image": {
+            "message": "The image field is mandatory.",
+            "rule": "required"
+          }
+        }
       });
+    }
+
+    var image_url = await Upload.uploadFile(req, "sellers");
+
+    if (req.body.image != "" || req.body.image != null || typeof req.body.image != "undefined") {
+      req.body.image = image_url;
+    }
+    if (req.body.seller_id != "" || req.body.seller_id != null || typeof req.body.seller_id != "undefined") {
+      req.body.seller_id = mongoose.Types.ObjectId(req.body.seller_id);
+    }
+
+    const NEW_SELLER = new SELLER(req.body);
+
+    return NEW_SELLER.save()
+      .then(data => {
+        res.status(200).json({
+          status: true,
+          message: "Data saved successfully.",
+          data: data
+        });
+      })
+      .catch(err => {
+        res.status(500).json({
+          status: false,
+          message: "Failed to save data. Server error.",
+          error: err.message
+        });
+      });
+  }
+  else {
+    return res.status(500).json({
+      status: false,
+      data: null,
+      error: "Seller approval request already sent."
     });
+  }
 }
 
 var getSellerApprovalStatus = async (req, res) => {
