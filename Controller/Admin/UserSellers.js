@@ -458,12 +458,36 @@ var getSellerRequest = async (req, res) => {
   }
 }
 
-var giveSellerApproval = async (req, res) => {
+var approveSellerRequest = async (req, res) => {
   var id = req.params.id;
 
   return SELLER.findOneAndUpdate(
     { _id: mongoose.Types.ObjectId(id) },
     { $set: { ask_permission: false, approved: true } },
+    { new: true }
+  )
+      .then(data => {
+        res.status(200).json({
+          status: true,
+          message: "Data successfully edited.",
+          data: data
+        });
+      })
+      .catch(err => {
+        res.status(500).json({
+          status: false,
+          message: "Invalid id. Server error.",
+          error: err
+        });
+      });
+}
+
+var rejectSellerRequest = async (req, res) => {
+  var id = req.params.id;
+
+  return SELLER.findOneAndUpdate(
+    { _id: mongoose.Types.ObjectId(id) },
+    { $set: { ask_permission: false } },
     { new: true }
   )
       .then(data => {
@@ -495,5 +519,6 @@ module.exports = {
   getKyc,
   setPriority,
   getSellerRequest,
-  giveSellerApproval
+  approveSellerRequest,
+  rejectSellerRequest
 }

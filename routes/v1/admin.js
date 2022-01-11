@@ -183,8 +183,8 @@ router.get('/Kyc/:id',UserSellersController.getKyc);
 router.post('/Priority',UserSellersController.setPriority);
 
 router.get('/seller-requests', UserSellersController.getSellerRequest);
-router.put('/seller-requests/:id', UserSellersController.giveSellerApproval);
-
+router.put('/approve-seller-requests/:id', UserSellersController.approveSellerRequest);
+router.put('/reject-seller-requests/:id', UserSellersController.rejectSellerRequest);
 
 
 
