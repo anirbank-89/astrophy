@@ -66,7 +66,18 @@ var userContactUsInfo = async (req, res) => {
         return res.status(400).json({ status: false, errors: V.errors });
     }
 
-    const NEW_GRIEVANCE = new USER_QUERIES(req.body);
+    let saveData = {
+        _id: mongoose.Types.ObjectId(),
+        user_id: mongoose.Types.ObjectId(req.body.user_id),
+        user_type: req.body.user_type,
+        email: req.body.email,
+        question: req.body.question
+    }
+    if (req.body.additional_details != null || typeof req.body.additional_details != "undefined") {
+        saveData.additional_details = req.body.additional_details;
+    }
+
+    const NEW_GRIEVANCE = new USER_QUERIES(saveData);
 
     return NEW_GRIEVANCE.save()
         .then(data => {
