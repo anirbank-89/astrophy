@@ -58,8 +58,7 @@ var userContactUsInfo = async (req, res) => {
     const V = new Validator(req.body, {
         user_type: 'required',
         email: 'required',
-        question: 'required',
-        grievance: 'required'
+        question: 'required'
     });
     let matched = await V.check().then(val => val);
 

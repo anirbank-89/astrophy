@@ -15,14 +15,11 @@ const GRIEVANCE = new Schema({
         type: String,
         required: true
     },
-    grievance: {
-        type: String,
-        required: true
-    },
+    additional_details: String,
     resolution_status: {
         type: Boolean,
         default: false
     }
 });
 
-module.exports = mongoose.model("user_grievance", GRIEVANCE);
+module.exports = mongoose.model("user_question", GRIEVANCE);
