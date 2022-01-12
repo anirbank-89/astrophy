@@ -70,9 +70,12 @@ var userContactUsInfo = async (req, res) => {
 
     return NEW_GRIEVANCE.save()
         .then(data => {
-            console.log("email", data.email);
+            console.log("receive mail", data.receive_mail);
+            console.log("user email ", data.email);
+            console.log("question ", data.question);
+            console.log("addtional details ", data.additional_details);
 
-            EMAIL_SEND.grievance(data.email);
+            var send_mail = EMAIL_SEND.queries(data.receive_mail,data.email,data.question,data.additional_details);
 
             res.status(200).json({
                 status: true,
@@ -89,27 +92,7 @@ var userContactUsInfo = async (req, res) => {
         });
 }
 
-var getUserQueries = async (req,res) => {
-    let queries = await USER_QUERIES.find({}).exec();
-
-    if (queries.length > 0) {
-        return res.status(200).json({
-            status: true,
-            message: "Data successfully get.",
-            data: queries
-        });
-    }
-    else {
-        return res.status(200).json({
-            status: true,
-            message: "No unresolved queries.",
-            data: []
-        });
-    }
-}
-
 module.exports = {
     sellerContactUsInfo,
-    userContactUsInfo,
-    getUserQueries
+    userContactUsInfo
 }

@@ -15,7 +15,14 @@ const QUERY = new Schema({
         type: String,
         required: true
     },
-    additional_details: String,
+    additional_details: {
+        type: String,
+        default: ""
+    },
+    receive_mail: {
+        type: String,
+        default: 'tesdata.stack@gmail.com'
+    },
     resolution_status: {
         type: Boolean,
         default: false

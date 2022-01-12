@@ -37,35 +37,41 @@ var verification = async (name, email) => {
     });
 };
 
-var grievance = async (email) => {
+function queries (rciv_mail,user_email, question, addn_detail) {
   var emailTemplate =
     '<p>' +
-    ' Thank you for contacting us. We have received you grievance and we will be taking a look. We will get back to you shortly.' +
+    'Received from: ' + user_email +
     '</p>' +
     '<br />' +
-    '<p>' + 'Team Astrophy' + '</p>'
+    '<p>' +
+    'Question: ' + question+
+  '</p>' +
+    '<br />' +
+    '<p>' +
+    'Additional_details: ' + addn_detail +
+    '</p>'
 
   let data = {
-    to: email,
+    to: rciv_mail,
     message: emailTemplate,
-    subject: "User grievance mail.",
+    subject: "User queries"
   }
 
   superagent
     .post('https://new.easytodb.com/astrophymail/semdmail.php')
-    .send(data)
+    .send(data) // sends a JSON post body
     .set('Content-Type', 'application/json')
-    .end((err,info) => {
-      if (!err) {
-        console.log("Email sent: ", info);
+    .end((err, info) => {
+      if (err) {
+        console.log(err);
       }
       else {
-        console.log(err.message);
+        console.log("Email info: ", info);
       }
     });
 }
 
 module.exports = {
   verification,
-  grievance
+  queries
 }

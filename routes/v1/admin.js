@@ -19,7 +19,7 @@ const FaqsubcatController = require('../../Controller/Admin/Faqsubcategory');
 const FaqController = require('../../Controller/Admin/Faq');
 const FeedbackController= require('../../Controller/Admin/Feedback');
 const StatsController = require('../../Controller/Admin/Stats');
-
+const UserQueries = require('../../Controller/Admin/UserQueries');
 
 
 
@@ -185,7 +185,7 @@ router.put('/reject-seller-requests/:id', UserSellersController.rejectSellerRequ
 
 router.get('/summary-stats', StatsController.summaryStats);
 
-
+router.get('/user_queries', UserQueries.getUserQueries);
 
 
 

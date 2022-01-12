@@ -152,7 +152,6 @@ router.get('/sellersingleBookinghis/:id', SellerMyaccountController.viewSingleOr
 // contact us
 router.post('/sellercontact', ContactUsController.sellerContactUsInfo);
 router.post('/user_questions', ContactUsController.userContactUsInfo);
-router.get('/user_queries', ContactUsController.getUserQueries);
 // contact us
 router.get('/sellercomission/:id',UserSellerController.sellercomHistory);
 router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingcomission);
