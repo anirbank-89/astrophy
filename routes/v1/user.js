@@ -19,7 +19,7 @@ const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout
 const SellerMyaccountController = require('../../Controller/User/SellerMyaccount')//krittika
 const ServicereviewController = require('../../Controller/User/ServiceReview')
 const SeaarchController = require('../../Controller/User/Search')
-const SellerContactus = require('../../Controller/User/ContactUs')
+const ContactUsController = require('../../Controller/User/ContactUs')
 
 
 
@@ -150,7 +150,8 @@ router.get('/sellersingleBookinghis/:id', SellerMyaccountController.viewSingleOr
 
 
 // contact us
-router.post('/sellercontact', SellerContactus.create);
+router.post('/sellercontact', ContactUsController.sellerContactUsInfo);
+router.post('/grievance', ContactUsController.userContactUsInfo);
 // contact us
 router.get('/sellercomission/:id',UserSellerController.sellercomHistory);
 router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingcomission);
