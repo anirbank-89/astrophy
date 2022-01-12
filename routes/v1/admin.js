@@ -18,7 +18,7 @@ const FaqcatController = require('../../Controller/Admin/Faqcategory');
 const FaqsubcatController = require('../../Controller/Admin/Faqsubcategory');
 const FaqController = require('../../Controller/Admin/Faq');
 const FeedbackController= require('../../Controller/Admin/Feedback');
-
+const StatsController = require('../../Controller/Admin/Stats');
 
 
 
@@ -175,9 +175,6 @@ router.get('/cms/customerService', CmsController.viewCustomerservice)
 router.get('/cms/viewSubscribe', CmsController.viewSubscribe)
 router.get('/cms/ContactusInfo', CmsController.getContactusInfo)
 
-
-
-
 router.get('/withdraw-history/:id',UserSellersController.withdrawHistory);
 router.get('/Kyc/:id',UserSellersController.getKyc);
 router.post('/Priority',UserSellersController.setPriority);
@@ -185,6 +182,9 @@ router.post('/Priority',UserSellersController.setPriority);
 router.get('/seller-requests', UserSellersController.getSellerRequest);
 router.put('/approve-seller-requests/:id', UserSellersController.approveSellerRequest);
 router.put('/reject-seller-requests/:id', UserSellersController.rejectSellerRequest);
+
+router.get('/summary-stats', StatsController.summaryStats);
+
 
 
 
