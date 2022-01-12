@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 const { Validator } = require('node-input-validator');
 
 var ContactUs = require("../../Models/seller_contactus");
-const USER_GRIEVANCE = require('../../Models/user_grievance');
+const USER_GRIEVANCE = require('../../Models/user_contactus');
 const EMAIL_SEND = require('../../service/emailsend');
 
 const sellerContactUsInfo = async (req, res) => {
