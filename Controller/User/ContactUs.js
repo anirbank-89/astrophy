@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 const { Validator } = require('node-input-validator');
 
 var ContactUs = require("../../Models/seller_contactus");
-const USER_GRIEVANCE = require('../../Models/user_contactus');
+const USER_QUERIES = require('../../Models/user_queries');
 const EMAIL_SEND = require('../../service/emailsend');
 
 const sellerContactUsInfo = async (req, res) => {
@@ -66,7 +66,7 @@ var userContactUsInfo = async (req, res) => {
         return res.status(400).json({ status: false, errors: V.errors });
     }
 
-    const NEW_GRIEVANCE = new USER_GRIEVANCE(req.body);
+    const NEW_GRIEVANCE = new USER_QUERIES(req.body);
 
     return NEW_GRIEVANCE.save()
         .then(data => {
@@ -89,7 +89,27 @@ var userContactUsInfo = async (req, res) => {
         });
 }
 
+var getUserQueries = async (req,res) => {
+    let queries = await USER_QUERIES.find({}).exec();
+
+    if (queries.length > 0) {
+        return res.status(200).json({
+            status: true,
+            message: "Data successfully get.",
+            data: queries
+        });
+    }
+    else {
+        return res.status(200).json({
+            status: true,
+            message: "No unresolved queries.",
+            data: []
+        });
+    }
+}
+
 module.exports = {
     sellerContactUsInfo,
-    userContactUsInfo
+    userContactUsInfo,
+    getUserQueries
 }

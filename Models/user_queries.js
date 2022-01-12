@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-const GRIEVANCE = new Schema({
+const QUERY = new Schema({
     // _id: mongoose.Schema.Types.ObjectId,
     user_type: {
         type: Object,
@@ -22,4 +22,4 @@ const GRIEVANCE = new Schema({
     }
 });
 
-module.exports = mongoose.model("user_question", GRIEVANCE);
+module.exports = mongoose.model("user_query", QUERY);
