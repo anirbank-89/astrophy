@@ -114,23 +114,28 @@ const newSubscription = async (req, res) => {
     return new_subscription
       .save()
       .then((data) => {
-        User.findOneAndUpdate(
-          { _id: req.body.userid },
-          {
-            $set: { type: "Seller" },
-          },
-          {
-            returnNewDocument: true,
-          },
-          function (error, result) {
-            res.status(200).json({
-              status: true,
-              success: true,
-              message: "New subscription applied successfully.",
-              data: data,
-            });
-          }
-        );
+        // User.findOneAndUpdate(
+        //   { _id: req.body.userid },
+        //   {
+        //     $set: { type: "Seller" },
+        //   },
+        //   {
+        //     returnNewDocument: true,
+        //   },
+        //   function (error, result) {
+        //     res.status(200).json({
+        //       status: true,
+        //       success: true,
+        //       message: "New subscription applied successfully.",
+        //       data: data,
+        //     });
+        //   }
+        // );
+        res.status(200).json({
+          status: true,
+          message: "New subscription applied successfully.",
+          data: data
+        });
       })
       .catch((err) => {
         res.status(500).json({

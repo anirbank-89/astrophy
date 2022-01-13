@@ -52,6 +52,14 @@ let UserSchema = new mongoose.Schema({
     priority: {
         type: Number,
         default: 0//
+    },
+    seller_request: {
+        type: Boolean,
+        default: false
+    },
+    seller_approval: {
+        type: Boolean,
+        default: false
     }
 });
 

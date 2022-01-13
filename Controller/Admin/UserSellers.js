@@ -463,23 +463,36 @@ var approveSellerRequest = async (req, res) => {
 
   return SELLER.findOneAndUpdate(
     { _id: mongoose.Types.ObjectId(id) },
-    { $set: { ask_permission: false, approved: true } },
+    { $set: { seller_status: true } },
     { new: true }
   )
-      .then(data => {
-        res.status(200).json({
-          status: true,
-          message: "Data successfully edited.",
-          data: data
+    .then(data => {
+      User.findOneAndUpdate(
+        { _id: mongoose.Types.ObjectId(data.seller_id) },
+        { $set: { seller_approval: true } }
+      )
+        .then(docs => {
+          res.status(200).json({
+            status: true,
+            message: "Data successfully edited.",
+            data: data
+          });
+        })
+        .catch(fault => {
+          res.status(500).json({
+            status: false,
+            message: "Invalid id. Server error 2.",
+            error: err
+          });
         });
-      })
-      .catch(err => {
-        res.status(500).json({
-          status: false,
-          message: "Invalid id. Server error.",
-          error: err
-        });
+    })
+    .catch(err => {
+      res.status(500).json({
+        status: false,
+        message: "Invalid id. Server error 1.",
+        error: err
       });
+    });
 }
 
 var rejectSellerRequest = async (req, res) => {
@@ -490,20 +503,20 @@ var rejectSellerRequest = async (req, res) => {
     { $set: { ask_permission: false } },
     { new: true }
   )
-      .then(data => {
-        res.status(200).json({
-          status: true,
-          message: "Data successfully edited.",
-          data: data
-        });
-      })
-      .catch(err => {
-        res.status(500).json({
-          status: false,
-          message: "Invalid id. Server error.",
-          error: err
-        });
+    .then(data => {
+      res.status(200).json({
+        status: true,
+        message: "Data successfully edited.",
+        data: data
       });
+    })
+    .catch(err => {
+      res.status(500).json({
+        status: false,
+        message: "Invalid id. Server error.",
+        error: err
+      });
+    });
 }
 
 module.exports = {

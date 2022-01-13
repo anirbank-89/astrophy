@@ -519,11 +519,24 @@ var applyForSeller = async (req, res) => {
 
     return NEW_SELLER.save()
       .then(data => {
-        res.status(200).json({
-          status: true,
-          message: "Data saved successfully.",
-          data: data
-        });
+        User.findOneAndUpdate(   // var editUserType = await
+          { _id: mongoose.Types.ObjectId(data.seller_id) },
+          { $set: { type: "Seller", seller_request: true } }
+        )
+            .then(docs => {
+              res.status(200).json({
+                status: true,
+                message: "Data saved successfully.",
+                data: data
+              });
+            })
+            .catch(fault => {
+              res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: fault.message
+              });
+            });
       })
       .catch(err => {
         res.status(500).json({
@@ -545,23 +558,26 @@ var applyForSeller = async (req, res) => {
 var getSellerApprovalStatus = async (req, res) => {
   var id = req.params.id;
 
-  return SELLER.findOne(
-    { _id: mongoose.Types.ObjectId(id) }
-  )
-    .then(data => {
-      res.status(200).json({
-        status: true,
-        message: "Data successfully edited.",
-        data: data
-      });
-    })
-    .catch(err => {
-      res.status(500).json({
-        status: false,
-        message: "Invalid id. Server error.",
-        error: err
-      });
+  let sellerStatus = await User.findOne({
+    _id: mongoose.Types.ObjectId(id),
+    seller_approval: true
+  }).exec();
+
+  console.log(sellerStatus);
+  if (sellerStatus == null || sellerStatus == "") {
+    return res.status(200).json({
+      status: true,
+      message: "Not approved.",
+      data: []
     });
+  }
+  else {
+    return res.status(200).json({
+      status: true,
+      message: "Approved.",
+      data: sellerStatus
+    });
+  }
 }
 
 module.exports = {
