@@ -558,26 +558,21 @@ var applyForSeller = async (req, res) => {
 var getSellerApprovalStatus = async (req, res) => {
   var id = req.params.id;
 
-  let sellerStatus = await User.findOne({
-    _id: mongoose.Types.ObjectId(id),
-    seller_approval: true
-  }).exec();
-
-  console.log(sellerStatus);
-  if (sellerStatus == null || sellerStatus == "") {
-    return res.status(200).json({
-      status: true,
-      message: "Not approved.",
-      data: []
-    });
-  }
-  else {
-    return res.status(200).json({
-      status: true,
-      message: "Approved.",
-      data: sellerStatus
-    });
-  }
+  return User.findOne({ _id: mongoose.Types.ObjectId(id) })
+      .then(data => {
+        res.status(200).json({
+          status: true,
+          message: "Data successfully get.",
+          data: data
+        });
+      })
+      .catch(err => {
+        res.status(500).json({
+          status: false,
+          message: "Invalid id. Server error.",
+          error: err.message
+        });
+      });
 }
 
 module.exports = {
