@@ -172,32 +172,64 @@ const totalandpendingcomission = async (req, res) => {
 };
 
 const applyWithdraw = async (req, res) => {
-  let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(req.body.seller_id) }).exec();
-  let pend_com = 0;
-  let withdrawcomission = await Withdraw.find({ seller_id: mongoose.Types.ObjectId(req.body.seller_id), paystatus: false }).exec();
-  if (withdrawcomission.length > 0) {
-    withdrawcomission.forEach(element => {
-      pend_com = parseInt(pend_com) + parseInt(element.amount)
-    })
-  }
+  // let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(req.body.seller_id) }).exec();
+  // let pend_com = 0;
+  // let withdrawcomission = await Withdraw.find({ seller_id: mongoose.Types.ObjectId(req.body.seller_id), paystatus: false }).exec();
+  // if (withdrawcomission.length > 0) {
+  //   withdrawcomission.forEach(element => {
+  //     pend_com = parseInt(pend_com) + parseInt(element.amount)
+  //   })
+  // }
 
-  let checkCom = parseInt(pend_com) + parseInt(req.body.amount)
-  console.log(pend_com)
+  // let checkCom = parseInt(pend_com) + parseInt(req.body.amount)
+  // console.log(pend_com)
   // return false;
-  if (req.body.amount > totalcomission.comission_total) {
-    return res.send({
-      status: false,
-      data: null,
-      error: true,
-      message: "Amount Exceeds Total Earning"
-    })
+  let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(req.body.seller_id) }).exec();
+  let totalEarning = totalcomission.comission_all
+  // let totalSettlement = parseInt(totalcomission.comission_all) - parseInt(totalcomission.comission_total)
+
+  /**------------------------ Get the amount withdrawn and settled by Astrophy ------------------------ */
+  let amount_credited = await Withdraw.find({ seller_id: mongoose.Types.ObjectId(req.body.seller_id), paystatus: true }).exec();
+  console.log("Amount settled", amount_credited);
+
+  var settledAmt = 0;
+
+  if (amount_credited.length > 0) {
+    amount_credited.forEach(element => {
+      settledAmt = parseInt(settledAmt) + parseInt(element.amount);
+    });
   }
-  else if (checkCom > totalcomission.comission_total) {
+  else {
+    // In this case, no amount has been withdrawn
+    settledAmt = 0;
+  }
+  /**-------------------------------------------------------------------------------------------------- */
+
+  /**---------------------- Get the amount withdrawn but bot settled by Astrophy ---------------------- */
+  let amountRequested = await Withdraw.find({ seller_id: mongoose.Types.ObjectId(req.body.seller_id), paystatus: false }).exec();
+  console.log("Amount requested", amountRequested);
+
+  var requestedAmt = 0;
+
+  if (amountRequested.length > 0) {
+    amountRequested.forEach(element => {
+      requestedAmt = parseInt(requestedAmt) + parseInt(element.amount);
+    });
+  }
+  else {
+    requestedAmt = 0;
+  }
+  /**-------------------------------------------------------------------------------------------------- */
+
+  /**-------------------------------- Amount earned but not claimed ----------------------------------- */
+  var inWallet = parseInt(totalEarning) - (parseInt(settledAmt) + parseInt(requestedAmt));
+  /**-------------------------------------------------------------------------------------------------- */
+  if (req.body.amount > inWallet) {
     return res.send({
       status: false,
       data: null,
       error: true,
-      message: "Amount Exceeds Total Earning"
+      message: "Requested amount exceeds amount in wallet."
     })
   }
   else {
@@ -213,7 +245,7 @@ const applyWithdraw = async (req, res) => {
       status: true,
       data: null,
       error: false,
-      message: "Comission Saved Successfully"
+      message: "Data saved successfully."
     })
   }
 
@@ -523,20 +555,20 @@ var applyForSeller = async (req, res) => {
           { _id: mongoose.Types.ObjectId(data.seller_id) },
           { $set: { type: "Seller", seller_request: true } }
         )
-            .then(docs => {
-              res.status(200).json({
-                status: true,
-                message: "Data saved successfully.",
-                data: data
-              });
-            })
-            .catch(fault => {
-              res.status(500).json({
-                status: false,
-                message: "Invalid id. Server error.",
-                error: fault.message
-              });
+          .then(docs => {
+            res.status(200).json({
+              status: true,
+              message: "Data saved successfully.",
+              data: data
             });
+          })
+          .catch(fault => {
+            res.status(500).json({
+              status: false,
+              message: "Invalid id. Server error.",
+              error: fault.message
+            });
+          });
       })
       .catch(err => {
         res.status(500).json({
@@ -559,20 +591,20 @@ var getSellerApprovalStatus = async (req, res) => {
   var id = req.params.id;
 
   return User.findOne({ _id: mongoose.Types.ObjectId(id) })
-      .then(data => {
-        res.status(200).json({
-          status: true,
-          message: "Data successfully get.",
-          data: data
-        });
-      })
-      .catch(err => {
-        res.status(500).json({
-          status: false,
-          message: "Invalid id. Server error.",
-          error: err.message
-        });
+    .then(data => {
+      res.status(200).json({
+        status: true,
+        message: "Data successfully get.",
+        data: data
       });
+    })
+    .catch(err => {
+      res.status(500).json({
+        status: false,
+        message: "Invalid id. Server error.",
+        error: err.message
+      });
+    });
 }
 
 module.exports = {
