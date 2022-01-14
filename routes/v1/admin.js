@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var nodeCron = require('node-cron');
 
 const ProductController = require('../../Controller/Admin/Product');
 const CategoryController = require('../../Controller/Admin/Category');
@@ -21,7 +22,7 @@ const FeedbackController= require('../../Controller/Admin/Feedback');
 const StatsController = require('../../Controller/Admin/Stats');
 const UserQueries = require('../../Controller/Admin/UserQueries');
 
-
+const AutomatedApi = require('../../Controller/Admin/AutomatedApi');
 
 
 const multer = require('multer');
@@ -191,7 +192,11 @@ router.get('/user_queries', UserQueries.getUserQueries);
 
 
 
+/**===================================== Automated tasks =====================================*/
 
-
+/**--------------- Clear all due of seller commissions on 14,28 of each month ---------------*/
+const clearDueCommision = nodeCron.schedule("* * 14,28 * *", AutomatedApi.clearPayment);
+/**------------------------------------------------------------------------------------------*/
+/**===========================================================================================*/
 
 module.exports = router;

@@ -5,14 +5,14 @@ const ServiceCheckout = require("../../Models/servicecheckout");
 const Servicecommission = require("../../Models/servicecommission");
 const SubscribedBy = require("../../Models/subscr_purchase");
 const Totalcomission = require("../../Models/totalcomission");
-
+var Withdraw = require('../../Models/withdraw');
 
 const { Validator } = require("node-input-validator");
 
 const create = async (req, res) => {
   const v = new Validator(req.body, {
     user_id: "required",
-    seller_id:"required",
+    seller_id: "required",
     subtotal: "required",
     //discount_percent: "required",
     total: "required",
@@ -52,8 +52,8 @@ const create = async (req, res) => {
     paymenttype: req.body.paymenttype,
   };
 
-  let subDataf = await SubscribedBy.findOne({userid:mongoose.Types.ObjectId(req.body.seller_id),status:true}).exec();
-  
+  let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(req.body.seller_id), status: true }).exec();
+
   // let sellerCom = 0;
 
   // let comType = subDataf.comission_type
@@ -73,7 +73,7 @@ const create = async (req, res) => {
 
   // console.log(sellerCom);
   // return false;
-  
+
   //  if (
   //   req.body.coupon_id != "" &&
   //   req.body.coupon_id != null &&
@@ -123,12 +123,11 @@ const create = async (req, res) => {
       }
     );
   }
-*/ 
-    // let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(req.body.seller_id)}).exec();
-    if(req.body.tokenid!='' && typeof req.body.tokenid!=undefined)
-    {
-      dataSubmit.tokenid = req.body.tokenid
-    }
+*/
+  // let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(req.body.seller_id)}).exec();
+  if (req.body.tokenid != '' && typeof req.body.tokenid != undefined) {
+    dataSubmit.tokenid = req.body.tokenid
+  }
   const saveData = new ServiceCheckout(dataSubmit);
   return saveData
     .save()
@@ -152,19 +151,19 @@ const create = async (req, res) => {
       //   seller_commission: sellerCom        
       // };
 
-  //     console.log(dataComision);
-  // return false;
+      //     console.log(dataComision);
+      // return false;
       // const saveCom = new Servicecommission(dataComision);
       // saveCom.save()
 
-      
+
       // console.log(totalcomission)
 
       // if(totalcomission!=null)
       // {
       //   console.log('a')
-      
-    
+
+
       //   let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
       //   Totalcomission.findOneAndUpdate(
       //     { seller_id: mongoose.Types.ObjectId(req.body.seller_id)},
@@ -228,14 +227,13 @@ const setStatus = async (req, res) => {
   var id = req.body.id;
   var acceptstatus = req.body.acceptstatus;
 
-  
+
 
   var current_status = await ServiceCheckout.findById({ _id: id }).exec();
 
-  if(req.body.acceptstatus == 'accept')
-  {
-    let subDataf = await SubscribedBy.findOne({userid:mongoose.Types.ObjectId(current_status.seller_id),status:true}).exec();
-  
+  if (req.body.acceptstatus == 'accept') {
+    let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(current_status.seller_id), status: true }).exec();
+
     let sellerCom = 0;
 
     let comType = subDataf.comission_type
@@ -244,137 +242,170 @@ const setStatus = async (req, res) => {
 
 
 
-    if(subDataf.comission_type=="Flat comission")
-    {
+    if (subDataf.comission_type == "Flat comission") {
       sellerCom = subDataf.seller_comission
     }
-    else
-    {
-      sellerCom = (current_status.total * subDataf.seller_comission )/100;
+    else {
+      sellerCom = (current_status.total * subDataf.seller_comission) / 100;
     }
 
-    let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(current_status.seller_id)}).exec();
+    let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(current_status.seller_id) }).exec();
     let dataComision = {
       _id: mongoose.Types.ObjectId(),
       order_id: mongoose.Types.ObjectId(current_status._id),
       seller_id: mongoose.Types.ObjectId(current_status.seller_id),
-      commision_type: comType,        
+      commision_type: comType,
       commision_value: comValue,
       price: current_status.total,
-      seller_commission: sellerCom        
+      seller_commission: sellerCom
     };
 
-//     console.log(dataComision);
-// return false;
+    //     console.log(dataComision);
+    // return false;
     const saveCom = new Servicecommission(dataComision);
     saveCom.save()
 
-    
+
     console.log(totalcomission)
 
-    if(totalcomission!=null)
-    {
+    if (totalcomission != null) {
       console.log('a')
-    
-  
+
+
       let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
       Totalcomission.findOneAndUpdate(
-        { seller_id: mongoose.Types.ObjectId(current_status.seller_id)},
-        { $set: { comission_total: totalComcal,comission_all:totalComcal} },
+        { seller_id: mongoose.Types.ObjectId(current_status.seller_id) },
+        { $set: { comission_total: totalComcal, comission_all: totalComcal } },
         (err, writeResult) => {
           // console.log(err);
         }
       );
     }
-    else
-    {
+    else {
       console.log('b')
       let dataComisionTotalval = {
         _id: mongoose.Types.ObjectId(),
         seller_id: mongoose.Types.ObjectId(current_status.seller_id),
-        comission_total: sellerCom,        
-        comission_all: sellerCom     
+        comission_total: sellerCom,
+        comission_all: sellerCom
       };
       console.log(dataComisionTotalval)
       const saveComTotal = new Totalcomission(dataComisionTotalval);
       saveComTotal.save()
     }
-  
+
   }
 
   console.log("Shop Service data", current_status);
 
   if (current_status.acceptstatus === "pending") {
-      console.log(true);
-      return ServiceCheckout.findByIdAndUpdate(
-          { _id: id },
-          { $set: { acceptstatus: acceptstatus } },
-          // { new: true },
-          (err, docs) => {
-            docs = { ...docs._doc, ...req.body };
-              if (!err) {
-                  res.status(200).json({
-                      status: true,
-                      message: "Service Checkout has been made inactive.",
-                      data: docs
-                  });
-              }
-              else {
-                  res.status(500).json({
-                      status: false,
-                      message: "Invalid id. Server error.",
-                      error: err
-                  });
-              }
-          }
-      );
+    console.log(true);
+    return ServiceCheckout.findByIdAndUpdate(
+      { _id: id },
+      { $set: { acceptstatus: acceptstatus } },
+      // { new: true },
+      (err, docs) => {
+        docs = { ...docs._doc, ...req.body };
+        if (!err) {
+          res.status(200).json({
+            status: true,
+            message: "Service Checkout has been made inactive.",
+            data: docs
+          });
+        }
+        else {
+          res.status(500).json({
+            status: false,
+            message: "Invalid id. Server error.",
+            error: err
+          });
+        }
+      }
+    );
   }
 }
 
 const setTips = async (req, res) => {
   var id = req.body.id;
 
-      console.log(true);
-      return ServiceCheckout.findByIdAndUpdate(
-          { _id: id },
-          { $set: { tip: req.body.tip } },
-          // { new: true },
-          (err, docs) => {
-            docs = { ...docs._doc, ...req.body };
-              if (!err) {
-                  res.status(200).json({
-                      status: true,
-                      message: "Tip paid successfully",
-                      data: docs
-                  });
-              }
-              else {
-                  res.status(500).json({
-                      status: false,
-                      message: "Invalid id. Server error.",
-                      error: err
-                  });
-              }
-          }
-      );
-  
+  console.log(true);
+  return ServiceCheckout.findByIdAndUpdate(
+    { _id: id },
+    { $set: { tip: req.body.tip } },
+    // { new: true },
+    (err, docs) => {
+      docs = { ...docs._doc, ...req.body };
+      if (!err) {
+        res.status(200).json({
+          status: true,
+          message: "Tip paid successfully",
+          data: docs
+        });
+      }
+      else {
+        res.status(500).json({
+          status: false,
+          message: "Invalid id. Server error.",
+          error: err
+        });
+      }
+    }
+  );
+
 }
 
 const setSellersettlement = async (req, res) => {
   var id = req.params.id;
 
-  let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(id)}).exec();
+  let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(id) }).exec();
   let totalEarning = totalcomission.comission_all
-  let totalSettlement = parseInt(totalcomission.comission_all) - parseInt(totalcomission.comission_total)
+  // let totalSettlement = parseInt(totalcomission.comission_all) - parseInt(totalcomission.comission_total)
+  
+  /**------------------------ Get the amount withdrawn and settled by Astrophy ------------------------ */
+  let amount_credited = await Withdraw.find({ seller_id: mongoose.Types.ObjectId(id), paystatus: true }).exec();
+  console.log("Amount settled", amount_credited);
+
+  var settledAmt = 0;
+
+  if (amount_credited.length > 0) {
+    amount_credited.forEach(element => {
+      settledAmt = parseInt(settledAmt) + parseInt(element.amount);
+    });
+  }
+  else {
+    // In this case, no amount has been withdrawn
+    settledAmt = 0;
+  }
+  /**-------------------------------------------------------------------------------------------------- */
+
+  /**---------------------- Get the amount withdrawn but bot settled by Astrophy ---------------------- */
+  let amountRequested = await Withdraw.find({ seller_id: mongoose.Types.ObjectId(id), paystatus: false }).exec();
+  console.log("Amount requested", amountRequested);
+
+  var requestedAmt = 0;
+
+  if (amountRequested.length > 0) {
+    amountRequested.forEach(element => {
+      requestedAmt = parseInt(requestedAmt) + parseInt(element.amount);
+    });
+  }
+  else {
+    requestedAmt = 0;
+  }
+  /**-------------------------------------------------------------------------------------------------- */
+
+  /**-------------------------------- Amount earned but not claimed ----------------------------------- */
+  var inWallet = parseInt(totalEarning) - (parseInt(settledAmt) + parseInt(requestedAmt));
+  /**-------------------------------------------------------------------------------------------------- */
+
   res.status(200).json({
     status: true,
-    totalEarning: totalEarning,
-    totalSettlement:totalSettlement
-});
-  
+    total_earnings: totalEarning,
+    earning_settled: settledAmt,
+    pending_settlement: requestedAmt,
+    in_wallet: inWallet
+  });
 }
-
-
 
 module.exports = {
   create,
