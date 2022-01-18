@@ -190,8 +190,7 @@ router.get('/summary-stats', StatsController.summaryStats);
 router.get('/user_queries', UserQueries.getUserQueries);
 
 /**=================================== Analytics Section =====================================*/
-router.get('/total-orders', AnalyticsController.totalOrders);
-router.get('/total-revenues', AnalyticsController.websiteRevenues);
+router.get('/total-orders-and-revenues', AnalyticsController.totalOrdersNRevenues);
 /**===========================================================================================*/
 
 

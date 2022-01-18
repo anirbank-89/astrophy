@@ -12,12 +12,13 @@ var totalOrders = async (req,res) => {
     });
 }
 
-var websiteRevenues = async (req,res) => {
+var totalOrdersNRevenues = async (req,res) => {
     let totalProductRev = await PRODUCT_CHECKOUTS.aggregate([
         {
             $group: {
                 _id: "$status",
-                total: { $sum: "$total" }
+                numberOfOrders: { $sum: 1 },
+                totalRevenue: { $sum: "$total" }
             }
         }
     ]).exec();
@@ -26,19 +27,19 @@ var websiteRevenues = async (req,res) => {
         {
             $group: {
                 _id: "$acceptstatus",
-                total: { $sum: "$total" }
+                numberOfOrders: { $sum: 1 },
+                totalRevenue: { $sum: "$total" }
             }
         }
     ]).exec();
 
     return res.status(200).json({
         status: true,
-        product_revenue: totalProductRev,
-        service_revenue: totalServiceRev
+        products: totalProductRev,
+        services: totalServiceRev
     });
 }
 
 module.exports = {
-    totalOrders,
-    websiteRevenues
+    totalOrdersNRevenues
 }
