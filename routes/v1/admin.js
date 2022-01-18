@@ -24,6 +24,7 @@ const UserQueries = require('../../Controller/Admin/UserQueries');
 
 const AutomatedApi = require('../../Controller/Admin/AutomatedApi');
 
+const AnalyticsController = require('../../Controller/Admin/Analytics');
 
 const multer = require('multer');
  
@@ -188,8 +189,10 @@ router.get('/summary-stats', StatsController.summaryStats);
 
 router.get('/user_queries', UserQueries.getUserQueries);
 
-
-
+/**=================================== Analytics Section =====================================*/
+router.get('/total-orders', AnalyticsController.totalOrders);
+router.get('/total-revenues', AnalyticsController.websiteRevenues);
+/**===========================================================================================*/
 
 
 /**===================================== Automated tasks =====================================*/
