@@ -82,7 +82,32 @@ var totalRevenueNProfit = async (req,res) => {
     });
 }
 
+var productSalesReport = async (req,res) => {
+    return PRODUCT_CHECKOUTS.aggregate([
+        {
+            $lookup: {
+                from: "carts",
+                localField: "order_id",
+                foreignField: "order_id",
+                as: "cart_data"
+            }
+        },
+        // {
+        //     $unwind: "$cart_data"
+        // },
+        {
+            $addFields: {
+                "cart_data.product_data": "product"
+            }
+        }
+    ])
+        .then(data => {
+            res.send(data);
+        })
+}
+
 module.exports = {
     totalOrdersNRevenues,
-    totalRevenueNProfit
+    totalRevenueNProfit,
+    productSalesReport
 }
