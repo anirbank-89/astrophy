@@ -84,26 +84,46 @@ var totalRevenueNProfit = async (req,res) => {
 
 var productSalesReport = async (req,res) => {
     return PRODUCT_CHECKOUTS.aggregate([
+        (req.body.start_date != "" || typeof req.body.start_date != "undefined") && 
+        (req.body.end_date != "" || typeof req.body.end_date != "undefined")
+        ? {
+            $match: {
+                $and: [
+                    {booking_date: { $gt: new Date(req.body.start_date) }},
+                    {booking_date: { $lt: new Date(req.body.end_date) }},
+                ]
+            }
+        }
+        : {$project: {_v: 0}},
         {
-            $lookup: {
-                from: "carts",
-                localField: "order_id",
-                foreignField: "order_id",
-                as: "cart_data"
+            $group: {
+                _id: {
+                    date: { $dateToString: {date: "$booking_date", format: "%Y-%m-%d"}},
+                    country: "$country"
+                },
+                salesValue: { $sum: "$subtotal" },
             }
         },
-        // {
-        //     $unwind: "$cart_data"
-        // },
         {
-            $addFields: {
-                "cart_data.product_data": "product"
+            $sort: {
+                "_id.date": 1
             }
         }
     ])
         .then(data => {
-            res.send(data);
+            res.status(200).json({
+                status: true,
+                message: "Data successfully get.",
+                data: data
+            });
         })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Enter both start date and end date.",
+                error: err
+            });
+        });
 }
 
 module.exports = {

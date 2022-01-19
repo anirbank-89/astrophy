@@ -192,7 +192,7 @@ router.get('/user_queries', UserQueries.getUserQueries);
 /**=================================== Analytics Section =====================================*/
 router.get('/total-orders-and-revenues', AnalyticsController.totalOrdersNRevenues);
 router.get('/website-revenue-and-profit', AnalyticsController.totalRevenueNProfit);
-router.get('/product-sales-report', AnalyticsController.productSalesReport);
+router.post('/product-sales-report', AnalyticsController.productSalesReport);
 /**===========================================================================================*/
 
 
