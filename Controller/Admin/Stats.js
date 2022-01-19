@@ -6,7 +6,7 @@ const SHOP_SERVICE = require('../../Models/shop_service');
 
 var summaryStats = async (req,res) => {
     let users = await USER.find({ status: true }).exec();
-    let sellers = await SELLER.find({ approved: true }).exec();
+    let sellers = await SELLER.find({ seller_status: true }).exec();
     let serv_category = await SERV_CATEGORY.find({}).exec();
     let shops = await SHOP.find({ status: true }).exec();
     let shop_service = await SHOP_SERVICE.find({ status: true }).exec();
