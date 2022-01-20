@@ -4,7 +4,7 @@ var jwt = require('jsonwebtoken');
 const { Validator } = require('node-input-validator');
 
 // var Admin = require('../../Models/admin');
-var RefundPersonnel = require('../../Models/refund_personnel');
+var Admin = require('../../Models/admin');
 var Upload = require('../../service/upload');
 
 function createToken(data) {
@@ -38,15 +38,16 @@ const register = async (req, res) => {
         email: req.body.email,
         password: passwordHash.generate(req.body.password),
         image: imageUrl,
+        admin_type: req.body.admin_type,
         token: createToken(req.body)
     }
     if (typeof (req.body.mobile) != 'undefined') {
         adminData.mobile = req.body.mobile
     }
 
-    const admin = new RefundPersonnel(adminData)
+    const NEW_REFUND_PERSONNEL = new Admin(adminData)
 
-    return admin.save().then((data) => {
+    return NEW_REFUND_PERSONNEL.save().then((data) => {
         res.status(200).json({
             status: true,
             success: true,
@@ -64,52 +65,52 @@ const register = async (req, res) => {
         })
 }
 
-var refundPersonnelList = async (req,res) => {
-    let refundPersonnel = await RefundPersonnel.find({ status: true }).exec();
+// var refundPersonnelList = async (req,res) => {
+//     let refundPersonnel = await RefundPersonnel.find({ status: true }).exec();
 
-    if (refundPersonnel.length > 0) {
-        return res.status(200).json({
-            status: true,
-            message: "Data successfully get.",
-            data: refundPersonnel
-        });
-    }
-    else {
-        return res.status(200).json({
-            status: true,
-            message: "Currently no active personnel exists.",
-            data: []
-        });
-    }
-}
+//     if (refundPersonnel.length > 0) {
+//         return res.status(200).json({
+//             status: true,
+//             message: "Data successfully get.",
+//             data: refundPersonnel
+//         });
+//     }
+//     else {
+//         return res.status(200).json({
+//             status: true,
+//             message: "Currently no active personnel exists.",
+//             data: []
+//         });
+//     }
+// }
 
-var setStatus = async (req,res) => {
-    var id = req.params.id;
+// var setStatus = async (req,res) => {
+//     var id = req.params.id;
 
-    return RefundPersonnel.findOneAndUpdate(
-        { _id: mongoose.Types.ObjectId(id) }, 
-        { $set: { status: false } }, 
-        { new: true }
-        )
-        .then(data => {
-            res.status(200).json({
-                status: true,
-                message: "Personnel made inactive",
-                data: data
-            });
-        })
-        .catch(err => {
-            res.status(500).json({
-                status: false,
-                message: "Invalid id. Server error.",
-                error: err
-            });
-        });
-}
+//     return RefundPersonnel.findOneAndUpdate(
+//         { _id: mongoose.Types.ObjectId(id) }, 
+//         { $set: { status: false } }, 
+//         { new: true }
+//         )
+//         .then(data => {
+//             res.status(200).json({
+//                 status: true,
+//                 message: "Personnel made inactive",
+//                 data: data
+//             });
+//         })
+//         .catch(err => {
+//             res.status(500).json({
+//                 status: false,
+//                 message: "Invalid id. Server error.",
+//                 error: err
+//             });
+//         });
+// }
 
 module.exports = {
     getTokenData,
-    register,
-    refundPersonnelList,
-    setStatus
+    register
+    // refundPersonnelList,
+    // setStatus
 }

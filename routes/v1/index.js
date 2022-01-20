@@ -38,7 +38,7 @@ router.post('/user/email-verification', UserController.sendVerifyLink);// added 
 router.post('/user/verify-email', UserController.afterEmailVerify);    // added by anirbank-93
 router.post('/user/login', UserController.login);
 
-router.post('/admin/refund-personnel-login', RefundPersonnel.login);
+router.post('/refund_personnel/refund-personnel-login', RefundPersonnel.login);
 
 router.get('/user/listProducts/:page/:userid', UserController.viewProductList);
 router.get('/user/spellCasting', UserController.viewAllServices);
