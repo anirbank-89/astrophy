@@ -13,6 +13,7 @@ const UserProductController = require('../../Controller/User/Product');// added 
 const ServiceController = require('../../Controller/User/Service');    // added by anirbank-93
 const SeaarchController = require('../../Controller/User/Search')
 const ShopServiceController = require("../../Controller/User/ShopServices");
+const RefundPersonnel = require('../../Controller/Auth/RefundPersonnel');
 const PaypalPaymentController = require("../../Controller/User/Paypalpayment");
 const StripesubscriptionController = require("../../Controller/User/Stripesubscription");
 const FeedbackController = require('../../Controller/User/Feedback');
@@ -26,6 +27,7 @@ const middleware  = require('../../service/middleware').middleware;
 
 const AdminRoute = require('./admin');
 const UserRoute = require('./user');
+const RefundPersonnelRoute = require('./refund_personnel');
 
 /** ================================= without login url ================================= */
 router.post('/admin/register', AdminController.register);
@@ -35,6 +37,8 @@ router.post('/user/register', UserController.register);
 router.post('/user/email-verification', UserController.sendVerifyLink);// added by anirbank-93
 router.post('/user/verify-email', UserController.afterEmailVerify);    // added by anirbank-93
 router.post('/user/login', UserController.login);
+
+router.post('/admin/refund-personnel-login', RefundPersonnel.login);
 
 router.get('/user/listProducts/:page/:userid', UserController.viewProductList);
 router.get('/user/spellCasting', UserController.viewAllServices);
@@ -122,5 +126,6 @@ router.use(middleware);
 
 router.use('/admin', AdminRoute);
 router.use('/user', UserRoute);
+router.use('/refund-personnel', RefundPersonnelRoute);
 
 module.exports = router;

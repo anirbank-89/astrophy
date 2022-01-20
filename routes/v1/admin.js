@@ -14,6 +14,7 @@ const OrderhistoryController = require('../../Controller/Admin/Orderhistory');
 const ServicehistoryController = require('../../Controller/Admin/Servicehistory');
 const UserController = require('../../Controller/Auth/User');
 const MyaccountController = require('../../Controller/Admin/Myaccount');
+const RefundPersonnel = require('../../Controller/Admin/RefundPersonnel');
 const CmsController = require('../../Controller/Admin/Cms');
 const FaqcatController = require('../../Controller/Admin/Faqcategory');
 const FaqsubcatController = require('../../Controller/Admin/Faqsubcategory');
@@ -23,8 +24,6 @@ const StatsController = require('../../Controller/Admin/Stats');
 const UserQueries = require('../../Controller/Admin/UserQueries');
 
 const AutomatedApi = require('../../Controller/Admin/AutomatedApi');
-
-const AnalyticsController = require('../../Controller/Admin/Analytics');
 
 const multer = require('multer');
  
@@ -142,6 +141,8 @@ router.get('/get-profile/:id', MyaccountController.getProfile);
 router.get('/feedback', FeedbackController.viewAllFeedback);
 router.get('/feedback/:id', FeedbackController.viewFeedbackById);
 
+router.post('/personnel-register', upload.single("image"), RefundPersonnel.register);
+
 router.post('/cms/About',upload.single("image"),CmsController.createNUpdatecms)
 router.post('/cms/Blog',upload.single("image"),CmsController.createNUpdateblog)
 router.get('/cms/Blog',CmsController.viewAllBlog)
@@ -188,11 +189,11 @@ router.put('/reject-seller-requests/:id', UserSellersController.rejectSellerRequ
 router.get('/user_queries', UserQueries.getUserQueries);
 
 /**=================================== Analytics Section =====================================*/
-router.get('/total-orders-and-revenues', AnalyticsController.totalOrdersNRevenues);
-router.get('/website-revenue-and-profit', AnalyticsController.totalRevenueNProfit);
 router.get('/summary-stats', StatsController.summaryStats);
 router.post('/product-sales-report', StatsController.productSalesReport);
 router.post('/service-sales-report', StatsController.serviceSalesReport);
+router.get('/total-orders-and-revenues', StatsController.totalOrdersNRevenues);
+router.get('/website-revenue-and-profit', StatsController.totalRevenueNProfit);
 /**===========================================================================================*/
 
 

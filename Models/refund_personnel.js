@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var passwordHash = require('password-hash');
 
 
-const AdminSchema = new mongoose.Schema({
+const REFUND_PERSONNEL = new mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
     fullname:{
         type:String,
@@ -32,14 +32,22 @@ const AdminSchema = new mongoose.Schema({
         required:false,
         default:null
     },
+    admin_type: {
+        type: String,
+        default: "refund_personnel"
+    },
     token:{
         type:String,
         required:false,
         unique:true
+    },
+    status: {
+        type: Boolean,
+        default: true
     }
 
 })
-AdminSchema.methods.comparePassword = function (candidatePassword) {
+REFUND_PERSONNEL.methods.comparePassword = function (candidatePassword) {
     return passwordHash.verify(candidatePassword, this.password);
   };
-module.exports = mongoose.model("Admin",AdminSchema)
+module.exports = mongoose.model("refund_personnel",REFUND_PERSONNEL);
