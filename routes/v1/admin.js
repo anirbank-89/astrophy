@@ -142,6 +142,8 @@ router.get('/feedback', FeedbackController.viewAllFeedback);
 router.get('/feedback/:id', FeedbackController.viewFeedbackById);
 
 router.post('/personnel-register', upload.single("image"), RefundPersonnel.register);
+router.get('/refund-personnel', RefundPersonnel.refundPersonnelList);
+router.put('/refund-personnel/:id', RefundPersonnel.setStatus);
 
 router.post('/cms/About',upload.single("image"),CmsController.createNUpdatecms)
 router.post('/cms/Blog',upload.single("image"),CmsController.createNUpdateblog)
