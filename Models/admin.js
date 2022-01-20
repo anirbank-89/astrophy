@@ -32,10 +32,18 @@ const AdminSchema = new mongoose.Schema({
         required:false,
         default:null
     },
+    admin_type: {
+        type: String,
+        default: "Admin"
+    },
     token:{
         type:String,
         required:false,
         unique:true
+    },
+    status: {
+        type: Boolean,
+        default: true
     }
 
 })

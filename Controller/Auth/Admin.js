@@ -18,13 +18,14 @@ const getTokenData = async (token) => {
 const register = async(req,res)=>{
     let adminData = {
         _id:mongoose.Types.ObjectId(),
+        fullname: req.body.fullname,
         email:req.body.email,
         password:passwordHash.generate(req.body.password),
         token:createToken(req.body)
     }
-    if (typeof (req.body.phone) !='undefined')
+    if (typeof (req.body.mobile) !='undefined')
     {
-        adminData.phone = Number(req.body.phone)
+        adminData.mobile = req.body.mobile
     }
 
     const admin = new Admin(adminData)
