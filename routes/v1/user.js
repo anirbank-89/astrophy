@@ -115,8 +115,6 @@ router.post('/checkCoupon', CartController.checkCoupon);
 
 router.post('/checkout', CheckoutController.create);
 
-router.post('/checkout', CheckoutController.create);
-
 router.get('/orderdetails/:user_id', MyaccountController.viewAll);
 router.put('/refundProduct/:id', MyaccountController.refundProduct);
 router.put('/update-profile/:id', upload1.single("image"), MyaccountController.updateProfile);

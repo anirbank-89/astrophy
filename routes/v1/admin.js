@@ -185,14 +185,14 @@ router.get('/seller-requests', UserSellersController.getSellerRequest);
 router.put('/approve-seller-requests/:id', UserSellersController.approveSellerRequest);
 router.put('/reject-seller-requests/:id', UserSellersController.rejectSellerRequest);
 
-router.get('/summary-stats', StatsController.summaryStats);
-
 router.get('/user_queries', UserQueries.getUserQueries);
 
 /**=================================== Analytics Section =====================================*/
 router.get('/total-orders-and-revenues', AnalyticsController.totalOrdersNRevenues);
 router.get('/website-revenue-and-profit', AnalyticsController.totalRevenueNProfit);
-router.post('/product-sales-report', AnalyticsController.productSalesReport);
+router.get('/summary-stats', StatsController.summaryStats);
+router.post('/product-sales-report', StatsController.productSalesReport);
+router.post('/service-sales-report', StatsController.serviceSalesReport);
 /**===========================================================================================*/
 
 
