@@ -15,6 +15,7 @@ const ServicehistoryController = require('../../Controller/Admin/Servicehistory'
 const UserController = require('../../Controller/Auth/User');
 const MyaccountController = require('../../Controller/Admin/Myaccount');
 const RefundPersonnel = require('../../Controller/Admin/RefundPersonnel');
+const ProductRefund = require('../../Controller/Admin/ProductRefund');
 const CmsController = require('../../Controller/Admin/Cms');
 const FaqcatController = require('../../Controller/Admin/Faqcategory');
 const FaqsubcatController = require('../../Controller/Admin/Faqsubcategory');
@@ -99,8 +100,6 @@ router.get('/viewseller/:id', UserSellersController.viewSeller)  // added by ani
 router.put('/user/set-status/:id', UserSellersController.setStatus)// added by anirbank-93
 router.put('/user/set-block/:id', UserSellersController.setBlock)// added by anirbank-93
 
-
-
 router.post('/service',upload.single("image"),ServiceController.create)// added by anirbank-93
 router.get('/service', ServiceController.viewAllServices)              // added by anirbank-93
 router.put('/service/:id',upload.single("image"),ServiceController.update)// added by anirbank-93
@@ -144,6 +143,12 @@ router.get('/feedback/:id', FeedbackController.viewFeedbackById);
 router.post('/personnel-register', upload.single("image"), RefundPersonnel.register);
 router.get('/refund-personnel', RefundPersonnel.refundPersonnelList);
 router.put('/refund-personnel/:id', RefundPersonnel.setStatus);
+
+/**------------------------------------ Product refund ------------------------------------*/
+router.get('/product-refund-requests', ProductRefund.getAllRefundRequests);
+router.put('/approve-product-refund/:id', ProductRefund.approveRefund);
+router.put('/reject-product-refund/:id', ProductRefund.rejectRefund);
+/**----------------------------------------------------------------------------------------*/
 
 router.post('/cms/About',upload.single("image"),CmsController.createNUpdatecms)
 router.post('/cms/Blog',upload.single("image"),CmsController.createNUpdateblog)

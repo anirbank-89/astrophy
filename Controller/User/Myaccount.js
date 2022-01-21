@@ -1,12 +1,11 @@
 var mongoose = require('mongoose')
-var Checkout = require('../../Models/checkout')
-var Coupon = require('../../Models/coupon')
-var User = require('../../Models/user')
-var Cart = require('../../Models/cart')
-var Upload = require('../../service/upload')
-
 var passwordHash = require('password-hash')
 const { Validator } = require('node-input-validator')
+
+var Checkout = require('../../Models/checkout')
+var User = require('../../Models/user')
+var ProductRefund = require('../../Models/product_refund')
+var Upload = require('../../service/upload')
 
 
 const viewAll = async (req,res)=>{
@@ -67,9 +66,43 @@ const refundProduct = async (req, res) => {
           });
         } else if (data != null) {
           // data = { ...req.body, ...data._doc };
+          console.log("Checkout data", data);
+
+          let refundData = {
+            user_id: mongoose.Types.ObjectId(data.user_id),
+            order_id: data.order_id,
+            refund_amount: data.total,
+            firstname: data.firstname,
+            lastname: data.lastname,
+            address1: data.address1,
+            country: data.country,
+            state: data.state,
+            zip: data.zip,
+            paymenttype: data.paymenttype
+          }
+          if (data.address2 != null || data.address2 != "" || typeof data.address2 != "undefined") {
+            refundData.address2 = data.address2
+          }
+          if (data.cardname != null || data.cardname != "" || typeof data.cardname != "undefined") {
+            refundData.cardname = data.cardname
+          }
+          if (data.cardno != null || data.cardno != "" || typeof data.cardno != "undefined") {
+            refundData.cardno = data.cardno
+          }
+          if (data.expdate != null || data.expdate != "" || typeof data.expdate != "undefined") {
+            refundData.expdate = data.expdate
+          }
+          if (data.cvv != null || data.cvv != "" || typeof data.cvv != "undefined") {
+            refundData.cvv = data.cvv
+          }
+
+          const NEW_REFUND_REQUEST = new ProductRefund(refundData);
+
+          var saveRefundRequest = await NEW_REFUND_REQUEST.save();
+
           res.status(200).json({
             status: true,
-            message: "Order Cancel successful",
+            message: "Order Cancel successful. Refund process will be initiated",
             data: data,
           });
         } else {
