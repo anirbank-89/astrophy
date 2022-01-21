@@ -6,6 +6,7 @@ const SHOP = require('../../Models/shop');
 const SHOP_SERVICE = require('../../Models/shop_service');
 const TOTAL_COMMISSION = require('../../Models/totalcomission');
 const USER = require('../../Models/user');
+const PRODUCT_REFUND = require('../../Models/product_refund');
 
 var summaryStats = async (req, res) => {
     let users = await USER.find({ status: true }).exec();
@@ -62,6 +63,7 @@ var productSalesReport = async (req, res) => {
         }
     ])
         .then(data => {
+
             res.status(200).json({
                 status: true,
                 message: "Data successfully get.",
@@ -76,6 +78,8 @@ var productSalesReport = async (req, res) => {
             });
         });
 }
+
+// add a separate function for product refunds
 
 var serviceSalesReport = async (req, res) => {
     return SERVICE_CHECKOUTS.aggregate([
@@ -129,6 +133,8 @@ var serviceSalesReport = async (req, res) => {
         });
 }
 
+// add a separate function for service refunds
+
 var totalOrdersNRevenues = async (req,res) => {
     let totalProductRev = await PRODUCT_CHECKOUTS.aggregate([
         {
@@ -157,6 +163,8 @@ var totalOrdersNRevenues = async (req,res) => {
     });
 }
 
+// add a separate function for total lost revenue to service and product refunds
+
 var totalRevenueNProfit = async (req,res) => {
     let totalSoldProduct = await PRODUCT_CHECKOUTS.find({ status: "true" }).exec();
     // console.log(totalSoldProduct);
@@ -165,7 +173,13 @@ var totalRevenueNProfit = async (req,res) => {
         soldProductRev = soldProductRev + Number(element.total);
         // no action with 'subtotal'
     });
-    console.log("Product revenue", soldProductRev);
+    let productRefund = await PRODUCT_REFUND.find({ request_status: "approved" }).exec();
+    let refundValue = 0;
+    productRefund.forEach(element => {
+        refundValue = refundValue + Number(element.refund_amount);
+    });
+    var productRevenue = soldProductRev - refundValue;
+    console.log("Product revenue", productRevenue);
     
     let totalServices = await SERVICE_CHECKOUTS.find({}).exec()
     
@@ -175,6 +189,8 @@ var totalRevenueNProfit = async (req,res) => {
     totalCompletedServices.forEach(element => {
         completedServiceRev = completedServiceRev + Number(element.total);
     });
+    /**----------calculate service refund value----------*/
+    /**--------------------------------------------------*/
     console.log("Service revenue", completedServiceRev);
 
     var totalPendingService = totalServices.filter(item => item.acceptstatus == "pending");
@@ -193,7 +209,7 @@ var totalRevenueNProfit = async (req,res) => {
     });
     console.log("Total commision paid ", paidTotalCommissions);
 
-    var totalRevenue = soldProductRev + completedServiceRev;
+    var totalRevenue = productRevenue + completedServiceRev;
     console.log("Total revenue ", totalRevenue);
 
     var profit = totalRevenue - paidTotalCommissions;

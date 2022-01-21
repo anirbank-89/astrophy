@@ -1,9 +1,9 @@
 var mongoose = require('mongoose');
 
-const PRODUCT_REFUND = require('../../Models/product_refund');
+const SERVICE_REFUND = require('../../Models/service_refund');
 
 var getAllRefundRequests = async (req,res) => {
-    var refundRequests = await PRODUCT_REFUND.aggregate([
+    var refundRequests = await SERVICE_REFUND.aggregate([
         {
             $match: {
                 request_status: "new"
@@ -19,6 +19,14 @@ var getAllRefundRequests = async (req,res) => {
         },
         {
             $unwind: "$cart_items"
+        },
+        {
+            $lookup: {
+                from: "sellers",
+                localField: "seller_id",
+                foreignField: "seller_id",
+                as: "seller_details"
+            }
         },
         {
             $lookup: {
@@ -50,7 +58,7 @@ var getAllRefundRequests = async (req,res) => {
 var approveRefund = async (req,res) => {
     var id = req.params.id;
 
-    return PRODUCT_REFUND.findOneAndUpdate(
+    return SERVICE_REFUND.findOneAndUpdate(
         { _id: mongoose.Types.ObjectId(id) }, 
         { $set: { request_status: "approved" } }, 
         { new: true }
@@ -72,7 +80,7 @@ var approveRefund = async (req,res) => {
 }
 
 var getApprovedRefundList = async (req,res) => {
-    var approvedRefunds = await PRODUCT_REFUND.aggregate([
+    var approvedRefunds = await SERVICE_REFUND.aggregate([
         {
             $match: {
                 request_status: "approved"
@@ -86,8 +94,16 @@ var getApprovedRefundList = async (req,res) => {
                 as: "cart_items"
             }
         },
+        // {
+        //     $unwind: "$cart_items"
+        // },
         {
-            $unwind: "$cart_items"
+            $lookup: {
+                from: "sellers",
+                localField: "seller_id",
+                foreignField: "seller_id",
+                as: "seller_details"
+            }
         },
         {
             $lookup: {
@@ -119,7 +135,7 @@ var getApprovedRefundList = async (req,res) => {
 var rejectRefund = async (req,res) => {
     var id = req.params.id;
 
-    return PRODUCT_REFUND.findOneAndUpdate(
+    return SERVICE_REFUND.findOneAndUpdate(
         { _id: mongoose.Types.ObjectId(id) }, 
         { $set: { request_status: "rejected" } }, 
         { new: true }
