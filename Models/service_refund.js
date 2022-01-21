@@ -73,10 +73,6 @@ const SERVICE_REFUND_SCHEMA = new Schema({
         type:Number,
         required:false
     },
-    acceptstatus:{
-        type: String,
-        default: 'pending'
-    },
     request_status:{
         type:String,
         default: "new"

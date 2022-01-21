@@ -16,6 +16,7 @@ const UserController = require('../../Controller/Auth/User');
 const MyaccountController = require('../../Controller/Admin/Myaccount');
 const RefundPersonnel = require('../../Controller/Admin/RefundPersonnel');
 const ProductRefund = require('../../Controller/Admin/ProductRefund');
+const ServiceRefund = require('../../Controller/Admin/ServceRefund');
 const CmsController = require('../../Controller/Admin/Cms');
 const FaqcatController = require('../../Controller/Admin/Faqcategory');
 const FaqsubcatController = require('../../Controller/Admin/Faqsubcategory');
@@ -149,6 +150,13 @@ router.get('/product-refund-requests', ProductRefund.getAllRefundRequests);
 router.put('/approve-product-refund/:id', ProductRefund.approveRefund);
 router.get('/approved-product-refunds', ProductRefund.getApprovedRefundList);
 router.put('/reject-product-refund/:id', ProductRefund.rejectRefund);
+/**----------------------------------------------------------------------------------------*/
+
+/**------------------------------------ Service refund ------------------------------------*/
+router.get('/service-refund-requests', ServiceRefund.getAllRefundRequests);
+router.put('/approve-service-refund/:id', ServiceRefund.approveRefund);
+router.get('/approved-service-refunds', ServiceRefund.getApprovedRefundList);
+router.put('/reject-service-refund/:id', ServiceRefund.rejectRefund);
 /**----------------------------------------------------------------------------------------*/
 
 router.post('/cms/About',upload.single("image"),CmsController.createNUpdatecms)
