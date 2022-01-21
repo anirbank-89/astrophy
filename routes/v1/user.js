@@ -117,6 +117,7 @@ router.post('/checkout', CheckoutController.create);
 
 router.get('/orderdetails/:user_id', MyaccountController.viewAll);
 router.put('/refundProduct/:id', MyaccountController.refundProduct);
+router.put('/refundService/:id', MyaccountController.refundService);
 router.put('/update-profile/:id', upload1.single("image"), MyaccountController.updateProfile);
 router.put('/update-password/:id', MyaccountController.updatePassword);
 

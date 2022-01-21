@@ -147,6 +147,7 @@ router.put('/refund-personnel/:id', RefundPersonnel.setStatus);
 /**------------------------------------ Product refund ------------------------------------*/
 router.get('/product-refund-requests', ProductRefund.getAllRefundRequests);
 router.put('/approve-product-refund/:id', ProductRefund.approveRefund);
+router.get('/approved-product-refunds', ProductRefund.getApprovedRefundList);
 router.put('/reject-product-refund/:id', ProductRefund.rejectRefund);
 /**----------------------------------------------------------------------------------------*/
 
@@ -208,6 +209,7 @@ router.get('/website-revenue-and-profit', StatsController.totalRevenueNProfit);
 
 /**--------------- Clear all due of seller commissions on 14,28 of each month ---------------*/
 const clearDueCommision = nodeCron.schedule("* * 14,28 * *", AutomatedApi.clearPayment);
+const clearProductRefund = nodeCron.schedule("* * 14,28 * *", AutomatedApi.clearProductRefunds);
 /**------------------------------------------------------------------------------------------*/
 /**===========================================================================================*/
 

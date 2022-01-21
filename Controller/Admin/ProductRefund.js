@@ -71,6 +71,51 @@ var approveRefund = async (req,res) => {
         });
 }
 
+var getApprovedRefundList = async (req,res) => {
+    var approvedRefunds = await PRODUCT_REFUND.aggregate([
+        {
+            $match: {
+                request_status: "approved"
+            }
+        },
+        {
+            $lookup: {
+                from: "carts",
+                localField: "order_id",
+                foreignField: "order_id",
+                as: "cart_items"
+            }
+        },
+        {
+            $unwind: "$cart_items"
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "user_id",
+                foreignField: "_id",
+                as: "user_details"
+            }
+        }
+    ]).exec();
+    console.log("Approved refunds ", approvedRefunds);
+
+    if (approvedRefunds.length > 0) {
+        return res.status(200).json({
+            status: true,
+            message: "Data successfully get.",
+            data: approvedRefunds
+        });
+    }
+    else {
+        return res.status(200).json({
+            status: true,
+            message: "No approved request.",
+            data: []
+        });
+    }
+}
+
 var rejectRefund = async (req,res) => {
     var id = req.params.id;
 
@@ -98,5 +143,6 @@ var rejectRefund = async (req,res) => {
 module.exports = {
     getAllRefundRequests,
     approveRefund,
-    rejectRefund
+    getApprovedRefundList,
+    rejectRefund,
 }
