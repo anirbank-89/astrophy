@@ -232,7 +232,7 @@ const setStatus = async (req, res) => {
 
   var current_status = await ServiceCheckout.findById({ _id: id }).exec();
 
-  if (req.body.acceptstatus == 'accept') {
+  if (req.body.acceptstatus == 'complete') {
     let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(current_status.seller_id), status: true }).exec();
 
     let sellerCom = 0;
@@ -323,6 +323,13 @@ const setStatus = async (req, res) => {
         }
       }
     );
+  }
+  else {
+    return res.status(500).json({
+      status: false,
+      error: "Seller action for this service is set.",
+      data: null
+    });
   }
 }
 
