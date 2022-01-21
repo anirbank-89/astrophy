@@ -7,7 +7,6 @@
 var user = {};
 var AdminController = require('../Controller/Auth/Admin');
 var UserController = require('../Controller/Auth/User');
-var RefundPersonnel = require('../Controller/Admin/RefundPersonnel');
 
 
 //Middleware
@@ -26,9 +25,6 @@ const parmisoen = [
     },
     {
         url: "/user/listProducts",
-    },
-    {
-        url: "/refund_personnel/refund-personnel-login"
     }
 ]
 
@@ -49,9 +45,6 @@ user.middleware = async (req, res, next) => {
             }
             if (userType == "User") {
                 userData = await UserController.getTokenData(authorization);
-            }
-            if (userType == "Refund_Personnel") {
-                userData = await RefundPersonnel.getTokenData(authorization);
             }
            
             if (userData && userData != null) {
