@@ -64,6 +64,8 @@ var approveRefund = async (req,res) => {
         { new: true }
     )
         .then(docs => {
+            // Instead of calculating total refund amount in 'setSellersettlement' of User/ServiceCheckout.js and 'applyWithdraw' of User/UserSellers.js, 
+            // deduct 'commission_total' and 'commission_all' with refunded seller commision amount here.
             res.status(200).json({
                 status: true,
                 message: "Data successfully edited.",
@@ -94,9 +96,9 @@ var getApprovedRefundList = async (req,res) => {
                 as: "cart_items"
             }
         },
-        // {
-        //     $unwind: "$cart_items"
-        // },
+        {
+            $unwind: "$cart_items"
+        },
         {
             $lookup: {
                 from: "sellers",
