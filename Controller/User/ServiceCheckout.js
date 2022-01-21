@@ -5,7 +5,8 @@ const ServiceCheckout = require("../../Models/servicecheckout");
 const Servicecommission = require("../../Models/servicecommission");
 const SubscribedBy = require("../../Models/subscr_purchase");
 const Totalcomission = require("../../Models/totalcomission");
-var Withdraw = require('../../Models/withdraw');
+const Withdraw = require('../../Models/withdraw');
+const ServiceRefund = require('../../Models/service_refund'); 
 
 const { Validator } = require("node-input-validator");
 
@@ -394,8 +395,30 @@ const setSellersettlement = async (req, res) => {
   }
   /**-------------------------------------------------------------------------------------------------- */
 
+/**-------------------------------- Refunded from seller earnings ----------------------------------- */
+  let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(id), status: true }).exec();
+
+  let sellerCom = 0;
+
+  if (subDataf.comission_type == "Flat comission") {
+    sellerCom = subDataf.seller_comission
+  }
+  else {
+    sellerCom = (current_status.total * subDataf.seller_comission) / 100;
+  }
+
+  let refundedServices = await ServiceRefund.find(
+    {
+      request_status: "approved",
+      refund_status: false
+    }
+  ).exec();
+
+  var refundedAmount = sellerCom * Number(refundedServices.length);
+  /**------------------------------------------------------------------------------------------------*/
+
   /**-------------------------------- Amount earned but not claimed ----------------------------------- */
-  var inWallet = parseInt(totalEarning) - (parseInt(settledAmt) + parseInt(requestedAmt));
+  var inWallet = parseInt(totalEarning) - (parseInt(settledAmt) + parseInt(requestedAmt) + parseInt(refundedAmount));
   /**-------------------------------------------------------------------------------------------------- */
 
   res.status(200).json({
@@ -403,6 +426,7 @@ const setSellersettlement = async (req, res) => {
     total_earnings: totalEarning,
     earning_settled: settledAmt,
     pending_settlement: requestedAmt,
+    amount_refunded: refundedAmount,
     in_wallet: inWallet
   });
 }

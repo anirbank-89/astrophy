@@ -1,14 +1,15 @@
 var mongoose = require('mongoose');
-var User = require("../../Models/user");
-var Shop = require("../../Models/shop");
-var ShopServices = require('../../Models/shop_service');
+var moment = require("moment");
+
+const User = require("../../Models/user");
+const Shop = require("../../Models/shop");
 const Servicecommission = require("../../Models/servicecommission");
 const Withdraw = require("../../Models/withdraw");
 const Totalcomission = require("../../Models/totalcomission");
 const Kyc = require("../../Models/kyc");
-const moment = require("moment");
-
 const SELLER = require('../../Models/seller');
+var SubscribedBy = require('../../Models/subscr_purchase');
+var ServiceRefund = require('../../Models/service_refund');
 var Upload = require('../../service/upload');
 
 const { Validator } = require('node-input-validator');
@@ -221,8 +222,30 @@ const applyWithdraw = async (req, res) => {
   }
   /**-------------------------------------------------------------------------------------------------- */
 
+  /**-------------------------------- Refunded from seller earnings ----------------------------------- */
+  let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(req.body.seller_id), status: true }).exec();
+
+  let sellerCom = 0;
+
+  if (subDataf.comission_type == "Flat comission") {
+    sellerCom = subDataf.seller_comission
+  }
+  else {
+    sellerCom = (current_status.total * subDataf.seller_comission) / 100;
+  }
+
+  let refundedServices = await ServiceRefund.find(
+    {
+      request_status: "approved",
+      refund_status: false
+    }
+  ).exec();
+
+  var refundedAmount = sellerCom * Number(refundedServices.length);
+  /**------------------------------------------------------------------------------------------------*/
+
   /**-------------------------------- Amount earned but not claimed ----------------------------------- */
-  var inWallet = parseInt(totalEarning) - (parseInt(settledAmt) + parseInt(requestedAmt));
+  var inWallet = parseInt(totalEarning) - (parseInt(settledAmt) + parseInt(requestedAmt) + parseInt(refundedAmount));
   /**-------------------------------------------------------------------------------------------------- */
   if (req.body.amount > inWallet) {
     return res.send({

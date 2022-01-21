@@ -1,12 +1,13 @@
 const WITHDRAWS = require('../../Models/withdraw');
-const PRODUCT_REFUND = require
+const PRODUCT_REFUND = require('../../Models/product_refund');
+const SERVICE_REFUND = require('../../Models/service_refund');
 
-var clearPayment = async (req,res) => {
+var clearPayment = async (req, res) => {
     return WITHDRAWS.updateMany(
         { paystatus: false },
-        { $set: { paystatus: true }} ,
+        { $set: { paystatus: true } },
         { multi: true },
-        (err,result) => {
+        (err, result) => {
             if (!err) {
                 console.log("Scheduled payments completed.");
             }
@@ -17,12 +18,12 @@ var clearPayment = async (req,res) => {
     );
 }
 
-var clearProductRefunds = async (req,res) => {
+var clearProductRefunds = async (req, res) => {
     return PRODUCT_REFUND.updateMany(
-        { refund_status: false }, 
-        { $set: { refund_status: true } }, 
-        { multi: true }, 
-        (err,result) => {
+        { refund_status: false },
+        { $set: { refund_status: true } },
+        { multi: true },
+        (err, result) => {
             if (!err) {
                 console.log("Product refunds cleared.");
             }
@@ -30,10 +31,27 @@ var clearProductRefunds = async (req,res) => {
                 console.log("Failed to clear product refunds due to: ", err.message);
             }
         }
-    )
+    );
+}
+
+var clearServiceRefunds = async (req, res) => {
+    return SERVICE_REFUND.updateMany(
+        { refund_status: false }, 
+        { $set: { refund_status: true } },
+        { multi: true },
+        (err, result) => {
+            if (!err) {
+                console.log("Product refunds cleared.");
+            }
+            else {
+                console.log("Failed to clear product refunds due to: ", err.message);
+            }
+        }
+    );
 }
 
 module.exports = {
     clearPayment,
-    clearProductRefunds
+    clearProductRefunds,
+    clearServiceRefunds
 }

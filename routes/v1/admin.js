@@ -145,19 +145,19 @@ router.post('/personnel-register', upload.single("image"), RefundPersonnel.regis
 router.get('/refund-personnel', RefundPersonnel.refundPersonnelList);
 router.put('/refund-personnel/:id', RefundPersonnel.setStatus);
 
-/**------------------------------------ Product refund ------------------------------------*/
+/**---------------------------------- Product refund ----------------------------------*/
 router.get('/product-refund-requests', ProductRefund.getAllRefundRequests);
 router.put('/approve-product-refund/:id', ProductRefund.approveRefund);
 router.get('/approved-product-refunds', ProductRefund.getApprovedRefundList);
 router.put('/reject-product-refund/:id', ProductRefund.rejectRefund);
-/**----------------------------------------------------------------------------------------*/
+/**------------------------------------------------------------------------------------*/
 
-/**------------------------------------ Service refund ------------------------------------*/
+/**---------------------------------- Service refund ----------------------------------*/
 router.get('/service-refund-requests', ServiceRefund.getAllRefundRequests);
 router.put('/approve-service-refund/:id', ServiceRefund.approveRefund);
 router.get('/approved-service-refunds', ServiceRefund.getApprovedRefundList);
 router.put('/reject-service-refund/:id', ServiceRefund.rejectRefund);
-/**----------------------------------------------------------------------------------------*/
+/**------------------------------------------------------------------------------------*/
 
 router.post('/cms/About',upload.single("image"),CmsController.createNUpdatecms)
 router.post('/cms/Blog',upload.single("image"),CmsController.createNUpdateblog)
@@ -215,10 +215,11 @@ router.get('/website-revenue-and-profit', StatsController.totalRevenueNProfit);
 
 /**===================================== Automated tasks =====================================*/
 
-/**--------------- Clear all due of seller commissions on 14,28 of each month ---------------*/
+/**--------------- Clear all due payments on 14,28 of each month ---------------*/
 const clearDueCommision = nodeCron.schedule("* * 14,28 * *", AutomatedApi.clearPayment);
 const clearProductRefund = nodeCron.schedule("* * 14,28 * *", AutomatedApi.clearProductRefunds);
-/**------------------------------------------------------------------------------------------*/
+const clearServiceRefund = nodeCron.schedule("* * 14,28 * *", AutomatedApi.clearServiceRefunds);
+/**-----------------------------------------------------------------------------*/
 /**===========================================================================================*/
 
 module.exports = router;
