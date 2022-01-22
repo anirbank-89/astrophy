@@ -228,125 +228,60 @@ const setStatus = async (req, res) => {
   var id = req.body.id;
   var acceptstatus = req.body.acceptstatus;
 
-
-
   var current_status = await ServiceCheckout.findById({ _id: id }).exec();
-
-  if (req.body.acceptstatus == 'complete') {
-    let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(current_status.seller_id), status: true }).exec();
-
-    let sellerCom = 0;
-
-    let comType = subDataf.comission_type
-
-    let comValue = subDataf.seller_comission
-
-
-
-    if (subDataf.comission_type == "Flat comission") {
-      sellerCom = subDataf.seller_comission
-    }
-    else {
-      sellerCom = (current_status.total * subDataf.seller_comission) / 100;
-    }
-
-    let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(current_status.seller_id) }).exec();
-    let dataComision = {
-      _id: mongoose.Types.ObjectId(),
-      order_id: mongoose.Types.ObjectId(current_status._id),
-      seller_id: mongoose.Types.ObjectId(current_status.seller_id),
-      commision_type: comType,
-      commision_value: comValue,
-      price: current_status.total,
-      seller_commission: sellerCom
-    };
-
-    //     console.log(dataComision);
-    // return false;
-    const saveCom = new Servicecommission(dataComision);
-    saveCom.save()
-
-
-    console.log(totalcomission)
-
-    if (totalcomission != null) {
-      console.log('a')
-
-
-      let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
-      Totalcomission.findOneAndUpdate(
-        { seller_id: mongoose.Types.ObjectId(current_status.seller_id) },
-        { $set: { comission_total: totalComcal, comission_all: totalComcal } },
-        (err, writeResult) => {
-          // console.log(err);
-        }
-      );
-    }
-    else {
-      console.log('b')
-      let dataComisionTotalval = {
-        _id: mongoose.Types.ObjectId(),
-        seller_id: mongoose.Types.ObjectId(current_status.seller_id),
-        comission_total: sellerCom,
-        comission_all: sellerCom
-      };
-      console.log(dataComisionTotalval)
-      const saveComTotal = new Totalcomission(dataComisionTotalval);
-      saveComTotal.save()
-    }
-
-  }
 
   console.log("Shop Service data", current_status);
 
   if (current_status.acceptstatus === "pending") {
     console.log(true);
-    return ServiceCheckout.findByIdAndUpdate(
-      { _id: id },
-      { $set: { acceptstatus: acceptstatus } },
-      // { new: true },
-      (err, docs) => {
-        docs = { ...docs._doc, ...req.body };
-        if (!err) {
-          res.status(200).json({
-            status: true,
-            message: "Service Checkout has been made inactive.",
-            data: docs
-          });
+    if (acceptstatus == 'accept') {
+      return ServiceCheckout.findByIdAndUpdate(
+        { _id: id },
+        { $set: { acceptstatus: acceptstatus } },
+        // { new: true },
+        (err, docs) => {
+          docs = { ...docs._doc, ...req.body };
+          if (!err) {
+            res.status(200).json({
+              status: true,
+              message: "Service request has been accepted.",
+              data: docs
+            });
+          }
+          else {
+            res.status(500).json({
+              status: false,
+              message: "Invalid id. Server error.",
+              error: err
+            });
+          }
         }
-        else {
-          res.status(500).json({
-            status: false,
-            message: "Invalid id. Server error.",
-            error: err
-          });
+      );
+    }
+    else {
+      return ServiceCheckout.findByIdAndUpdate(
+        { _id: id },
+        { $set: { acceptstatus: acceptstatus } },
+        // { new: true },
+        (err, docs) => {
+          docs = { ...docs._doc, ...req.body };
+          if (!err) {
+            res.status(200).json({
+              status: true,
+              message: "Service request has been rejected.",
+              data: docs
+            });
+          }
+          else {
+            res.status(500).json({
+              status: false,
+              message: "Invalid id. Server error.",
+              error: err
+            });
+          }
         }
-      }
-    );
-  }
-  else if (current_status.acceptstatus === "accept") {
-    return ServiceCheckout.findByIdAndUpdate(
-      { _id: id },
-      { $set: { acceptstatus: acceptstatus } },
-      // { new: true },
-      (err, docs) => {
-        docs = { ...docs._doc, ...req.body };
-        if (!err) {
-          res.status(200).json({
-            status: true,
-            message: "Service to buyer completed.",
-            data: docs
-          });
-        }
-        else {
-          res.status(500).json({
-            status: false,
-            message: "Invalid id. Server error.",
-            error: err
-          });
-        }
-      }
-    );
+      );
+    }
   }
   else {
     return res.status(500).json({
@@ -355,6 +290,92 @@ const setStatus = async (req, res) => {
       data: null
     });
   }
+}
+
+var completeServiceRequest = async (req, res) => {
+  var id = req.params.id;
+
+  return ServiceCheckout.findOneAndUpdate(
+    { _id: mongoose.Types.ObjectId(id) },
+    { $set: { completestatus: true } },
+    { new: true }
+  )
+    .then(async (docs) => {
+      let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(docs.seller_id), status: true }).exec();
+
+      let sellerCom = 0;
+
+      let comType = subDataf.comission_type
+
+      let comValue = subDataf.seller_comission
+
+
+
+      if (subDataf.comission_type == "Flat comission") {
+        sellerCom = subDataf.seller_comission
+      }
+      else {
+        sellerCom = (docs.total * subDataf.seller_comission) / 100;
+      }
+
+      let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(docs.seller_id) }).exec();
+      let dataComision = {
+        _id: mongoose.Types.ObjectId(),
+        order_id: mongoose.Types.ObjectId(docs._id),
+        seller_id: mongoose.Types.ObjectId(docs.seller_id),
+        commision_type: comType,
+        commision_value: comValue,
+        price: docs.total,
+        seller_commission: sellerCom
+      };
+
+      //     console.log(dataComision);
+      // return false;
+      const saveCom = new Servicecommission(dataComision);
+      saveCom.save()
+
+
+      console.log(totalcomission)
+
+      if (totalcomission != null) {
+        console.log('a')
+
+
+        let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
+        Totalcomission.findOneAndUpdate(
+          { seller_id: mongoose.Types.ObjectId(docs.seller_id) },
+          { $set: { comission_total: totalComcal, comission_all: totalComcal } },
+          (err, writeResult) => {
+            // console.log(err);
+          }
+        );
+      }
+      else {
+        console.log('b')
+        let dataComisionTotalval = {
+          _id: mongoose.Types.ObjectId(),
+          seller_id: mongoose.Types.ObjectId(docs.seller_id),
+          comission_total: sellerCom,
+          comission_all: sellerCom
+        };
+        console.log(dataComisionTotalval)
+        const saveComTotal = new Totalcomission(dataComisionTotalval);
+        saveComTotal.save()
+      }
+
+      res.status(200).json({
+        status: true,
+        message: "Buyer service request has been completed.",
+        data: docs
+      });
+    })
+    .catch(err => {
+      res.status(500).json({
+        status: false,
+        message: "Invalid id. Server error.",
+        error: err.message
+      });
+    });
 }
 
 const setTips = async (req, res) => {
@@ -426,6 +447,10 @@ const setSellersettlement = async (req, res) => {
   }
   /**-------------------------------------------------------------------------------------------------- */
 
+  /**-------------------------------- Amount earned but not claimed ----------------------------------- */
+  var inWallet = parseInt(totalEarning) - (parseInt(settledAmt) + parseInt(requestedAmt));
+  /**-------------------------------------------------------------------------------------------------- */
+
   /**-------------------------------- Refunded from seller earnings ----------------------------------- */
   let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(id), status: true }).exec();
 
@@ -448,23 +473,39 @@ const setSellersettlement = async (req, res) => {
   var refundedAmount = sellerCom * Number(refundedServices.length);
   /**------------------------------------------------------------------------------------------------*/
 
-  /**-------------------------------- Amount earned but not claimed ----------------------------------- */
-  var inWallet = parseInt(totalEarning) - (parseInt(settledAmt) + parseInt(requestedAmt) + parseInt(refundedAmount));
-  /**-------------------------------------------------------------------------------------------------- */
+  // if (refundedAmount > inWallet) {
+  //   //
+  // } else
+  if (refundedAmount >= inWallet) {                        // it will be refundedAmount == inWallet
+    var takeFromWallet = refundedAmount - inWallet;
+    var newPayableRequest = requestedAmt - takeFromWallet;
+    var newWalletValue = 0;
 
-  res.status(200).json({
-    status: true,
-    total_earnings: totalEarning,
-    earning_settled: settledAmt,
-    pending_settlement: requestedAmt,
-    amount_refunded: refundedAmount,
-    in_wallet: inWallet
-  });
+    res.status(200).json({
+      status: true,
+      total_earnings: totalEarning,
+      earning_settled: settledAmt,
+      new_refunds: refundedAmount,
+      pending_settlement: newPayableRequest,
+      in_wallet: newWalletValue
+    });
+  }
+  else {
+    res.status(200).json({
+      status: true,
+      total_earnings: totalEarning,
+      earning_settled: settledAmt,
+      new_refunds: refundedAmount,
+      pending_settlement: requestedAmt,
+      in_wallet: inWallet
+    });
+  }
 }
 
 module.exports = {
   create,
   setStatus,
+  completeServiceRequest,
   setTips,
   setSellersettlement
   //checkCoupon,
