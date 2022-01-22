@@ -95,6 +95,10 @@ const ServiceCheckoutSchema = new mongoose.Schema({
         type: String,
         default: 'pending'
     },
+    completestatus: {
+        type: Boolean,
+        default: false
+    },
     tokenid:{
         type:String,
         default:null

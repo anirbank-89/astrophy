@@ -226,13 +226,13 @@ const create = async (req, res) => {
 
 const setStatus = async (req, res) => {
   var id = req.body.id;
-  var acceptstatus = req.body.acceptstatus;
+  var completestatus = req.body.completestatus;
 
 
 
   var current_status = await ServiceCheckout.findById({ _id: id }).exec();
 
-  if (req.body.acceptstatus == 'complete') {
+  if (req.body.completestatus == true) {
     let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(current_status.seller_id), status: true }).exec();
 
     let sellerCom = 0;
@@ -303,7 +303,7 @@ const setStatus = async (req, res) => {
     console.log(true);
     return ServiceCheckout.findByIdAndUpdate(
       { _id: id },
-      { $set: { acceptstatus: acceptstatus } },
+      { $set: { acceptstatus: "accept" } }, 
       // { new: true },
       (err, docs) => {
         docs = { ...docs._doc, ...req.body };
@@ -327,7 +327,7 @@ const setStatus = async (req, res) => {
   else if (current_status.acceptstatus === "accept") {
     return ServiceCheckout.findByIdAndUpdate(
       { _id: id },
-      { $set: { acceptstatus: acceptstatus } },
+      { $set: { completestatus: completestatus } },
       // { new: true },
       (err, docs) => {
         docs = { ...docs._doc, ...req.body };
