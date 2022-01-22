@@ -6,7 +6,7 @@ const Servicecommission = require("../../Models/servicecommission");
 const SubscribedBy = require("../../Models/subscr_purchase");
 const Totalcomission = require("../../Models/totalcomission");
 const Withdraw = require('../../Models/withdraw');
-const ServiceRefund = require('../../Models/service_refund'); 
+const ServiceRefund = require('../../Models/service_refund');
 
 const { Validator } = require("node-input-validator");
 
@@ -324,6 +324,30 @@ const setStatus = async (req, res) => {
       }
     );
   }
+  else if (current_status.acceptstatus === "accept") {
+    return ServiceCheckout.findByIdAndUpdate(
+      { _id: id },
+      { $set: { acceptstatus: acceptstatus } },
+      // { new: true },
+      (err, docs) => {
+        docs = { ...docs._doc, ...req.body };
+        if (!err) {
+          res.status(200).json({
+            status: true,
+            message: "Service to buyer completed.",
+            data: docs
+          });
+        }
+        else {
+          res.status(500).json({
+            status: false,
+            message: "Invalid id. Server error.",
+            error: err
+          });
+        }
+      }
+    );
+  }
   else {
     return res.status(500).json({
       status: false,
@@ -368,7 +392,7 @@ const setSellersettlement = async (req, res) => {
   let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(id) }).exec();
   let totalEarning = totalcomission.comission_all
   // let totalSettlement = parseInt(totalcomission.comission_all) - parseInt(totalcomission.comission_total)
-  
+
   /**------------------------ Get the amount withdrawn and settled by Astrophy ------------------------ */
   let amount_credited = await Withdraw.find({ seller_id: mongoose.Types.ObjectId(id), paystatus: true }).exec();
   console.log("Amount settled", amount_credited);
@@ -402,7 +426,7 @@ const setSellersettlement = async (req, res) => {
   }
   /**-------------------------------------------------------------------------------------------------- */
 
-/**-------------------------------- Refunded from seller earnings ----------------------------------- */
+  /**-------------------------------- Refunded from seller earnings ----------------------------------- */
   let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(id), status: true }).exec();
 
   let sellerCom = 0;
