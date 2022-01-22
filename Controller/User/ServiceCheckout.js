@@ -473,13 +473,29 @@ const setSellersettlement = async (req, res) => {
   var refundedAmount = sellerCom * Number(refundedServices.length);
   /**------------------------------------------------------------------------------------------------*/
 
-  // if (refundedAmount > inWallet) {
-  //   //
-  // } else
-  if (refundedAmount >= inWallet) {                        // it will be refundedAmount == inWallet
+  if (refundedAmount > inWallet) {
     var takeFromWallet = refundedAmount - inWallet;
     var newPayableRequest = requestedAmt - takeFromWallet;
     var newWalletValue = 0;
+
+    let editSellerWithdraw = await Withdraw.updateMany(
+      { paystatus: false }, 
+      { $set: { paystatus: true } },
+      { multi: true }, 
+      (err,writeResult) => {
+        // console.log(writeResult)
+      }
+    );
+
+    let obj = {
+      _id: mongoose.Types.ObjectId(),
+      seller_id: mongoose.Types.ObjectId(id),
+      amount: newPayableRequest,
+      paystatus: false
+    }
+
+    const NEW_PERMISSIBLE_WITHDRAW = new Withdraw(obj);
+    NEW_PERMISSIBLE_WITHDRAW.save();
 
     res.status(200).json({
       status: true,
@@ -487,6 +503,18 @@ const setSellersettlement = async (req, res) => {
       earning_settled: settledAmt,
       new_refunds: refundedAmount,
       pending_settlement: newPayableRequest,
+      in_wallet: newWalletValue
+    });
+  }
+  else if (refundedAmount == inWallet) {
+    var newWalletValue = 0;
+
+    res.status(200).json({
+      status: true,
+      total_earnings: totalEarning,
+      earning_settled: settledAmt,
+      new_refunds: refundedAmount,
+      pending_settlement: requestedAmt,
       in_wallet: newWalletValue
     });
   }
