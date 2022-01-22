@@ -497,7 +497,7 @@ const setSellersettlement = async (req, res) => {
       earning_settled: settledAmt,
       new_refunds: refundedAmount,
       pending_settlement: requestedAmt,
-      in_wallet: inWallet
+      in_wallet: inWallet - refundedAmount
     });
   }
 }
