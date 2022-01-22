@@ -134,6 +134,7 @@ router.delete('/servicecart/:id',ServiceCartController.Delete)
 router.post('/servicecheckout', ServiceCheckoutController.create);
 
 router.post('/accept_status', ServiceCheckoutController.setStatus);
+router.put('/complete-service-request/:id', ServiceCheckoutController.completeServiceRequest);
 
 router.post('/tips', ServiceCheckoutController.setTips);
 router.get('/getSellersettlement/:id', ServiceCheckoutController.setSellersettlement);
