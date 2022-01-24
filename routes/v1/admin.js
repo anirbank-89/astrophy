@@ -157,6 +157,7 @@ router.get('/service-refund-requests', ServiceRefund.getAllRefundRequests);
 router.put('/approve-service-refund/:id', ServiceRefund.approveRefund);
 router.get('/approved-service-refunds', ServiceRefund.getApprovedRefundList);
 router.put('/reject-service-refund/:id', ServiceRefund.rejectRefund);
+router.put('/initate-service-refund/:id', ServiceRefund.adminInitiateRefund);
 /**------------------------------------------------------------------------------------*/
 
 router.post('/cms/About',upload.single("image"),CmsController.createNUpdatecms)

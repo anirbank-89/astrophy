@@ -77,6 +77,10 @@ const SERVICE_REFUND_SCHEMA = new Schema({
         type:String,
         default: "new"
     },
+    admin_status: {
+        type: String,
+        default: "pending"
+    },
     refund_status: {
         type: Boolean,
         default: false

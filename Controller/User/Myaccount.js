@@ -118,14 +118,18 @@ const refundProduct = async (req, res) => {
   );
 }
 
-const refundService = async (req,res) => {
+const refundService = async (req, res) => {
   var id = req.params.id;
 
-  return ServiceCheckout.findOneAndUpdate(
-    { _id: mongoose.Types.ObjectId(id) },
-    { status: 'cancel' }, 
-    { new: true }
-  )
+  var checkStatus = await ServiceCheckout.findOne({ _id: mongoose.Types.ObjectId(id) }).exec();
+
+  if ((checkStatus.acceptstatus == "accept" && checkStatus.completestatus == false) ||
+    (checkStatus.acceptstatus == "accept" && checkStatus.completestatus == true)) {
+    return ServiceCheckout.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(id) },
+      { status: 'cancel' },
+      { new: true }
+    )
       .then(async (docs) => {
         console.log("Checkout data ", docs);
 
@@ -142,23 +146,23 @@ const refundService = async (req,res) => {
           zip: docs.zip,
           paymenttype: docs.paymenttype
         }
-        if (req.body.address2 != null || req.body.address2 != "" || typeof req.body.address2 != "undefined") {
-          refundData.address2 = req.body.address2;
+        if (docs.address2 != null || docs.address2 != "" || typeof docs.address2 != "undefined") {
+          refundData.address2 = docs.address2;
         }
-        if (req.body.cardname != null || req.body.cardname != "" || typeof req.body.cardname != "undefined") {
-          refundData.cardname = req.body.cardname;
+        if (docs.cardname != null || docs.cardname != "" || typeof docs.cardname != "undefined") {
+          refundData.cardname = docs.cardname;
         }
-        if (req.body.cardno != null || req.body.cardno != "" || typeof req.body.cardno != "undefined") {
-          refundData.cardno = req.body.cardno;
+        if (docs.cardno != null || docs.cardno != "" || typeof docs.cardno != "undefined") {
+          refundData.cardno = docs.cardno;
         }
-        if (req.body.expdate != null || req.body.expdate != "" || typeof req.body.expdate != "undefined") {
-          refundData.expdate = req.body.expdate;
+        if (docs.expdate != null || docs.expdate != "" || typeof docs.expdate != "undefined") {
+          refundData.expdate = docs.expdate;
         }
-        if (req.body.cvv != null || req.body.cvv != "" || typeof req.body.cvv != "undefined") {
-          refundData.cvv = req.body.cvv;
+        if (docs.cvv != null || docs.cvv != "" || typeof docs.cvv != "undefined") {
+          refundData.cvv = docs.cvv;
         }
-        if (req.body.tip != null || req.body.tip != "" || typeof req.body.tip != "undefined") {
-          refundData.tip = req.body.tip;
+        if (docs.tip != null || docs.tip != "" || typeof docs.tip != "undefined") {
+          refundData.tip = docs.tip;
         }
 
         const NEW_REFUND_REQUEST = new ServiceRefund(refundData);
@@ -178,6 +182,14 @@ const refundService = async (req,res) => {
           error: err.message
         })
       });
+  }
+  else {
+    return res.status(500).json({
+      status: false,
+      error: "Service request has been rejected. Money already refunded for online payments.",
+      data: null
+    });
+  }
 }
 
 const updateProfile = async (req, res) => {
