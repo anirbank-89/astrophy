@@ -263,9 +263,46 @@ const setStatus = async (req, res) => {
         { _id: id },
         { $set: { acceptstatus: acceptstatus } },
         // { new: true },
-        (err, docs) => {
+        async (err, docs) => {
           docs = { ...docs._doc, ...req.body };
           if (!err) {
+            // Initiate refund process if 'paymenttype' is not 'cash'
+            // let refundData = {
+            //   user_id: mongoose.Types.ObjectId(docs.user_id),
+            //   seller_id: mongoose.Types.ObjectId(docs.seller_id),
+            //   order_id: docs.order_id,
+            //   refund_amount: docs.total,
+            //   firstname: docs.firstname,
+            //   lastname: docs.lastname,
+            //   address1: docs.address1,
+            //   country: docs.country,
+            //   state: docs.state,
+            //   zip: docs.zip,
+            //   paymenttype: docs.paymenttype
+            // }
+            // if (docs.address2 != null || docs.address2 != "" || typeof docs.address2 != "undefined") {
+            //   refundData.address2 = docs.address2;
+            // }
+            // if (docs.cardname != null || docs.cardname != "" || typeof docs.cardname != "undefined") {
+            //   refundData.cardname = docs.cardname;
+            // }
+            // if (docs.cardno != null || docs.cardno != "" || typeof docs.cardno != "undefined") {
+            //   refundData.cardno = docs.cardno;
+            // }
+            // if (docs.expdate != null || docs.expdate != "" || typeof docs.expdate != "undefined") {
+            //   refundData.expdate = docs.expdate;
+            // }
+            // if (docs.cvv != null || docs.cvv != "" || typeof docs.cvv != "undefined") {
+            //   refundData.cvv = docs.cvv;
+            // }
+            // if (docs.tip != null || docs.tip != "" || typeof docs.tip != "undefined") {
+            //   refundData.tip = docs.tip;
+            // }
+
+            // const NEW_REFUND_REQUEST = new ServiceRefund(refundData);
+
+            // let saveRequest = await NEW_REFUND_REQUEST.save();
+            
             res.status(200).json({
               status: true,
               message: "Service request has been rejected.",
@@ -479,10 +516,10 @@ const setSellersettlement = async (req, res) => {
     var newWalletValue = 0;
 
     let editSellerWithdraw = await Withdraw.updateMany(
-      { paystatus: false }, 
+      { paystatus: false },
       { $set: { paystatus: true } },
-      { multi: true }, 
-      (err,writeResult) => {
+      { multi: true },
+      (err, writeResult) => {
         // console.log(writeResult)
       }
     );

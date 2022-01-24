@@ -158,9 +158,34 @@ var rejectRefund = async (req,res) => {
         });
 }
 
+var adminInitiateRefund = async (req,res) => {
+    var id = req.params.id;
+
+    return SERVICE_REFUND.findOneAndUpdate(
+        { _id: mongoose.Types.ObjectId(id) },
+        { $set: { admin_status: "refund_initiated" } }, 
+        { new: true }
+    )
+        .then(docs => {
+            res.status(200).json({
+                status: true,
+                message: "Data successfully edited.",
+                data: docs
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err
+            });
+        });
+}
+
 module.exports = {
     getAllRefundRequests,
     approveRefund,
     getApprovedRefundList,
     rejectRefund,
+    adminInitiateRefund
 }
