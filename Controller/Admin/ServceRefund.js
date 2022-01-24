@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 const SERVICE_REFUND = require('../../Models/service_refund');
 
-var getAllRefundRequests = async (req,res) => {
+var getAllRefundRequests = async (req, res) => {
     var refundRequests = await SERVICE_REFUND.aggregate([
         {
             $match: {
@@ -55,12 +55,12 @@ var getAllRefundRequests = async (req,res) => {
     }
 }
 
-var approveRefund = async (req,res) => {
+var approveRefund = async (req, res) => {
     var id = req.params.id;
 
     return SERVICE_REFUND.findOneAndUpdate(
-        { _id: mongoose.Types.ObjectId(id) }, 
-        { $set: { request_status: "approved" } }, 
+        { _id: mongoose.Types.ObjectId(id) },
+        { $set: { request_status: "approved" } },
         { new: true }
     )
         .then(docs => {
@@ -81,7 +81,7 @@ var approveRefund = async (req,res) => {
         });
 }
 
-var getApprovedRefundList = async (req,res) => {
+var getApprovedRefundList = async (req, res) => {
     var approvedRefunds = await SERVICE_REFUND.aggregate([
         {
             $match: {
@@ -134,12 +134,17 @@ var getApprovedRefundList = async (req,res) => {
     }
 }
 
-var rejectRefund = async (req,res) => {
+var rejectRefund = async (req, res) => {
     var id = req.params.id;
 
     return SERVICE_REFUND.findOneAndUpdate(
-        { _id: mongoose.Types.ObjectId(id) }, 
-        { $set: { request_status: "rejected" } }, 
+        { _id: mongoose.Types.ObjectId(id) },
+        {
+            $set: {
+                request_status: "rejected",
+                admin_status: "refund_rejected"
+            }
+        },
         { new: true }
     )
         .then(docs => {
@@ -158,12 +163,12 @@ var rejectRefund = async (req,res) => {
         });
 }
 
-var adminInitiateRefund = async (req,res) => {
+var adminInitiateRefund = async (req, res) => {
     var id = req.params.id;
 
     return SERVICE_REFUND.findOneAndUpdate(
         { _id: mongoose.Types.ObjectId(id) },
-        { $set: { admin_status: "refund_initiated" } }, 
+        { $set: { admin_status: "refund_initiated" } },
         { new: true }
     )
         .then(docs => {
