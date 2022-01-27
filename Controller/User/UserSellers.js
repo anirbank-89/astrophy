@@ -236,6 +236,7 @@ const applyWithdraw = async (req, res) => {
 
   let refundedServices = await ServiceRefund.find(
     {
+      seller_id: mongoose.Types.ObjectId(req.body.seller_id),
       request_status: "approved",
       refund_status: false
     }
@@ -245,7 +246,7 @@ const applyWithdraw = async (req, res) => {
   /**------------------------------------------------------------------------------------------------*/
 
   /**-------------------------------- Amount earned but not claimed ----------------------------------- */
-  var inWallet = parseInt(totalEarning) - (parseInt(settledAmt) + parseInt(requestedAmt) + parseInt(refundedAmount));
+  var inWallet = parseInt(totalEarning) - (parseInt(settledAmt) + parseInt(requestedAmt));
   /**-------------------------------------------------------------------------------------------------- */
   if (req.body.amount > inWallet) {
     return res.send({

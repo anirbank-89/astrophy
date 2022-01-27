@@ -302,7 +302,7 @@ const setStatus = async (req, res) => {
             // const NEW_REFUND_REQUEST = new ServiceRefund(refundData);
 
             // let saveRequest = await NEW_REFUND_REQUEST.save();
-            
+
             res.status(200).json({
               status: true,
               message: "Service request has been rejected.",
@@ -448,6 +448,7 @@ const setSellersettlement = async (req, res) => {
   var id = req.params.id;
 
   let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(id) }).exec();
+  // if-else clause
   let totalEarning = totalcomission.comission_all
   // let totalSettlement = parseInt(totalcomission.comission_all) - parseInt(totalcomission.comission_total)
 
@@ -490,7 +491,14 @@ const setSellersettlement = async (req, res) => {
 
   /**-------------------------------- Refunded from seller earnings ----------------------------------- */
   let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(id), status: true }).exec();
+  let current_status = await ServiceCheckout.find(
+    {
+      seller_id: id,
+      completestatus: false
+    }
+  ).exec();
 
+  // more operations need to be done on current status
   let sellerCom = 0;
 
   if (subDataf.comission_type == "Flat comission") {
@@ -502,6 +510,7 @@ const setSellersettlement = async (req, res) => {
 
   let refundedServices = await ServiceRefund.find(
     {
+      seller_id: mongoose.Types.ObjectId(id), 
       request_status: "approved",
       refund_status: false
     }
@@ -543,18 +552,18 @@ const setSellersettlement = async (req, res) => {
       in_wallet: newWalletValue
     });
   }
-  else if (refundedAmount == inWallet) {
-    var newWalletValue = 0;
+  // else if (refundedAmount == inWallet) {
+  //   var newWalletValue = 0;
 
-    res.status(200).json({
-      status: true,
-      total_earnings: totalEarning,
-      earning_settled: settledAmt,
-      new_refunds: refundedAmount,
-      pending_settlement: requestedAmt,
-      in_wallet: newWalletValue
-    });
-  }
+  //   res.status(200).json({
+  //     status: true,
+  //     total_earnings: totalEarning,
+  //     earning_settled: settledAmt,
+  //     new_refunds: refundedAmount,
+  //     pending_settlement: requestedAmt,
+  //     in_wallet: newWalletValue
+  //   });
+  // }
   else {
     res.status(200).json({
       status: true,
