@@ -470,7 +470,12 @@ const setSellersettlement = async (req, res) => {
   /**-------------------------------------------------------------------------------------------------- */
 
   /**---------------------- Get the amount withdrawn but bot settled by Astrophy ---------------------- */
-  let amountRequested = await Withdraw.find({ seller_id: mongoose.Types.ObjectId(id), paystatus: false }).exec();
+  let amountRequested = await Withdraw.find(
+    {
+      seller_id: mongoose.Types.ObjectId(id),
+      paystatus: false
+    }
+  ).exec();
   console.log("Amount requested", amountRequested);
 
   var requestedAmt = 0;
@@ -510,7 +515,7 @@ const setSellersettlement = async (req, res) => {
 
   let refundedServices = await ServiceRefund.find(
     {
-      seller_id: mongoose.Types.ObjectId(id), 
+      seller_id: mongoose.Types.ObjectId(id),
       request_status: "approved",
       refund_status: false
     }
@@ -525,7 +530,10 @@ const setSellersettlement = async (req, res) => {
     var newWalletValue = 0;
 
     let editSellerWithdraw = await Withdraw.updateMany(
-      { paystatus: false },
+      {
+        seller_id: mongoose.Types.ObjectId(id), 
+        paystatus: false
+      },
       { $set: { paystatus: true } },
       { multi: true },
       (err, writeResult) => {
@@ -533,15 +541,14 @@ const setSellersettlement = async (req, res) => {
       }
     );
 
-    let obj = {
-      _id: mongoose.Types.ObjectId(),
-      seller_id: mongoose.Types.ObjectId(id),
-      amount: newPayableRequest,
-      paystatus: false
-    }
+    // let obj = {
+    //   _id: mongoose.Types.ObjectId(),
+    //   seller_id: mongoose.Types.ObjectId(id),
+    //   amount: newPayableRequest
+    // }
 
-    const NEW_PERMISSIBLE_WITHDRAW = new Withdraw(obj);
-    NEW_PERMISSIBLE_WITHDRAW.save();
+    // const NEW_PERMISSIBLE_WITHDRAW = new Withdraw(obj);
+    // NEW_PERMISSIBLE_WITHDRAW.save();
 
     res.status(200).json({
       status: true,
