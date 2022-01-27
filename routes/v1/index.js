@@ -8,6 +8,7 @@ router.get('/', function(req, res, next) {
 });
 
 const AdminController = require('../../Controller/Auth/Admin');
+const CurrencyNTaxRates = require('../../Controller/Admin/CurrencyNTaxRates');
 const UserController = require('../../Controller/Auth/User');
 const UserProductController = require('../../Controller/User/Product');// added by anirbank-93
 const ServiceController = require('../../Controller/User/Service');    // added by anirbank-93
@@ -35,6 +36,8 @@ router.post('/user/register', UserController.register);
 router.post('/user/email-verification', UserController.sendVerifyLink);// added by anirbank-93
 router.post('/user/verify-email', UserController.afterEmailVerify);    // added by anirbank-93
 router.post('/user/login', UserController.login);
+
+router.get('/user/currency', CurrencyNTaxRates.getCurrencies);
 
 router.get('/user/listProducts/:page/:userid', UserController.viewProductList);
 router.get('/user/spellCasting', UserController.viewAllServices);

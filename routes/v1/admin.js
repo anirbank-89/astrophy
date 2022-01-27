@@ -4,6 +4,7 @@ var nodeCron = require('node-cron');
 
 const ProductController = require('../../Controller/Admin/Product');
 const CategoryController = require('../../Controller/Admin/Category');
+const CurrencyNTaxRates = require('../../Controller/Admin/CurrencyNTaxRates');
 const SubscriptionController = require('../../Controller/Admin/Subscription');
 const UserSellersController = require('../../Controller/Admin/UserSellers'); // added by anirbank-93
 const ServiceController = require('../../Controller/Admin/Service');         // added by anirbank-93
@@ -47,6 +48,10 @@ router.use((req,res,next)=>{
         res.send({status: false, msg: "parmison not found" });
     }
 })
+
+router.post('/currency', CurrencyNTaxRates.addCurrency);
+router.get('/currency', CurrencyNTaxRates.getCurrencies);
+router.delete('/currency/:id', CurrencyNTaxRates.deleteCurrency);
 
 // router.post('/product/Product',upload.single("image"),ProductController.create)
 router.post('/product/Product',ProductController.create)
