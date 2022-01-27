@@ -552,18 +552,18 @@ const setSellersettlement = async (req, res) => {
       in_wallet: newWalletValue
     });
   }
-  // else if (refundedAmount == inWallet) {
-  //   var newWalletValue = 0;
+  else if (refundedAmount == inWallet) {
+    var newWalletValue = 0;
 
-  //   res.status(200).json({
-  //     status: true,
-  //     total_earnings: totalEarning,
-  //     earning_settled: settledAmt,
-  //     new_refunds: refundedAmount,
-  //     pending_settlement: requestedAmt,
-  //     in_wallet: newWalletValue
-  //   });
-  // }
+    res.status(200).json({
+      status: true,
+      total_earnings: totalEarning,
+      earning_settled: settledAmt,
+      new_refunds: refundedAmount,
+      pending_settlement: requestedAmt,
+      in_wallet: newWalletValue
+    });
+  }
   else {
     res.status(200).json({
       status: true,
