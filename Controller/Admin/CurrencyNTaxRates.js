@@ -4,6 +4,7 @@ const { Validator } = require('node-input-validator');
 
 const CURRENCY = require('../../Models/currency');
 
+// Add currency and tax rate in single information doc
 var addCurrencyNTax = async (req, res) => {
     const V = new Validator({
         name: 'required',

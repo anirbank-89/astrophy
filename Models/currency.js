@@ -15,7 +15,7 @@ const CURRENCY_SCHEMA = new Schema({
     },
     symbol: String,
     subunit: String,
-    tax_rate: {
+    tax_rate: {         // tax rate currency locale wise 
         type: Number,
         required: true
     },
