@@ -11,7 +11,7 @@ const WithdrawSchema = new mongoose.Schema({
   },
   paystatus: {
     type: Boolean,
-    dafault:false
+    default: false
   },
   transactionid: {
     type: String
