@@ -49,7 +49,7 @@ router.use((req,res,next)=>{
     }
 })
 
-router.post('/currency', CurrencyNTaxRates.addCurrency);
+router.post('/currency', CurrencyNTaxRates.addCurrencyNTax);
 router.get('/currency', CurrencyNTaxRates.getCurrencies);
 router.delete('/currency/:id', CurrencyNTaxRates.deleteCurrency);
 
