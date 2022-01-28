@@ -4,12 +4,12 @@ const { Validator } = require('node-input-validator');
 
 const CURRENCY = require('../../Models/currency');
 
-var addCurrency = async (req, res) => {
+// Add currency and tax rate in single information doc
+var addCurrencyNTax = async (req, res) => {
     const V = new Validator({
         name: 'required',
         abbreviation: 'required',
-        symbol: 'required',
-        subunit: 'required'
+        tax_rate: 'required'
     });
     let matched = await V.check().then(val => val);
 
@@ -17,11 +17,23 @@ var addCurrency = async (req, res) => {
         return res.status(400).json({ status: false, errors: V.errors });
     }
 
+    let saveData = {
+        _id: mongoose.Types.ObjectId(),
+        name: req.body.name,
+        abbreviation: req.body.abbreviation,
+        tax_rate: req.body.tax_rate
+    }
+    if (req.body.symbol != null || req.body.symbol != "" || typeof req.body.symbol != "undefined") {
+        saveData.symbol = req.body.symbol;
+    }
+    if (req.body.subunit != null || req.body.subunit != "" || typeof req.body.subunit != "undefined") {
+        saveData.subunit = req.body.subunit;
+    }
     if (req.body.detailed_info != null || req.body.detailed_info != "" || typeof req.body.detailed_info != "undefined") {
-        req.body.detailed_info = req.body.detailed_info;
+        saveData.detailed_info = req.body.detailed_info;
     }
 
-    const NEW_CURRENCY = new CURRENCY(req.body);
+    const NEW_CURRENCY = new CURRENCY(saveData);
 
     return NEW_CURRENCY.save()
         .then(docs => {
@@ -79,7 +91,7 @@ var deleteCurrency = async (req,res) => {
 }
 
 module.exports = {
-    addCurrency,
+    addCurrencyNTax,
     getCurrencies,
     deleteCurrency
 }
