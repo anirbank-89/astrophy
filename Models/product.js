@@ -19,7 +19,7 @@ const ProductSchema = new mongoose.Schema({
         required: true
     },
     currency: {
-        type: Object,
+        type: String,
         required: true
     },
     mrp:{

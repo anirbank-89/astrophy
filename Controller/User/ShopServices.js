@@ -19,10 +19,8 @@ const register = async (req,res)=>{
         res.status(400).send({status: false, errors: v.errors})
     }
 
-    let taxData = await Currency.findOne({ abbreviation: req.body.currency.value }).exec()
-    // console.log("Tax data", taxData);
-    var taxValue = taxData.tax_rate + "%"
-    var totalPrice = req.body.price + ((req.body.price * taxData.tax_rate)/100)
+    var taxValue = req.body.tax_rate + "%"
+    var totalPrice = req.body.price + ((req.body.price * req.body.tax_rate)/100)
     // console.log(totalPrice)
     // let image_url = await Upload.uploadFile(req, "shop_services")
     let shopServiceData = {

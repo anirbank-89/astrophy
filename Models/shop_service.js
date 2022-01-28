@@ -21,7 +21,7 @@ const ShopServiceSchema = new Schema({
     personalization: String,
     hashtags: String,
     currency: {
-        type: Object,
+        type: String,
         required: true
     },
     price:{

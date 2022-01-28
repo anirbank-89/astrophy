@@ -41,10 +41,8 @@ const create = async( req , res ) =>
     //     })
     // }
     // let image_url = await Upload.uploadFile(req, "products");
-    let taxData = await Currency.findOne({ abbreviation: req.body.currency.value }).exec()
-    console.log("Tax data", taxData);
-    var taxValue = taxData.tax_rate + "%"
-    var totalPrice = req.body.selling_price + ((req.body.selling_price * taxData.tax_rate)/100)
+    var taxValue = req.body.tax_rate + "%"
+    var totalPrice = req.body.selling_price + ((req.body.selling_price * req.body.tax_rate)/100)
 
     let prductData = {
         _id : mongoose.Types.ObjectId(),
