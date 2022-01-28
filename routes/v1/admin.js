@@ -51,6 +51,7 @@ router.use((req,res,next)=>{
 
 router.post('/currency', CurrencyNTaxRates.addCurrencyNTax); // add currency and tax rate together
 router.get('/currency', CurrencyNTaxRates.getCurrencies);
+router.post('/currency/tax-rates', CurrencyNTaxRates.getTaxRateByCurrency);
 router.delete('/currency/:id', CurrencyNTaxRates.deleteCurrency);
 
 // router.post('/product/Product',upload.single("image"),ProductController.create)

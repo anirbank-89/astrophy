@@ -70,6 +70,24 @@ var getCurrencies = async (req, res) => {
         });
 }
 
+var getTaxRateByCurrency = async (req,res) => {
+    return CURRENCY.findOne({ abbreviation: req.body.currency })
+        .then(docs => {
+            res.status(200).json({
+                status: true,
+                message: "Data successfully get.",
+                data: docs
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Failed to get data. Server error.",
+                error: err
+            });
+        });
+}
+
 var deleteCurrency = async (req,res) => {
     var id = req.params.id;
 
@@ -93,5 +111,6 @@ var deleteCurrency = async (req,res) => {
 module.exports = {
     addCurrencyNTax,
     getCurrencies,
+    getTaxRateByCurrency,
     deleteCurrency
 }
