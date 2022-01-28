@@ -10,43 +10,44 @@ const ProductSchema = new mongoose.Schema({
         required: true,
     },
     name:{
-        type:String,
-        required:true,
-        unique:true
+        type: String,
+        required: true,
+        unique: true
     },
     description:{
-        type:String,
-        required:true
+        type: String,
+        required: true
+    },
+    currency: {
+        type: String,
+        required: true
     },
     mrp:{
-        type:Number,
-        required:true
+        type: Number,
+        required: true
     },
     selling_price:{
-        type:Number,
-        required:true
+        type: Number,
+        required: true
     },
-    image:{
-        type:Array,
-        required:false
-    },
+    tax: String,
+    total: Number,
+    image: Array,
     status: {
         type: Boolean,
-        required: true,
         default: true
     },
     adminStatus: {
-    type: Boolean,
-    required: true,
-    default: true
+        type: Boolean,
+        default: true
     },
     delivery:{
-        type:String,
-        required:true
+        type: String,
+        required: true
     },
     delivery_time:{
-        type:String,
-        required:true
+        type: String,
+        required: true
     },
     created_on: {
         type: Date,

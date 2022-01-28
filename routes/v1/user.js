@@ -82,7 +82,7 @@ router.get('/service/shop-services/:id', ServiceController.viewShopServicesPerSe
 router.post('/shop', uploadMultiple, ShopController.createNUpdate);// added by anirbank-93
 router.get('/shop/:id', ShopController.viewShop);              // added by anirbank-93
 
-router.post('/shop/services', upload1.single("image"), ShopServiceController.register);// added by anirbank-93
+router.post('/shop/services', ShopServiceController.register);// added by anirbank-93 upload1.single("image"),
 router.post('/shop-service-images', upload1.single("image"), ShopServiceController.shopserviceImageUrl);// anirbank-93
 router.get('/shop/all-services', ShopServiceController.viewAllShopServices); // added by anirbank-93
 // route to fetch all services of a shop
