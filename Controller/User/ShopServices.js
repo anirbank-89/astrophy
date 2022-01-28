@@ -1,36 +1,41 @@
 var mongoose = require('mongoose')
-var Shop = require('../../Models/shop')
-var ShopService = require('../../Models/shop_service')
-const service = require('../../Models/service')
-var Subcategory = require('../../Models/subcategory')
-var ServiceReview = require('../../Models/servicereview');
-var serviceCart = require('../../Models/servicecart');
-const ServiceCheckout = require("../../Models/servicecheckout");
-var User = require("../../Models/user");
-
 const { Validator } = require('node-input-validator')
+
+var ShopService = require('../../Models/shop_service')
+var ServiceCheckout = require("../../Models/servicecheckout")
+var User = require("../../Models/user")
+var Currency = require('../../Models/currency')
 var Upload = require('../../service/upload')
 
 const register = async (req,res)=>{
     const v = new Validator(req.body,{
         name: "required",
-        price: "required",
-        details: "required"
+        details: "required",
+        currency: "required",
+        price: "required"
     })
     let matched = v.check().then((val)=>val)
     if(!matched){
-        res.status(200).send({status: false, errors: v.errors})
+        res.status(400).send({status: false, errors: v.errors})
     }
-    console.log(req.file)
+
+    let taxData = await Currency.findOne({ abbreviation: req.body.currency.value }).exec()
+    // console.log("Tax data", taxData);
+    var taxValue = taxData.tax_rate + "%"
+    var totalPrice = req.body.price + ((req.body.price * taxData.tax_rate)/100)
+    // console.log(totalPrice)
     // let image_url = await Upload.uploadFile(req, "shop_services")
     let shopServiceData = {
         _id: mongoose.Types.ObjectId(),
-        name: req.body.name,
-        price: req.body.price,
-        details: req.body.details,
+        shop_id: mongoose.Types.ObjectId(req.body.shop_id),
         category_id: mongoose.Types.ObjectId(req.body.category_id),
         subcategory_id: mongoose.Types.ObjectId(req.body.subcategory_id),
-        shop_id: mongoose.Types.ObjectId(req.body.shop_id)
+        name: req.body.name,
+        details: req.body.details,
+        currency: req.body.currency,
+        price: req.body.price,
+        tax: taxValue,
+        total: totalPrice
     }
     if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
         shopServiceData.personalization = req.body.personalization
@@ -57,7 +62,7 @@ const register = async (req,res)=>{
           res.status(500).json({
               status: false,
               message: "Server error. Please try again",
-              errors: err
+              errors: err.message
           })
       })
 }

@@ -1,13 +1,9 @@
 var mongoose = require('mongoose');
-var Product = require("../../Models/product");
-var Upload = require("../../service/upload");
-var passwordHash = require('password-hash')
-
-var jwt = require('jsonwebtoken');
-
 const { Validator } = require('node-input-validator');
 
-var uuidv1 = require('uuid').v1;
+var Product = require("../../Models/product");
+var Currency = require("../../Models/currency");
+var Upload = require("../../service/upload");
 
 const create = async( req , res ) =>
 {
@@ -15,6 +11,7 @@ const create = async( req , res ) =>
         catID : "required",
         name : "required",
         description : "required",
+        currency: "required",
         mrp : "required",
         selling_price : "required",
         delivery :"required",
@@ -44,13 +41,21 @@ const create = async( req , res ) =>
     //     })
     // }
     // let image_url = await Upload.uploadFile(req, "products");
+    let taxData = await Currency.findOne({ abbreviation: req.body.currency.value }).exec()
+    console.log("Tax data", taxData);
+    var taxValue = taxData.tax_rate + "%"
+    var totalPrice = req.body.selling_price + ((req.body.selling_price * taxData.tax_rate)/100)
+
     let prductData = {
         _id : mongoose.Types.ObjectId(),
         name : req.body.name,
         catID : mongoose.Types.ObjectId(req.body.catID),
         description : req.body.description,
+        currency: req.body.currency,
         mrp : Number(req.body.mrp),
         selling_price : Number(req.body.selling_price),
+        tax: taxValue,
+        total: totalPrice,
         image: req.body.image,
         delivery:req.body.delivery,
         delivery_time:req.body.delivery_time
