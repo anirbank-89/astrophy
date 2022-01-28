@@ -2,9 +2,7 @@ var mongoose = require('mongoose')
 const { Validator } = require('node-input-validator')
 
 var ShopService = require('../../Models/shop_service')
-var ServiceCheckout = require("../../Models/servicecheckout")
 var User = require("../../Models/user")
-var Currency = require('../../Models/currency')
 var Upload = require('../../service/upload')
 
 const register = async (req,res)=>{

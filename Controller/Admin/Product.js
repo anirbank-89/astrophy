@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 const { Validator } = require('node-input-validator');
 
 var Product = require("../../Models/product");
-var Currency = require("../../Models/currency");
 var Upload = require("../../service/upload");
 
 const create = async( req , res ) =>
