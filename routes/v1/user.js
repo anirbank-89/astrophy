@@ -89,12 +89,12 @@ router.get('/shop/all-services', ShopServiceController.viewAllShopServices); // 
 router.get('/shop/all-services/:id', ShopServiceController.viewShopServicesPerSeller); // added by anirbank-93
 // route to fetch one service of a shop
 router.get('/shop/view-shopservice/:id', ShopServiceController.viewOneService);        // added by anirbank-93
-// no. of times shop service sales
-router.get('/sales-count/:serv_id', ShopServiceController.salesCount);                 // added by anirbank-93
 router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.update);// added by anirbank-93
-
+router.delete('/shop/services/:id', ShopServiceController.deleteService);              // added by anirbank-93
 router.post('/shop/chatservices', upload1.single("image"), ShopServiceController.chatServiceregister);// added by anirbank-93
 router.post('/image-uploadurl', upload1.single("image"), ShopServiceController.chatImageUrl);
+// no. of times shop service sales
+router.get('/sales-count/:id', ShopServiceController.salesCount);                 // added by anirbank-93
 
 
 

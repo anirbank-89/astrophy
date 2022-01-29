@@ -17,7 +17,7 @@ const register = async (req,res)=>{
         res.status(400).send({status: false, errors: v.errors})
     }
 
-    var taxValue = req.body.tax_rate + "%"
+    var taxRate = req.body.tax_rate + "%"
     var totalPrice = req.body.price + ((req.body.price * req.body.tax_rate)/100)
     // console.log(totalPrice)
     // let image_url = await Upload.uploadFile(req, "shop_services")
@@ -29,9 +29,8 @@ const register = async (req,res)=>{
         name: req.body.name,
         details: req.body.details,
         currency: req.body.currency,
-        price: req.body.price,
-        tax: taxValue,
-        total: totalPrice
+        tax: taxRate,
+        price: totalPrice
     }
     if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
         shopServiceData.personalization = req.body.personalization
@@ -75,110 +74,6 @@ const shopserviceImageUrl = async(req,res)=>{
         data : imagUrl,
         error : null
     })
-}
-
-const chatServiceregister = async (req,res)=>{
-    const v = new Validator(req.body,{
-        name: "required",
-        price: "required",
-        details: "required"
-    })
-    let matched = v.check().then((val)=>val)
-    if(!matched){
-        res.status(200).send({status: false, errors: v.errors})
-    }
-    console.log(req.file)
-    let image_url = await Upload.uploadFile(req, "shop_services")
-    let shopServiceData = {
-        _id: mongoose.Types.ObjectId(),
-        name: req.body.name,
-        price: req.body.price,
-        details: req.body.details,
-        category_id: mongoose.Types.ObjectId(req.body.category_id),
-        subcategory_id: mongoose.Types.ObjectId(req.body.subcategory_id),
-        shop_id: mongoose.Types.ObjectId(req.body.shop_id),
-        chataddstatus : true
-    }
-    if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
-        shopServiceData.personalization = req.body.personalization
-    }
-    if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
-        shopServiceData.hashtags = req.body.hashtags
-    }
-    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
-        shopServiceData.image = image_url
-    }
-
-    let shop_service = new ShopService(shopServiceData)
-    shop_service.save()
-      .then((docs)=>{
-          res.status(200).json({
-              status: true,
-              message: "Shop's service created sucessfully!",
-              data: docs
-          })
-      })
-      .catch((err)=>{
-          res.status(500).json({
-              status: false,
-              message: "Server error. Please try again",
-              errors: err
-          })
-      })
-
-}
-
-const update = async (req,res)=>{
-    const v = new Validator(req.body,{
-        name: "required",
-        price: "required",
-        details: "required"
-    })
-    
-    let matched = await v.check().then((val)=>val);
-    if(!matched){
-        return res.status(200).send({
-            status: false,
-            error: v.errors
-        });
-    }
-    console.log(req.file)
-    // if(typeof(req.body.image)!='undefined' || req.body.image!='' || req.body.image!=null){
-    //     req.body.image = JSON.parse(req.body.image)
-    // }
-    if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
-        req.body.personalization = req.body.personalization
-    }
-    if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
-        req.body.hashtags = req.body.hashtags
-    }
-    if(typeof(req.body.image)=='undefined' || req.body.image=='' || req.body.image==null){
-        req.body.image = null
-    } else {
-        req.body.image = JSON.parse(req.body.image)
-    }
-
-    let id = req.params.id
-    return ShopService.findOneAndUpdate(
-        {_id: {$in: [mongoose.Types.ObjectId(id)]}}, 
-        req.body, 
-        async (err,docs)=>{
-            if(err){
-                res.status(500).json({
-                    status: false,
-                    message: "Server error. Please try again.",
-                    error: err
-                });
-            }
-            else{
-                res.status(200).json({
-                    status: true,
-                    message: "Shop service updated successfully!",
-                    data: docs
-                });
-            }
-        }
-      )
 }
 
 const viewAllShopServices = async (req,res)=>{
@@ -423,10 +318,148 @@ const viewOneService = async (req,res)=>{
         })
 }
 
+const update = async (req,res)=>{
+    const v = new Validator(req.body,{
+        name: "required",
+        price: "required",
+        details: "required"
+    })
+    
+    let matched = await v.check().then((val)=>val);
+    if(!matched){
+        return res.status(200).send({
+            status: false,
+            error: v.errors
+        });
+    }
+    console.log(req.file)
+    // if(typeof(req.body.image)!='undefined' || req.body.image!='' || req.body.image!=null){
+    //     req.body.image = JSON.parse(req.body.image)
+    // }
+    if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
+        req.body.personalization = req.body.personalization
+    }
+    if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
+        req.body.hashtags = req.body.hashtags
+    }
+    if(typeof(req.body.image)=='undefined' || req.body.image=='' || req.body.image==null){
+        req.body.image = null
+    } else {
+        req.body.image = JSON.parse(req.body.image)
+    }
+
+    let id = req.params.id
+    return ShopService.findOneAndUpdate(
+        {_id: {$in: [mongoose.Types.ObjectId(id)]}}, 
+        req.body, 
+        async (err,docs)=>{
+            if(err){
+                res.status(500).json({
+                    status: false,
+                    message: "Server error. Please try again.",
+                    error: err
+                });
+            }
+            else{
+                res.status(200).json({
+                    status: true,
+                    message: "Shop service updated successfully!",
+                    data: docs
+                });
+            }
+        }
+      )
+}
+
+const deleteService = async (req,res) => {
+    var id = req.params.id;
+
+    return ShopService.findOneAndDelete({ _id: mongoose.Types.ObjectId(id) })
+        .then(docs => {
+            res.status(200).json({
+                status: true,
+                message: "Data successfully deleted.",
+                data: docs
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err.message
+            });
+        });
+}
+
+const chatServiceregister = async (req,res)=>{
+    const v = new Validator(req.body,{
+        name: "required",
+        price: "required",
+        details: "required"
+    })
+    let matched = v.check().then((val)=>val)
+    if(!matched){
+        res.status(200).send({status: false, errors: v.errors})
+    }
+    console.log(req.file)
+    let image_url = await Upload.uploadFile(req, "shop_services")
+    let shopServiceData = {
+        _id: mongoose.Types.ObjectId(),
+        name: req.body.name,
+        price: req.body.price,
+        details: req.body.details,
+        category_id: mongoose.Types.ObjectId(req.body.category_id),
+        subcategory_id: mongoose.Types.ObjectId(req.body.subcategory_id),
+        shop_id: mongoose.Types.ObjectId(req.body.shop_id),
+        chataddstatus : true
+    }
+    if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
+        shopServiceData.personalization = req.body.personalization
+    }
+    if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
+        shopServiceData.hashtags = req.body.hashtags
+    }
+    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
+        shopServiceData.image = image_url
+    }
+
+    let shop_service = new ShopService(shopServiceData)
+    shop_service.save()
+      .then((docs)=>{
+          res.status(200).json({
+              status: true,
+              message: "Shop's service created sucessfully!",
+              data: docs
+          })
+      })
+      .catch((err)=>{
+          res.status(500).json({
+              status: false,
+              message: "Server error. Please try again",
+              errors: err
+          })
+      })
+
+}
+
+const chatImageUrl = async(req,res)=>{
+    let imagUrl = '';
+    let image_url = await Upload.uploadFile(req, "chat")
+    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
+        imagUrl = image_url
+    }
+
+    return res.status(200).send({
+        status : true,
+        data : imagUrl,
+        error : null
+    })
+}
 
 const salesCount = async (req,res)=>{
+    var id = req.params.id
     var in_cart= await serviceCart.find(
-        {serv_id: mongoose.Types.ObjectId(req.params.serv_id)}
+        {serv_id: mongoose.Types.ObjectId(id)}
         ).exec()
 
     console.log(in_cart)
@@ -457,20 +490,6 @@ const salesCount = async (req,res)=>{
             data: in_cart
         })
     }
-}
-
-const chatImageUrl = async(req,res)=>{
-    let imagUrl = '';
-    let image_url = await Upload.uploadFile(req, "chat")
-    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
-        imagUrl = image_url
-    }
-
-    return res.status(200).send({
-        status : true,
-        data : imagUrl,
-        error : null
-    })
 }
 
 const viewTopServiceProvider = async (req,res)=>{
@@ -888,13 +907,14 @@ const viewAllrelatedService = async (req,res)=>{
 module.exports = {
     register,
     shopserviceImageUrl,
-    update,
     viewAllShopServices,
     viewShopServicesPerSeller,
     viewOneService,
-    salesCount,
-    chatImageUrl,
+    update,
+    deleteService,
     chatServiceregister,
+    chatImageUrl,
+    salesCount,
     viewTopServiceProvider,
     viewAllshopservicelist,
     viewAllrelatedService,
