@@ -31,7 +31,7 @@ const ProductSchema = new mongoose.Schema({
         required: true
     },
     tax: String,
-    total: Number,
+    // total: Number,
     image: Array,
     status: {
         type: Boolean,

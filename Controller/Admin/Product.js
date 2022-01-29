@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 const { Validator } = require('node-input-validator');
 
 var Product = require("../../Models/product");
-var Currency = require("../../Models/currency");
 var Upload = require("../../service/upload");
 
 const create = async( req , res ) =>
@@ -41,8 +40,9 @@ const create = async( req , res ) =>
     //     })
     // }
     // let image_url = await Upload.uploadFile(req, "products");
-    var taxValue = req.body.tax_rate + "%"
+    var taxRate = req.body.tax_rate + "%"
     var totalPrice = req.body.selling_price + ((req.body.selling_price * req.body.tax_rate)/100)
+    console.log("Total price", totalPrice);
 
     let prductData = {
         _id : mongoose.Types.ObjectId(),
@@ -51,9 +51,8 @@ const create = async( req , res ) =>
         description : req.body.description,
         currency: req.body.currency,
         mrp : Number(req.body.mrp),
-        selling_price : Number(req.body.selling_price),
-        tax: taxValue,
-        total: totalPrice,
+        tax: taxRate,
+        selling_price : totalPrice,
         image: req.body.image,
         delivery:req.body.delivery,
         delivery_time:req.body.delivery_time
@@ -77,6 +76,20 @@ const create = async( req , res ) =>
                 error: err,
                 });
            })
+}
+
+const productImageUrl = async(req,res)=>{
+    let imagUrl = '';
+    let image_url = await Upload.uploadFile(req, "products")
+    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
+        imagUrl = image_url
+    }
+
+    return res.status(200).send({
+        status : true,
+        data : imagUrl,
+        error : null
+    })
 }
 
 const viewAll = async( req ,res )=>
@@ -229,20 +242,6 @@ const setStatus = async (req, res) => {
             }
         );
     }
-}
-
-const productImageUrl = async(req,res)=>{
-    let imagUrl = '';
-    let image_url = await Upload.uploadFile(req, "products")
-    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
-        imagUrl = image_url
-    }
-
-    return res.status(200).send({
-        status : true,
-        data : imagUrl,
-        error : null
-    })
 }
 
 module.exports = {
