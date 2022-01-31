@@ -20,20 +20,20 @@ const ShopServiceSchema = new Schema({
     },
     personalization: String,
     hashtags: String,
-    currency: {
-        type: String,
-        required: true
-    },
+    // currency: {
+    //     type: String,
+    //     required: true
+    // },
     price:{
         type: Number,
         required: true
     },
-    tax: String,
+    // tax: String,
     // total: Number,
     image:{
         type: Array,
         required: false,
-        default: null
+        default: []
     },
     status:{
         type: Boolean,

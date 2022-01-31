@@ -358,8 +358,8 @@ var completeServiceRequest = async (req, res) => {
       let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(docs.seller_id) }).exec();
       let dataComision = {
         _id: mongoose.Types.ObjectId(),
-        order_id: mongoose.Types.ObjectId(docs._id),
         seller_id: mongoose.Types.ObjectId(docs.seller_id),
+        order_id: docs.order_id,
         commision_type: comType,
         commision_value: comValue,
         price: docs.total,

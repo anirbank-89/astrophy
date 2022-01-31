@@ -9,7 +9,7 @@ const register = async (req,res)=>{
     const v = new Validator(req.body,{
         name: "required",
         details: "required",
-        currency: "required",
+        // currency: "required",
         price: "required"
     })
     let matched = v.check().then((val)=>val)
@@ -17,8 +17,8 @@ const register = async (req,res)=>{
         res.status(400).send({status: false, errors: v.errors})
     }
 
-    var taxRate = req.body.tax_rate + "%"
-    var totalPrice = req.body.price + ((req.body.price * req.body.tax_rate)/100)
+    // var taxRate = req.body.tax_rate + "%"
+    // var totalPrice = req.body.price + ((req.body.price * req.body.tax_rate)/100)
     // console.log(totalPrice)
     // let image_url = await Upload.uploadFile(req, "shop_services")
     let shopServiceData = {
@@ -28,9 +28,9 @@ const register = async (req,res)=>{
         subcategory_id: mongoose.Types.ObjectId(req.body.subcategory_id),
         name: req.body.name,
         details: req.body.details,
-        currency: req.body.currency,
-        tax: taxRate,
-        price: totalPrice
+        // currency: req.body.currency,
+        // tax: taxRate,
+        price: req.body.price
     }
     if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
         shopServiceData.personalization = req.body.personalization
@@ -38,11 +38,12 @@ const register = async (req,res)=>{
     if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
         shopServiceData.hashtags = req.body.hashtags
     }
-    if(typeof(req.body.image)=='undefined' || req.body.image=='' || req.body.image==null){
-        shopServiceData.image = null
-    } else {
-        shopServiceData.image = JSON.parse(req.body.image)
-    }
+    if(typeof(req.body.image)!='undefined' || req.body.image!='' || req.body.image!=null){
+        shopServiceData.image = req.body.image
+    } 
+    // else {
+    //     shopServiceData.image = JSON.parse(req.body.image)
+    // }
 
     let shop_service = new ShopService(shopServiceData)
     shop_service.save()
