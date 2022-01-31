@@ -5,6 +5,7 @@ var ShopService = require('../../Models/shop_service')
 var User = require("../../Models/user")
 var Upload = require('../../service/upload')
 
+// create service
 const register = async (req,res)=>{
     const v = new Validator(req.body,{
         name: "required",

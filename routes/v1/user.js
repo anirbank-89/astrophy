@@ -138,6 +138,7 @@ router.put('/complete-service-request/:id', ServiceCheckoutController.completeSe
 
 router.get('/claimable-commissions/:id', SellerMyaccountController.getClaimableCommissions);
 router.put('/claimable-commissions/:id', SellerMyaccountController.claimCommission);
+router.post('/withdraw-request',UserSellerController.applyWithdraw);                        // same as above route
 
 router.post('/tips', ServiceCheckoutController.setTips);
 router.get('/getSellersettlement/:id', ServiceCheckoutController.getSellerSettlement);
@@ -158,7 +159,6 @@ router.post('/user_questions', ContactUsController.userContactUsInfo);
 // contact us
 router.get('/sellercomission/:id',UserSellerController.sellercomHistory);
 router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingcomission);
-router.post('/withdraw-request',UserSellerController.applyWithdraw);
 router.get('/withdraw-history/:id',UserSellerController.withdrawHistory);
 router.post('/Kyc',UserSellerController.kyccreateNUpdate);
 router.get('/Kyc/:id',UserSellerController.getKyc);
