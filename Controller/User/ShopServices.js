@@ -9,7 +9,7 @@ const register = async (req, res) => {
     const v = new Validator(req.body, {
         name: "required",
         details: "required",
-        // currency: "required",
+        currency: "required",
         price: "required"
     })
     let matched = v.check().then((val) => val)
@@ -28,9 +28,9 @@ const register = async (req, res) => {
         subcategory_id: mongoose.Types.ObjectId(req.body.subcategory_id),
         name: req.body.name,
         details: req.body.details,
+        currency: req.body.currency,
         price: req.body.price
     }
-    // currency: req.body.currency,
     // tax: taxRate,
     if (typeof (req.body.personalization) != 'undefined' || req.body.personalization != '') {
         shopServiceData.personalization = req.body.personalization
