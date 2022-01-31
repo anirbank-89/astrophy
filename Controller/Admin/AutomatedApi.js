@@ -1,6 +1,43 @@
+const SELLER_COMMISSIONS = require('../../Models/servicecommission');
 const WITHDRAWS = require('../../Models/withdraw');
 const PRODUCT_REFUND = require('../../Models/product_refund');
 const SERVICE_REFUND = require('../../Models/service_refund');
+
+
+var payForServiceOrNot = async (req,res) => {
+    return SELLER_COMMISSIONS.updateMany(
+        { status: false }, 
+        { $set: { status: true } }, 
+        { multi: true }, 
+        (err,result) => {
+            if (!err) {
+                console.log("Newly completed and not refunded seller commissions cleared.");
+            }
+            else {
+                console.log("Failed to execute required clearance due to ", err.message);
+            }
+        }
+    );
+}
+
+var payForService = async (req,res) => {
+    return SELLER_COMMISSIONS.updateMany(
+        {
+            status: true, 
+            sellerapply: true
+        },
+        { $set: { paystatus: true } },
+        { multi: true }, 
+        (err,result) => {
+            if (!err) {
+                console.log("Seller claimed commissions cleared.");
+            }
+            else {
+                console.log("Failed to execute required clearance due to ", err.message);
+            }
+        }
+    );
+}
 
 var clearPayment = async (req, res) => {
     return WITHDRAWS.updateMany(
@@ -51,6 +88,8 @@ var clearServiceRefunds = async (req, res) => {
 }
 
 module.exports = {
+    payForServiceOrNot,
+    payForService,
     clearPayment,
     clearProductRefunds,
     clearServiceRefunds

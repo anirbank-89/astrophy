@@ -136,8 +136,11 @@ router.post('/servicecheckout', ServiceCheckoutController.create);
 router.post('/accept_status', ServiceCheckoutController.setStatus);
 router.put('/complete-service-request/:id', ServiceCheckoutController.completeServiceRequest);
 
+router.get('/claimable-commissions/:id', SellerMyaccountController.getClaimableCommissions);
+router.put('/claimable-commissions/:id', SellerMyaccountController.claimCommission);
+
 router.post('/tips', ServiceCheckoutController.setTips);
-router.get('/getSellersettlement/:id', ServiceCheckoutController.setSellersettlement);
+router.get('/getSellersettlement/:id', ServiceCheckoutController.getSellerSettlement);
 
 
 

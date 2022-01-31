@@ -531,7 +531,7 @@ const setSellersettlement = async (req, res) => {
 
     let editSellerWithdraw = await Withdraw.updateMany(
       {
-        seller_id: mongoose.Types.ObjectId(id), 
+        seller_id: mongoose.Types.ObjectId(id),
         paystatus: false
       },
       { $set: { paystatus: true } },
@@ -583,11 +583,119 @@ const setSellersettlement = async (req, res) => {
   }
 }
 
+var getSellerSettlement = async (req, res) => {
+  var id = req.params.id;
+
+  /**------------------------------------Total earnings------------------------------------ */
+  let serviceCheckout = await ServiceCheckout.find(
+    {
+      seller_id: mongoose.Types.ObjectId(id),
+      acceptstatus: "accept"
+    }
+  ).exec();
+  // console.log(serviceCheckout);
+  var totalServiceValue = 0;
+
+  serviceCheckout.forEach(element => {
+    totalServiceValue = parseInt(totalServiceValue) + parseInt(element.total);
+  });
+  // console.log("Total service value", totalServiceValue);
+
+  let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(id), status: true }).exec();
+
+  var totalEarnings = 0;
+
+  var comType = subDataf.comission_type;
+
+  var comValue = subDataf.seller_comission;
+  
+  if (comType == "Flat comission") {
+    totalEarnings = comValue * Number(serviceCheckout.length);
+
+  }
+  else {
+    totalEarnings = (totalServiceValue * comValue) / 100;
+  }
+  
+  console.log("Total commission earned = ", totalEarnings);
+  /**-------------------------------------------------------------------------------------- */
+
+  /**---------------------------------- Settled earnings ---------------------------------- */
+  let settlementEarnings = await Servicecommission.find(
+    {
+      seller_id: mongoose.Types.ObjectId(id),
+      status: true,
+      sellerapply: true,
+      paystatus: true
+    }
+  ).exec();
+  
+  var earningSettled = 0;
+
+  settlementEarnings.forEach(element => {
+    earningSettled = parseInt(earningSettled) + parseInt(element.seller_commission);
+  });
+  console.log("Earning setlled = ", earningSettled);
+  /**-------------------------------------------------------------------------------------- */
+
+  /**--------------------------------- Pending settlement --------------------------------- */
+  let settlementPending = await Servicecommission.find(
+    {
+      seller_id: mongoose.Types.ObjectId(id),
+      status: true,
+      sellerapply: true,
+      paystatus: false
+    }
+  ).exec();
+  
+  var pendingSettlement = 0;
+
+  settlementPending.forEach(element => {
+    pendingSettlement = parseInt(pendingSettlement) + parseInt(element.seller_commission);
+  });
+  console.log("Pending settlement = ", pendingSettlement);
+  /**-------------------------------------------------------------------------------------- */
+
+  /**---------------------------------- Claimable earnings -------------------------------- */
+  let claimableCommissions = await Servicecommission.find(
+    {
+      seller_id: mongoose.Types.ObjectId(id),
+      status: true,
+      sellerapply: false,
+      paystatus: false
+    }
+  ).exec();
+  // console.log(serviceCommission);
+  var claimableEarnings = 0;
+  
+  claimableCommissions.forEach(element => {
+    claimableEarnings = parseInt(claimableEarnings) + parseInt(element.seller_commission);
+  });
+  console.log("Cleared earnings = ", claimableEarnings);
+  /**-------------------------------------------------------------------------------------- */
+
+  /**-------------------------------- Service refund amount ------------------------------- */
+  let refunds = await ServiceRefund.find({ seller_id: mongoose.Types.ObjectId(id) }).exec();
+
+  var refundedAmount = comValue * Number(refunds.length);
+  console.log("Refunded service amount = ", refundedAmount);
+  /**-------------------------------------------------------------------------------------- */
+
+  res.send({
+    total_earnings: totalEarnings,
+    earning_settled: earningSettled,
+    pending_settlement: pendingSettlement,
+    service_refund_amt: refundedAmount,
+    claimable_earnings: claimableEarnings
+  });
+}
+
 module.exports = {
   create,
   setStatus,
   completeServiceRequest,
   setTips,
-  setSellersettlement
+  setSellersettlement,
   //checkCoupon,
+  getSellerSettlement
 };
