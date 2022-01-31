@@ -6,7 +6,10 @@ const SERVICE_REFUND = require('../../Models/service_refund');
 
 var payForServiceOrNot = async (req,res) => {
     return SELLER_COMMISSIONS.updateMany(
-        { status: false }, 
+        {
+            status: false, 
+            refund: false
+        }, 
         { $set: { status: true } }, 
         { multi: true }, 
         (err,result) => {

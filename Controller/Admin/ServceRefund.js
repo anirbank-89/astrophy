@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 const SERVICE_REFUND = require('../../Models/service_refund');
+const SERVICE_COMMISSION = require('../../Models/servicecommission');
 
 var getAllRefundRequests = async (req, res) => {
     var refundRequests = await SERVICE_REFUND.aggregate([
@@ -66,6 +67,12 @@ var approveRefund = async (req, res) => {
         .then(docs => {
             // Instead of calculating total refund amount in 'setSellersettlement' of User/ServiceCheckout.js and 'applyWithdraw' of User/UserSellers.js, 
             // deduct 'commission_total' and 'commission_all' with refunded seller commision amount here.
+            console.log(docs);
+            SERVICE_COMMISSION.findOneAndUpdate(
+                { order_id: docs.order_id },
+                { $set: { refund: true } }
+            ).exec();
+
             res.status(200).json({
                 status: true,
                 message: "Data successfully edited.",

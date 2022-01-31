@@ -36,6 +36,10 @@ const SellercomissionSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    refund: {
+        type: Boolean,
+        default: false
+    },
     sellerapply:{
         type:Boolean,
         default:false
