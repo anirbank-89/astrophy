@@ -321,8 +321,9 @@ const viewOneService = async (req, res) => {
 const update = async (req, res) => {
     const v = new Validator(req.body, {
         name: "required",
-        price: "required",
-        details: "required"
+        details: "required",
+        currency: "required",
+        price: "required"
     })
 
     let matched = await v.check().then((val) => val);
