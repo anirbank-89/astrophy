@@ -33,7 +33,7 @@ const ShopServiceSchema = new Schema({
     image:{
         type: Array,
         required: false,
-        default: []
+        default: null
     },
     status:{
         type: Boolean,

@@ -19,7 +19,7 @@ const register = async (req, res) => {
 
     // var taxRate = req.body.tax_rate + "%"
     // var totalPrice = req.body.price + ((req.body.price * req.body.tax_rate)/100)
-    // console.log(totalPrice)
+    console.log(req.file)
     // let image_url = await Upload.uploadFile(req, "shop_services")
     let shopServiceData = {
         _id: mongoose.Types.ObjectId(),
@@ -38,12 +38,11 @@ const register = async (req, res) => {
     if (typeof (req.body.hashtags) != 'undefined' || req.body.hashtags != '') {
         shopServiceData.hashtags = req.body.hashtags
     }
-    if (typeof (req.body.image) != 'undefined' || req.body.image != '' || req.body.image != null) {
-        shopServiceData.image = req.body.image
+    if(typeof(req.body.image)=='undefined' || req.body.image=='' || req.body.image==null){
+        shopServiceData.image = null
+    } else {
+        shopServiceData.image = JSON.parse(req.body.image)
     }
-    // else {
-    //     shopServiceData.image = JSON.parse(req.body.image)
-    // }
 
     let shop_service = new ShopService(shopServiceData)
     shop_service.save()
