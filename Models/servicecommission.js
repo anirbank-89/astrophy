@@ -4,8 +4,8 @@ var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 
 const SellercomissionSchema = new mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
-    order_id:mongoose.Schema.Types.ObjectId,
     seller_id:mongoose.Schema.Types.ObjectId,
+    order_id:Number,
     commision_type:{
         type:String,
         required:true
@@ -35,6 +35,10 @@ const SellercomissionSchema = new mongoose.Schema({
     status:{
         type:Boolean,
         default:false
+    },
+    refund: {
+        type: Boolean,
+        default: false
     },
     sellerapply:{
         type:Boolean,

@@ -5,21 +5,21 @@ var ShopService = require('../../Models/shop_service')
 var User = require("../../Models/user")
 var Upload = require('../../service/upload')
 
-const register = async (req,res)=>{
-    const v = new Validator(req.body,{
+const register = async (req, res) => {
+    const v = new Validator(req.body, {
         name: "required",
         details: "required",
         currency: "required",
         price: "required"
     })
-    let matched = v.check().then((val)=>val)
-    if(!matched){
-        res.status(400).send({status: false, errors: v.errors})
+    let matched = v.check().then((val) => val)
+    if (!matched) {
+        res.status(400).send({ status: false, errors: v.errors })
     }
 
-    var taxRate = req.body.tax_rate + "%"
-    var totalPrice = req.body.price + ((req.body.price * req.body.tax_rate)/100)
-    // console.log(totalPrice)
+    // var taxRate = req.body.tax_rate + "%"
+    // var totalPrice = req.body.price + ((req.body.price * req.body.tax_rate)/100)
+    console.log(req.file)
     // let image_url = await Upload.uploadFile(req, "shop_services")
     let shopServiceData = {
         _id: mongoose.Types.ObjectId(),
@@ -29,13 +29,13 @@ const register = async (req,res)=>{
         name: req.body.name,
         details: req.body.details,
         currency: req.body.currency,
-        tax: taxRate,
-        price: totalPrice
+        price: req.body.price
     }
-    if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
+    // tax: taxRate,
+    if (typeof (req.body.personalization) != 'undefined' || req.body.personalization != '') {
         shopServiceData.personalization = req.body.personalization
     }
-    if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
+    if (typeof (req.body.hashtags) != 'undefined' || req.body.hashtags != '') {
         shopServiceData.hashtags = req.body.hashtags
     }
     if(typeof(req.body.image)=='undefined' || req.body.image=='' || req.body.image==null){
@@ -46,181 +46,181 @@ const register = async (req,res)=>{
 
     let shop_service = new ShopService(shopServiceData)
     shop_service.save()
-      .then((docs)=>{
-          res.status(200).json({
-              status: true,
-              message: "Shop's service created sucessfully!",
-              data: docs
-          })
-      })
-      .catch((err)=>{
-          res.status(500).json({
-              status: false,
-              message: "Server error. Please try again",
-              errors: err.message
-          })
-      })
+        .then((docs) => {
+            res.status(200).json({
+                status: true,
+                message: "Shop's service created sucessfully!",
+                data: docs
+            })
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again",
+                errors: err.message
+            })
+        })
 }
 
-const shopserviceImageUrl = async(req,res)=>{
+const shopserviceImageUrl = async (req, res) => {
     let imagUrl = '';
     let image_url = await Upload.uploadFile(req, "shop_services")
-    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
+    if (typeof (req.file) != 'undefined' || req.file != '' || req.file != null) {
         imagUrl = image_url
     }
 
     return res.status(200).send({
-        status : true,
-        data : imagUrl,
-        error : null
+        status: true,
+        data: imagUrl,
+        error: null
     })
 }
 
-const viewAllShopServices = async (req,res)=>{
+const viewAllShopServices = async (req, res) => {
     // var all_services = await ShopService.find({status: true}).exec();
 
     // return res.send(all_services)
     ShopService
-    .aggregate(
-        [
-            {
-                $lookup:{
-                    from:"categories",
-                    localField:"category_id",
-                    foreignField:"_id",
-                    as:"category_data"
+        .aggregate(
+            [
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "category_id",
+                        foreignField: "_id",
+                        as: "category_data"
+                    }
+                },
+                {
+                    $project: {
+                        _v: 0
+                    }
                 }
-            },
-            {
-                $project:{
-                    _v:0
-                }
-            }
-        ]
-    )
-    .then((data)=>{
-        res.status(200).json({
-            status: true,
-            message: "Shops get successfully",
-            data: data
-        });
-    })
-    .catch((err)=>{
-        res.status(500).json({
-            status: false,
-            message: "Server error. Please try again.",
-            error: err
-        });
-    });
-}
-
-const viewShopServicesPerSeller = async (req,res)=>{
-    let id = req.params.id          // shop_id of shop_services
-    ShopService.find({shop_id: {$in: [mongoose.Types.ObjectId(id)]}})
-      .then((data)=>{
-        if(data==null || data==''){
+            ]
+        )
+        .then((data) => {
             res.status(200).json({
                 status: true,
-                message: "This seller doesn't have any services currently.",
+                message: "Shops get successfully",
                 data: data
-            })
-        }
-        else {
-            ShopService.aggregate(
-                [
-                    {
-                        $match:{
-                            shop_id: {$in: [mongoose.Types.ObjectId(id)]},
-                            chataddstatus : false
-                            
-                        }
-                    },
-                    {
-                        $lookup:{
-                            from: "shops",
-                            localField: "shop_id",
-                            foreignField: "_id",
-                            as: "shop_details"
-                        }
-                    },
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err
+            });
+        });
+}
 
-                    {
-                        $lookup:{
-                            from:"servicereviews",
-                            localField:"_id",
-                            foreignField: "service_id",
-                            as:"rev_data",
-                        }
-                    },
-                    {
-                        $addFields: {
-                            avgRating: {
-                                $avg: {
-                                    $map: {
-                                        input: "$review_data",
-                                        in: "$$this.rating"
+const viewShopServicesPerSeller = async (req, res) => {
+    let id = req.params.id          // shop_id of shop_services
+    ShopService.find({ shop_id: { $in: [mongoose.Types.ObjectId(id)] } })
+        .then((data) => {
+            if (data == null || data == '') {
+                res.status(200).json({
+                    status: true,
+                    message: "This seller doesn't have any services currently.",
+                    data: data
+                })
+            }
+            else {
+                ShopService.aggregate(
+                    [
+                        {
+                            $match: {
+                                shop_id: { $in: [mongoose.Types.ObjectId(id)] },
+                                chataddstatus: false
+
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "shops",
+                                localField: "shop_id",
+                                foreignField: "_id",
+                                as: "shop_details"
+                            }
+                        },
+
+                        {
+                            $lookup: {
+                                from: "servicereviews",
+                                localField: "_id",
+                                foreignField: "service_id",
+                                as: "rev_data",
+                            }
+                        },
+                        {
+                            $addFields: {
+                                avgRating: {
+                                    $avg: {
+                                        $map: {
+                                            input: "$review_data",
+                                            in: "$$this.rating"
+                                        }
                                     }
                                 }
                             }
+                        },
+                        {
+                            $project: {
+                                _v: 0
+                            }
                         }
-                    },    
-                    {
-                        $project:{
-                            _v:0
-                        }
-                    }
-                ]
-            )
-            .then((docs)=>{
-                res.status(200).json({
-                    status: true,
-                    message: "All services of this shop get successfully.",
-                    data: docs
-                })
-            })
-            .catch((fault)=>{
-                res.status(400).json({
-                    status: false,
-                    message: "Service error2. Please try again",
-                    error: fault
-                })
-            })
-        }
-      })
-      .catch((err)=>{
-        res.status(500).json({
-            status: false,
-            message: "Server error. Please try again.",
-            error: err
+                    ]
+                )
+                    .then((docs) => {
+                        res.status(200).json({
+                            status: true,
+                            message: "All services of this shop get successfully.",
+                            data: docs
+                        })
+                    })
+                    .catch((fault) => {
+                        res.status(400).json({
+                            status: false,
+                            message: "Service error2. Please try again",
+                            error: fault
+                        })
+                    })
+            }
         })
-    })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err
+            })
+        })
 }
 
-const viewOneService = async (req,res)=>{
+const viewOneService = async (req, res) => {
     let id = req.params.id          // _id of shop_services
-    ShopService.findOne({_id: {$in: [mongoose.Types.ObjectId(id)]}})
-        .then((data)=>{
-            if(data==null || data==''){
+    ShopService.findOne({ _id: { $in: [mongoose.Types.ObjectId(id)] } })
+        .then((data) => {
+            if (data == null || data == '') {
                 res.status(200).json({
                     status: true,
                     message: "Invalid id",
                     data: []
                 })
             }
-            else{
+            else {
                 ShopService.aggregate(
                     [
                         {
-                            $match:{
-                                _id: {$in: [mongoose.Types.ObjectId(id)]}
+                            $match: {
+                                _id: { $in: [mongoose.Types.ObjectId(id)] }
                             }
                         },
                         {
-                            $lookup:{
-                                from:"servicereviews",
-                                localField:"_id",
+                            $lookup: {
+                                from: "servicereviews",
+                                localField: "_id",
                                 foreignField: "service_id",
-                                as:"rev_data",
+                                as: "rev_data",
                             }
                         },
                         {
@@ -251,15 +251,15 @@ const viewOneService = async (req,res)=>{
                         //     }
                         // },
                         {
-                            $lookup:{
-                                from:'servicecarts',                                
+                            $lookup: {
+                                from: 'servicecarts',
                                 localField: "_id",
                                 foreignField: "serv_id",
-                                as:'cart_data'
+                                as: 'cart_data'
                             }
-                        },                        
+                        },
                         {
-                            $lookup:{
+                            $lookup: {
                                 from: "shops",
                                 localField: "shop_id",
                                 foreignField: "_id",
@@ -269,7 +269,7 @@ const viewOneService = async (req,res)=>{
                         {
                             $unwind: {
                                 path: "$shop_details",
-                                preserveNullAndEmptyArrays: true                        
+                                preserveNullAndEmptyArrays: true
                             }
                         },
                         {
@@ -283,33 +283,33 @@ const viewOneService = async (req,res)=>{
                         {
                             $unwind: {
                                 path: "$shop_details.user_data",
-                                preserveNullAndEmptyArrays: true                        
+                                preserveNullAndEmptyArrays: true
                             }
-                        },  
+                        },
                         {
-                            $project:{
-                                _v:0
+                            $project: {
+                                _v: 0
                             }
                         }
                     ]
-                  )
-                  .then((docs)=>{
-                      res.status(200).json({
-                          status: true,
-                          message: "This shop service get successfully",
-                          data: docs
-                      })
-                  })
-                  .catch((fault)=>{
-                      res.status(500).json({
-                          status: false,
-                          message: "Server error2. Please try again.",
-                          error: fault
-                      })
-                  })
+                )
+                    .then((docs) => {
+                        res.status(200).json({
+                            status: true,
+                            message: "This shop service get successfully",
+                            data: docs
+                        })
+                    })
+                    .catch((fault) => {
+                        res.status(500).json({
+                            status: false,
+                            message: "Server error2. Please try again.",
+                            error: fault
+                        })
+                    })
             }
         })
-        .catch((err)=>{
+        .catch((err) => {
             res.status(500).json({
                 status: false,
                 message: "Server error. Please try again.",
@@ -318,15 +318,16 @@ const viewOneService = async (req,res)=>{
         })
 }
 
-const update = async (req,res)=>{
-    const v = new Validator(req.body,{
+const update = async (req, res) => {
+    const v = new Validator(req.body, {
         name: "required",
-        price: "required",
-        details: "required"
+        details: "required",
+        currency: "required",
+        price: "required"
     })
-    
-    let matched = await v.check().then((val)=>val);
-    if(!matched){
+
+    let matched = await v.check().then((val) => val);
+    if (!matched) {
         return res.status(200).send({
             status: false,
             error: v.errors
@@ -336,13 +337,13 @@ const update = async (req,res)=>{
     // if(typeof(req.body.image)!='undefined' || req.body.image!='' || req.body.image!=null){
     //     req.body.image = JSON.parse(req.body.image)
     // }
-    if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
+    if (typeof (req.body.personalization) != 'undefined' || req.body.personalization != '') {
         req.body.personalization = req.body.personalization
     }
-    if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
+    if (typeof (req.body.hashtags) != 'undefined' || req.body.hashtags != '') {
         req.body.hashtags = req.body.hashtags
     }
-    if(typeof(req.body.image)=='undefined' || req.body.image=='' || req.body.image==null){
+    if (typeof (req.body.image) == 'undefined' || req.body.image == '' || req.body.image == null) {
         req.body.image = null
     } else {
         req.body.image = JSON.parse(req.body.image)
@@ -350,17 +351,17 @@ const update = async (req,res)=>{
 
     let id = req.params.id
     return ShopService.findOneAndUpdate(
-        {_id: {$in: [mongoose.Types.ObjectId(id)]}}, 
-        req.body, 
-        async (err,docs)=>{
-            if(err){
+        { _id: { $in: [mongoose.Types.ObjectId(id)] } },
+        req.body,
+        async (err, docs) => {
+            if (err) {
                 res.status(500).json({
                     status: false,
                     message: "Server error. Please try again.",
                     error: err
                 });
             }
-            else{
+            else {
                 res.status(200).json({
                     status: true,
                     message: "Shop service updated successfully!",
@@ -368,10 +369,10 @@ const update = async (req,res)=>{
                 });
             }
         }
-      )
+    )
 }
 
-const deleteService = async (req,res) => {
+const deleteService = async (req, res) => {
     var id = req.params.id;
 
     return ShopService.findOneAndDelete({ _id: mongoose.Types.ObjectId(id) })
@@ -391,15 +392,15 @@ const deleteService = async (req,res) => {
         });
 }
 
-const chatServiceregister = async (req,res)=>{
-    const v = new Validator(req.body,{
+const chatServiceregister = async (req, res) => {
+    const v = new Validator(req.body, {
         name: "required",
         price: "required",
         details: "required"
     })
-    let matched = v.check().then((val)=>val)
-    if(!matched){
-        res.status(200).send({status: false, errors: v.errors})
+    let matched = v.check().then((val) => val)
+    if (!matched) {
+        res.status(200).send({ status: false, errors: v.errors })
     }
     console.log(req.file)
     let image_url = await Upload.uploadFile(req, "shop_services")
@@ -411,63 +412,63 @@ const chatServiceregister = async (req,res)=>{
         category_id: mongoose.Types.ObjectId(req.body.category_id),
         subcategory_id: mongoose.Types.ObjectId(req.body.subcategory_id),
         shop_id: mongoose.Types.ObjectId(req.body.shop_id),
-        chataddstatus : true
+        chataddstatus: true
     }
-    if(typeof(req.body.personalization)!='undefined' || req.body.personalization!=''){
+    if (typeof (req.body.personalization) != 'undefined' || req.body.personalization != '') {
         shopServiceData.personalization = req.body.personalization
     }
-    if(typeof(req.body.hashtags)!='undefined' || req.body.hashtags!=''){
+    if (typeof (req.body.hashtags) != 'undefined' || req.body.hashtags != '') {
         shopServiceData.hashtags = req.body.hashtags
     }
-    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
+    if (typeof (req.file) != 'undefined' || req.file != '' || req.file != null) {
         shopServiceData.image = image_url
     }
 
     let shop_service = new ShopService(shopServiceData)
     shop_service.save()
-      .then((docs)=>{
-          res.status(200).json({
-              status: true,
-              message: "Shop's service created sucessfully!",
-              data: docs
-          })
-      })
-      .catch((err)=>{
-          res.status(500).json({
-              status: false,
-              message: "Server error. Please try again",
-              errors: err
-          })
-      })
+        .then((docs) => {
+            res.status(200).json({
+                status: true,
+                message: "Shop's service created sucessfully!",
+                data: docs
+            })
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again",
+                errors: err
+            })
+        })
 
 }
 
-const chatImageUrl = async(req,res)=>{
+const chatImageUrl = async (req, res) => {
     let imagUrl = '';
     let image_url = await Upload.uploadFile(req, "chat")
-    if(typeof(req.file)!='undefined' || req.file!='' || req.file!=null){
+    if (typeof (req.file) != 'undefined' || req.file != '' || req.file != null) {
         imagUrl = image_url
     }
 
     return res.status(200).send({
-        status : true,
-        data : imagUrl,
-        error : null
+        status: true,
+        data: imagUrl,
+        error: null
     })
 }
 
-const salesCount = async (req,res)=>{
+const salesCount = async (req, res) => {
     var id = req.params.id
-    var in_cart= await serviceCart.find(
-        {serv_id: mongoose.Types.ObjectId(id)}
-        ).exec()
+    var in_cart = await serviceCart.find(
+        { serv_id: mongoose.Types.ObjectId(id) }
+    ).exec()
 
     console.log(in_cart)
 
     var sales_count = in_cart.length;
     console.log("sales count", sales_count);
 
-    if (in_cart!=null || in_cart!="") {
+    if (in_cart != null || in_cart != "") {
         if (sales_count > 1) {
             return res.status(200).json({
                 status: true,
@@ -492,7 +493,7 @@ const salesCount = async (req,res)=>{
     }
 }
 
-const viewTopServiceProvider = async (req,res)=>{
+const viewTopServiceProvider = async (req, res) => {
     // var all_services = await ShopService.find({status: true}).exec();
 
     // return res.send(all_services)
@@ -605,8 +606,8 @@ const viewTopServiceProvider = async (req,res)=>{
     //                 }
     //             }
     //         },
-            
-            
+
+
     //     ]
     // )
     // .then((data)=>{
@@ -625,210 +626,210 @@ const viewTopServiceProvider = async (req,res)=>{
     // });
 
     User
-    .aggregate(
-        [
-            {
-                $match: { type: { $in: ["Seller"] } },
-            }, 
-            {
-                $lookup:{
-                    from:"shops",
-                    localField:"_id",
-                    foreignField:"userid",
-                    as:"shop_data"
-                }
-            },
-            {
-                $unwind:"$shop_data"
-            },  
-            {
-                $lookup:{
-                    from:"shop_services",
-                    localField:"shop_data._id",
-                    foreignField:"shop_id",                    
-                    as:"service_data"
-                }
-            },
-            {
-                $project:{
-                    _v:0
-                }
-            },
-            {
-                $lookup:{
-                    from:"servicereviews",
-                    localField:"service_data._id",
-                    foreignField: "service_id",
-                    as:"rev_data",
-                }
-            },
-            {
-                $addFields: {
-                    avgRating: {
-                        $avg: {
-                            $map: {
-                                input: "$rev_data",
-                                in: "$$this.rating"
+        .aggregate(
+            [
+                {
+                    $match: { type: { $in: ["Seller"] } },
+                },
+                {
+                    $lookup: {
+                        from: "shops",
+                        localField: "_id",
+                        foreignField: "userid",
+                        as: "shop_data"
+                    }
+                },
+                {
+                    $unwind: "$shop_data"
+                },
+                {
+                    $lookup: {
+                        from: "shop_services",
+                        localField: "shop_data._id",
+                        foreignField: "shop_id",
+                        as: "service_data"
+                    }
+                },
+                {
+                    $project: {
+                        _v: 0
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "servicereviews",
+                        localField: "service_data._id",
+                        foreignField: "service_id",
+                        as: "rev_data",
+                    }
+                },
+                {
+                    $addFields: {
+                        avgRating: {
+                            $avg: {
+                                $map: {
+                                    input: "$rev_data",
+                                    in: "$$this.rating"
+                                }
                             }
                         }
                     }
-                }
-            },
-            { $sort: { priority: 1 } },
-            
-            
-        ]
-    )
-    .then((data)=>{
-        res.status(200).json({
-            status: true,
-            message: "Top Provider get successfully",
-            data: data
+                },
+                { $sort: { priority: 1 } },
+
+
+            ]
+        )
+        .then((data) => {
+            res.status(200).json({
+                status: true,
+                message: "Top Provider get successfully",
+                data: data
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err
+            });
         });
-    })
-    .catch((err)=>{
-        res.status(500).json({
-            status: false,
-            message: "Server error. Please try again.",
-            error: err
-        });
-    });
 }
 
-const viewSingleServiceProvider = async (req,res)=>{
+const viewSingleServiceProvider = async (req, res) => {
 
     User
-    .aggregate(
-        [
-            {
-                $match: { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
-            }, 
-            {
-                $lookup:{
-                    from:"shops",
-                    localField:"_id",
-                    foreignField:"userid",
-                    as:"shop_data"
-                }
-            },
-            {
-                $unwind:"$shop_data"
-            },  
-            {
-                $lookup:{
-                    from:"shop_services",
-                    localField:"shop_data._id",
-                    foreignField:"shop_id",                    
-                    as:"service_data"
-                }
-            },
-            {
-                $project:{
-                    _v:0
-                }
-            },
-            {
-                $lookup:{
-                    from:"servicereviews",
-                    localField:"service_data._id",
-                    foreignField: "service_id",
-                    as:"rev_data",
-                }
-            },
-            {
-                $addFields: {
-                    avgRating: {
-                        $avg: {
-                            $map: {
-                                input: "$rev_data",
-                                in: "$$this.rating"
+        .aggregate(
+            [
+                {
+                    $match: { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+                },
+                {
+                    $lookup: {
+                        from: "shops",
+                        localField: "_id",
+                        foreignField: "userid",
+                        as: "shop_data"
+                    }
+                },
+                {
+                    $unwind: "$shop_data"
+                },
+                {
+                    $lookup: {
+                        from: "shop_services",
+                        localField: "shop_data._id",
+                        foreignField: "shop_id",
+                        as: "service_data"
+                    }
+                },
+                {
+                    $project: {
+                        _v: 0
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "servicereviews",
+                        localField: "service_data._id",
+                        foreignField: "service_id",
+                        as: "rev_data",
+                    }
+                },
+                {
+                    $addFields: {
+                        avgRating: {
+                            $avg: {
+                                $map: {
+                                    input: "$rev_data",
+                                    in: "$$this.rating"
+                                }
                             }
                         }
                     }
-                }
-            },
-            { $sort: { priority: 1 } },
-            
-            
-        ]
-    )
-    .then((data)=>{
-        res.status(200).json({
-            status: true,
-            message: "Single Provider get successfully",
-            data: data
+                },
+                { $sort: { priority: 1 } },
+
+
+            ]
+        )
+        .then((data) => {
+            res.status(200).json({
+                status: true,
+                message: "Single Provider get successfully",
+                data: data
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err
+            });
         });
-    })
-    .catch((err)=>{
-        res.status(500).json({
-            status: false,
-            message: "Server error. Please try again.",
-            error: err
-        });
-    });
 }
 
-const viewAllshopservicelist = async (req,res)=>{
-    let id = req.params.id 
+const viewAllshopservicelist = async (req, res) => {
+    let id = req.params.id
     ShopService.aggregate(
         [
             {
-                $match:{
-                    shop_id: {$in: [mongoose.Types.ObjectId(id)]}
+                $match: {
+                    shop_id: { $in: [mongoose.Types.ObjectId(id)] }
                 }
-            },                        
+            },
             {
-                $project:{
-                    _v:0
+                $project: {
+                    _v: 0
                 }
             }
         ]
-        )
-        .then((docs)=>{
+    )
+        .then((docs) => {
             res.status(200).json({
                 status: true,
                 message: "This shop service get successfully",
                 data: docs
             })
         })
-        .catch((fault)=>{
+        .catch((fault) => {
             res.status(500).json({
-                
+
                 status: false,
                 message: "Server error2. Please try again.",
                 error: fault
             })
         })
-           
+
 }
 
-const viewAllrelatedService = async (req,res)=>{
-    let id = req.body.cat_id 
+const viewAllrelatedService = async (req, res) => {
+    let id = req.body.cat_id
     ShopService.aggregate(
         [
             {
-                $match:{
+                $match: {
                     category_id: { $in: [mongoose.Types.ObjectId(id)] },
-                    _id:{ $nin: [mongoose.Types.ObjectId(req.body.service_id)] }
+                    _id: { $nin: [mongoose.Types.ObjectId(req.body.service_id)] }
                 }
             },
             {
-                $lookup:{
-                    from:"services",
-                    localField:"category_id",
+                $lookup: {
+                    from: "services",
+                    localField: "category_id",
                     foreignField: "_id",
-                    as:"category_data",
+                    as: "category_data",
                 }
             },
             {
-                $unwind:"$category_data"
+                $unwind: "$category_data"
             },
             {
-                $lookup:{
-                    from:"servicereviews",
-                    localField:"_id",
+                $lookup: {
+                    from: "servicereviews",
+                    localField: "_id",
                     foreignField: "service_id",
-                    as:"rev_data",
+                    as: "rev_data",
                 }
             },
             {
@@ -844,15 +845,15 @@ const viewAllrelatedService = async (req,res)=>{
                 }
             },
             {
-                $lookup:{
-                    from:'servicecarts',                                
+                $lookup: {
+                    from: 'servicecarts',
                     localField: "_id",
                     foreignField: "serv_id",
-                    as:'cart_data'
+                    as: 'cart_data'
                 }
-            },                        
+            },
             {
-                $lookup:{
+                $lookup: {
                     from: "shops",
                     localField: "shop_id",
                     foreignField: "_id",
@@ -862,7 +863,7 @@ const viewAllrelatedService = async (req,res)=>{
             {
                 $unwind: {
                     path: "$shop_details",
-                    preserveNullAndEmptyArrays: true                        
+                    preserveNullAndEmptyArrays: true
                 }
             },
             {
@@ -876,32 +877,32 @@ const viewAllrelatedService = async (req,res)=>{
             {
                 $unwind: {
                     path: "$shop_details.user_data",
-                    preserveNullAndEmptyArrays: true                        
+                    preserveNullAndEmptyArrays: true
                 }
-            },  
+            },
             {
-                $project:{
-                    _v:0
+                $project: {
+                    _v: 0
                 }
             }
         ]
-        )
-        .then((docs)=>{
+    )
+        .then((docs) => {
             res.status(200).json({
                 status: true,
                 message: "This shop service get successfully",
                 data: docs
             })
         })
-        .catch((fault)=>{
+        .catch((fault) => {
             res.status(500).json({
-                
+
                 status: false,
                 message: "Server error2. Please try again.",
                 error: fault
             })
         })
-           
+
 }
 
 module.exports = {

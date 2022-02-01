@@ -24,11 +24,11 @@ const ShopServiceSchema = new Schema({
         type: String,
         required: true
     },
+    // tax: String,
     price:{
         type: Number,
         required: true
     },
-    tax: String,
     // total: Number,
     image:{
         type: Array,
