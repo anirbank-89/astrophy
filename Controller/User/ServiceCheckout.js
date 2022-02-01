@@ -642,8 +642,8 @@ var getSellerSettlement = async (req, res) => {
   let settlementPending = await Servicecommission.find(
     {
       seller_id: mongoose.Types.ObjectId(id),
-      status: true,
-      sellerapply: true,
+      status: false,
+      sellerapply: false,
       paystatus: false
     }
   ).exec();
@@ -661,6 +661,7 @@ var getSellerSettlement = async (req, res) => {
     {
       seller_id: mongoose.Types.ObjectId(id),
       status: true,
+      refund: false,
       sellerapply: false,
       paystatus: false
     }
