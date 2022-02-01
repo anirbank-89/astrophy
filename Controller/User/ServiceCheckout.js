@@ -643,6 +643,7 @@ var getSellerSettlement = async (req, res) => {
     {
       seller_id: mongoose.Types.ObjectId(id),
       status: false,
+      refund: false,
       sellerapply: false,
       paystatus: false
     }
