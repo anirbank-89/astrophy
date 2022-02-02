@@ -37,15 +37,15 @@ var verification = async (name, email) => {
     });
 };
 
-function queries (rciv_mail,user_email, question, addn_detail) {
+function queries(rciv_mail, user_email, question, addn_detail) {
   var emailTemplate =
     '<p>' +
     'Received from: ' + user_email +
     '</p>' +
     '<br />' +
     '<p>' +
-    'Question: ' + question+
-  '</p>' +
+    'Question: ' + question +
+    '</p>' +
     '<br />' +
     '<p>' +
     'Additional_details: ' + addn_detail +
@@ -71,7 +71,46 @@ function queries (rciv_mail,user_email, question, addn_detail) {
     });
 }
 
+function buyerOrderConfirmation(order_info, serv_info, user_email) {
+  var template =
+    '<p>' +
+    'Hi ' + order_info.firstname + ',' +
+    '</p>' +
+    '<br /><br />' +
+    '<p>' +
+    'This is confirmation mail for your service request at ' + serv_info.servicename + ' (order id: ' + order_info.order_id + '). Payment of ' + order_info.total + ' has already been made.' +
+    '<br />' +
+    'Please be availabe on the requested service date.' +
+    '</p>' +
+    '<br /><br />' +
+    '<p>' +
+    'Thanking you,' +
+    '<br />' +
+    'Team Astrophy' +
+    '</p>'
+
+  let data = {
+    to: user_email,
+    message: template,
+    subject: "Astrophy service order " + order_info.order_id
+  }
+
+  superagent
+    .post('https://new.easytodb.com/astrophymail/semdmail.php')
+    .send(data)  // sends a JSON post body
+    .set('Content-Type', 'application/json')
+    .end((err, info) => {
+      if (err) {
+        console.log(err);
+      }
+      else {
+        console.log("Email info: ", info);
+      }
+    });
+}
+
 module.exports = {
   verification,
-  queries
+  queries,
+  buyerOrderConfirmation
 }

@@ -183,7 +183,7 @@ var totalRevenueNProfit = async (req,res) => {
     
     let totalServices = await SERVICE_CHECKOUTS.find({}).exec()
     
-    var totalCompletedServices = totalServices.filter(item => item.acceptstatus == "accept");
+    var totalCompletedServices = totalServices.filter(item => item.completestatus == true);
     // console.log(totalCompletedServices);
     let completedServiceRev = 0;
     totalCompletedServices.forEach(element => {
