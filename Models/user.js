@@ -20,7 +20,15 @@ let UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    country: {
+        type: Object,
+        required: true
+    },
     city: String,
+    currency: {
+        type: String,
+        required: true
+    },
     about: String,
     include: [],
     token:{

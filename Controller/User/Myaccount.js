@@ -198,7 +198,9 @@ const updateProfile = async (req, res) => {
     email: 'required|email',
     password: 'required',// |minLength:8
     firstName: 'required',
-    lastName: 'required'
+    lastName: 'required',
+    country: 'required',
+    currency: 'required'
   });
   let matched = V.check().then(val => val);
   if (!matched) {
@@ -210,10 +212,19 @@ const updateProfile = async (req, res) => {
     lastName: req.body.lastName,
     email: req.body.email,
     password: req.body.password,
-    city: req.body.city,
-    about: req.body.about,
+    country: req.body.country,
+    currency: req.body.currency
   }
-
+  if (req.body.city != "" ||
+    req.body.city != null ||
+    typeof req.body.city != "undefined") {
+    editData.city = req.body.city
+  }
+  if (req.body.about != "" ||
+    req.body.about != null ||
+    typeof req.body.about != "undefined") {
+    editData.about = req.body.about
+  }
   if (req.body.include == "" ||
     req.body.include == null ||
     typeof req.body.include == "undefined") {

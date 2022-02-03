@@ -25,6 +25,57 @@ const getTokenData = async (token) => {
     return userData;
 }
 
+const register = async(req,res)=>{
+    const v = new Validator(req.body,{
+        email:'required|email',
+        password:'required',// |minLength:8
+        firstName:'required',
+        lastName: 'required',
+        country: 'required',
+        currency: 'required'
+    })
+    let matched = await v.check().then((val)=>val)
+    if(!matched)
+    {
+        return res.status(200).send({ status: false, error: v.errors });
+    }
+    let userData = {
+        _id:mongoose.Types.ObjectId(),
+        firstName:req.body.firstName,
+        lastName:req.body.lastName,
+        email:req.body.email,
+        password:passwordHash.generate(req.body.password),
+        token:createToken(req.body),
+        country: req.body.country,
+        currency: req.body.currency
+    }
+    // if (typeof (req.body.phone) !='undefined')
+    // {
+    //     userData.phone = Number(req.body.phone)
+    // }
+
+    const all_users = new User(userData)
+
+    return all_users.save().then(async (data)=>{
+        let email_verify = await emailVerify.verification(data.firstName,data.email);
+
+        res.status(200).json({
+            status: true,
+            success: true,
+            message: 'New user created successfully',
+            data: data,
+        })
+    })
+    .catch((error)=>{
+        res.status(200).json({
+            status: false,
+            success: false,
+            message: 'Server error. Please try again.',
+            error: error,
+        });
+    });
+}
+
 const sendVerifyLink = async (req,res)=>{
     let data = {
         url:'http://astrophy.com/after-verify',
@@ -55,53 +106,6 @@ const sendVerifyLink = async (req,res)=>{
           }
       });
 };
-
-const register = async(req,res)=>{
-    const v = new Validator(req.body,{
-        email:'required|email',
-        password:'required',// |minLength:8
-        firstName:'required',
-        lastName: 'required'
-    })
-    let matched = await v.check().then((val)=>val)
-    if(!matched)
-    {
-        return res.status(200).send({ status: false, error: v.errors });
-    }
-    let userData = {
-        _id:mongoose.Types.ObjectId(),
-        firstName:req.body.firstName,
-        lastName:req.body.lastName,
-        email:req.body.email,
-        password:passwordHash.generate(req.body.password),
-        token:createToken(req.body)
-    }
-    // if (typeof (req.body.phone) !='undefined')
-    // {
-    //     userData.phone = Number(req.body.phone)
-    // }
-
-    const all_users = new User(userData)
-
-    return all_users.save().then(async (data)=>{
-        let email_verify = await emailVerify.verification(data.firstName,data.email);
-
-        res.status(200).json({
-            status: true,
-            success: true,
-            message: 'New user created successfully',
-            data: data,
-        })
-    })
-    .catch((error)=>{
-        res.status(200).json({
-            status: false,
-            success: false,
-            message: 'Server error. Please try again.',
-            error: error,
-        });
-    });
-}
 
 const afterEmailVerify = async (req,res)=>{
     return User.findOneAndUpdate(
