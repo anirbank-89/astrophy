@@ -212,7 +212,7 @@ const updateProfile = async (req, res) => {
     lastName: req.body.lastName,
     email: req.body.email,
     password: req.body.password,
-    country: req.body.country,
+    country: JSON.parse(req.body.country),
     currency: req.body.currency
   }
   if (req.body.city != "" ||
