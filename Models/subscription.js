@@ -6,54 +6,51 @@ const SubscriptionSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   name: {
     type: String,
-    required: true,
+    required: true
   },
   description: {
     type: String,
-    required: true,
+    required: true
   },
-  seller_comission_type: {
+  // seller_comission_type: {
+  //   type: String,
+  //   required: true,
+  // },
+  // range:{
+  //     type: Object,
+  //     required: true,
+  //   },
+  duration: {
     type: String,
+    required: true
+  },
+  country: {
+    type: Object,
+    required: true
+  },
+  currency: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
     required: true,
   },
   seller_commission_value: {
     type: Number,
     required: true
   },
-  // range:{
-  //     type: Object,
-  //     required: true,
-  //   },
-  price: {
-    type: Number,
-    required: true,
-  },
-  type: {
-    type: String,
-    required: false,
-  },
-  duration: {
-    type: String,
-    required: false,
-  },
-  no_of_listing:{
-    type: Number,
-    required: true
-  },
-  plan_id:{
-    type: String,
-    required: false,
-    default:null
-  },
+  type: String,
+  no_of_listing: Number,
+  plan_id: String,
   status: {
     type: Boolean,
-    required: false,
     default: true,
   },
   created_on: {
     type: Date,
-    default: dateKolkata,
-}
+    default: dateKolkata
+  }
 });
 
-module.exports = mongoose.model("Subscription", SubscriptionSchema);
+module.exports = mongoose.model("subscription", SubscriptionSchema);

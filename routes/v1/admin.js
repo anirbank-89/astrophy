@@ -67,6 +67,7 @@ router.post('/product-uploadurl', upload.single("image"), ProductController.prod
 
 router.post('/subscription',SubscriptionController.create)
 router.get('/subscription',SubscriptionController.viewAll)
+router.get('/subscription/:id',SubscriptionController.viewSubById)
 router.put('/subscription/:id',SubscriptionController.update)
 router.delete('/subscription/:id',SubscriptionController.Delete)
 router.put('/subscription/set-status/:id',SubscriptionController.setStatus)

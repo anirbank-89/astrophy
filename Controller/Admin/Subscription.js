@@ -1,34 +1,25 @@
 var mongoose = require("mongoose");
-var passwordHash = require("password-hash");
-var Subsciption = require("../../Models/subscription");
-var SubscribedBy = require("../../Models/subscr_purchase");
-var User = require("../../Models/user");
 var moment = require("moment");
-
-var jwt = require("jsonwebtoken");
-
 const { Validator } = require("node-input-validator");
 
-var uuidv1 = require("uuid").v1;
+var Subsciption = require("../../Models/subscription");
+var SubscribedBy = require("../../Models/subscr_purchase");
 
 const create = async (req, res) => {
   let v = new Validator(req.body, {
-    name: "required",
-    description: "required",
-    seller_comission_type: "required",
-    seller_commission_value: "required",
-    // range: "required",
-    type:"required",
-    duration:"required",
-    // end_date: "required",
-    price: "required",
-    no_of_listing: "required",
+    name: 'required',
+    description: 'required',
+    duration: 'required',
+    country: 'required',
+    currency: 'required',
+    price: 'required',
+    seller_commission_value: 'required'
   });
 
   let matched = await v.check().then((val) => val);
   if (!matched) {
-    return res.status(200).send({
-      status: true,
+    return res.status(400).send({
+      status: false,
       error: v.errors,
     });
   }
@@ -37,18 +28,21 @@ const create = async (req, res) => {
     _id: mongoose.Types.ObjectId(),
     name: req.body.name,
     description: req.body.description,
-    seller_comission_type: req.body.seller_comission_type,
-    seller_commission_value: req.body.seller_commission_value,
-    // range: req.body.range,
-    // end_date: req.body.end_date,
-    type: req.body.type,
     duration: req.body.duration,
+    country: req.body.country,
+    currency: req.body.currency,
     price: req.body.price,
-    no_of_listing: req.body.no_of_listing,
-  };
-
-  console.log(subdata);
-  // return false;
+    seller_commission_value: req.body.seller_commission_value,
+  }
+  if (req.body.type != "" || req.body.type != null || typeof req.body.type != "undefined") {
+    subdata.type = req.body.type;
+  }
+  if (req.body.no_of_listing != "" || req.body.no_of_listing != null || typeof req.body.no_of_listing != "undefined") {
+    subdata.no_of_listing = req.body.no_of_listing;
+  }
+  if (req.body.plan_id != "" || req.body.plan_id != null || typeof req.body.plan_id != "undefined") {
+    subdata.plan_id = req.body.plan_id;
+  }
 
   let subscriptionSchema = new Subsciption(subdata);
 
@@ -56,16 +50,16 @@ const create = async (req, res) => {
     .save()
     .then((data) => {
       res.status(200).send({
-        status: 200,
+        status: true,
         message: "Subscription Added Successfully",
         data: data,
       });
     })
     .catch((err) => {
       res.status(500).send({
-        status: 500,
+        status: false,
         message: "Server error. Please try again.",
-        error: err,
+        error: err.message,
       });
     });
 };
@@ -95,37 +89,48 @@ const viewAll = async (req, res) => {
     });
 };
 
+const viewSubById = async (req,res) => {
+  var id = req.params.id;
+}
+
 const update = async (req, res) => {
-  Subsciption.findOneAndUpdate(
-    { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+  const V = new Validator(req.body, {
+    name: 'required',
+    description: 'required',
+    duration: 'required',
+    country: 'required',
+    currency: 'required',
+    price: 'required',
+    seller_commission_value: 'required'
+  });
+  let matched = await V.check().then(val => val);
+
+  if (!matched) {
+    return res.status(400).json({ status: false, errors: V.errors });
+  }
+
+  var id = req.params.id;
+
+  return Subsciption.findOneAndUpdate(
+    { _id: mongoose.Types.ObjectId(id) }, 
     req.body,
-    { new: true },
-    (err, doc) => {
-      if (err) {
-        res.status(500).json({
-          status: false,
-          message: "Server error. Please try again.",
-          error: err,
-        });
-      } else if (doc != null) {
-        // data = { ...req.body, ...data._doc };
+    { new: true }
+  )
+      .then(docs => {
         res.status(200).json({
           status: true,
-          message: "Product update successful",
-          data: doc,
+          message: "Data successfully edited.",
+          data: docs
         });
-      } else {
+      })
+      .catch(err => {
         res.status(500).json({
           status: false,
-          message: "User not match",
-          data: null,
+          message: "Invalid id. Server error.",
+          error: err.message
         });
-      }
-
-      // console.log(doc);
-    }
-  );
-};
+      });
+}
 
 const Delete = async (req, res) => {
   return Subsciption.remove({
@@ -201,17 +206,17 @@ const subscriptionHistory = async (req, res) => {
 const subscriptionHistoryRepo = async (req, res) => {
   return SubscribedBy.aggregate([
     req.body.datefrom != "" &&
-    typeof req.body.datefrom != "undefined" &&
-    req.body.dateto != "" &&
-    typeof req.body.dateto != "undefined"
+      typeof req.body.datefrom != "undefined" &&
+      req.body.dateto != "" &&
+      typeof req.body.dateto != "undefined"
       ? {
-          $match: {
-            subscribed_on: {
-              $gte: new Date(req.body.datefrom),
-              $lte: moment.utc(req.body.dateto).endOf("day").toDate(),
-            },
+        $match: {
+          subscribed_on: {
+            $gte: new Date(req.body.datefrom),
+            $lte: moment.utc(req.body.dateto).endOf("day").toDate(),
           },
-        }
+        },
+      }
       : { $project: { __v: 0 } },
     {
       $lookup: {
@@ -266,57 +271,58 @@ const setStatus = async (req, res) => {
   console.log("Subscription data", current_status);
 
   if (current_status.status === true) {
-      console.log(true);
-      return Subsciption.findByIdAndUpdate(
-          { _id: id },
-          { $set: { status: false } },
-          { new: true },
-          (err, docs) => {
-              if (!err) {
-                  res.status(200).json({
-                      status: true,
-                      message: "Subsciption plan has been made inactive.",
-                      data: docs
-                  });
-              }
-              else {
-                  res.status(500).json({
-                      status: false,
-                      message: "Invalid id. Server error.",
-                      error: err
-                  });
-              }
-          }
-      );
+    console.log(true);
+    return Subsciption.findByIdAndUpdate(
+      { _id: id },
+      { $set: { status: false } },
+      { new: true },
+      (err, docs) => {
+        if (!err) {
+          res.status(200).json({
+            status: true,
+            message: "Subsciption plan has been made inactive.",
+            data: docs
+          });
+        }
+        else {
+          res.status(500).json({
+            status: false,
+            message: "Invalid id. Server error.",
+            error: err
+          });
+        }
+      }
+    );
   }
   else {
-      return Subsciption.findByIdAndUpdate(
-          { _id: id },
-          { $set: { status: true } },
-          { new: true },
-          (err, docs) => {
-              if (!err) {
-                  res.status(200).json({
-                      status: true,
-                      message: "Subsciption plan has been activated.",
-                      data: docs
-                  });
-              }
-              else {
-                  res.status(500).json({
-                      status: false,
-                      message: "Invalid id. Server error.",
-                      error: err
-                  });
-              }
-          }
-      );
+    return Subsciption.findByIdAndUpdate(
+      { _id: id },
+      { $set: { status: true } },
+      { new: true },
+      (err, docs) => {
+        if (!err) {
+          res.status(200).json({
+            status: true,
+            message: "Subsciption plan has been activated.",
+            data: docs
+          });
+        }
+        else {
+          res.status(500).json({
+            status: false,
+            message: "Invalid id. Server error.",
+            error: err
+          });
+        }
+      }
+    );
   }
 }
 
 module.exports = {
   create,
   viewAll,
+  viewSubById,
   update,
   Delete,
   setStatus,
