@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 const SELLER = new Schema({
-    // _id: mongoose.Schema.Types.ObjectId,
+    _id: mongoose.Schema.Types.ObjectId,
     seller_id: mongoose.Schema.Types.ObjectId,
     name: {
         type: String,
@@ -20,17 +20,25 @@ const SELLER = new Schema({
         type: String,
         required: true,
     },
+    country: {
+        type: Object,
+        required: true
+    },
+    currency: {
+        type: String,
+        required: true
+    },
     govt_id_name: {
         type: String,
-        required: true,
+        required: true
     },
     govt_id: {
         type: String,
-        required: true,
+        required: true
     },
     image: {
         type: String,
-        required: true,
+        required: true
     },
     seller_status: {
         type: Boolean,

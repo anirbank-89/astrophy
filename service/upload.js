@@ -1,4 +1,3 @@
-var multer = require("multer");
 var fs = require("fs");
 
 const uploadFile = async (req, folder) => {

@@ -541,6 +541,8 @@ var applyForSeller = async (req, res) => {
       address: 'required',
       email: 'required',
       phone: 'required',
+      country: 'required',
+      currency: 'required',
       govt_id_name: 'required',
       govt_id: 'required'
     });
@@ -564,14 +566,21 @@ var applyForSeller = async (req, res) => {
 
     var image_url = await Upload.uploadFile(req, "sellers");
 
-    if (req.body.image != "" || req.body.image != null || typeof req.body.image != "undefined") {
-      req.body.image = image_url;
+    let saveData = {
+      _id: mongoose.Types.ObjectId(),
+      seller_id: mongoose.Types.ObjectId(req.body.seller_id),
+      name: req.body.name,
+      address: req.body.address,
+      email: req.body.email,
+      phone: req.body.phone,
+      country: JSON.parse(req.body.country),
+      currency: req.body.currency,
+      govt_id_name: req.body.govt_id_name,
+      govt_id: req.body.govt_id,
+      image: image_url
     }
-    if (req.body.seller_id != "" || req.body.seller_id != null || typeof req.body.seller_id != "undefined") {
-      req.body.seller_id = mongoose.Types.ObjectId(req.body.seller_id);
-    }
-
-    const NEW_SELLER = new SELLER(req.body);
+    
+    const NEW_SELLER = new SELLER(saveData);
 
     return NEW_SELLER.save()
       .then(data => {

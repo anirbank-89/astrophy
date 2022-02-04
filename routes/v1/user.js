@@ -64,6 +64,9 @@ router.use((req, res, next) => {
 });
 
 /** ================================= with login url ================================= */
+router.post('/apply-for-seller', upload1.single("image"), UserSellerController.applyForSeller); 
+router.get('/seller-approval-status/:id', UserSellerController.getSellerApprovalStatus);
+
 // router.get('/product/viewall',ProductController.viewProductList)
 router.get("/listSubs/:id", SubscriptionController.viewAllsubscription);
 router.post("/userSubs", SubscriptionController.viewUsersubscription);
@@ -163,9 +166,6 @@ router.get('/withdraw-history/:id',UserSellerController.withdrawHistory);
 router.post('/Kyc',UserSellerController.kyccreateNUpdate);
 router.get('/Kyc/:id',UserSellerController.getKyc);
 router.post('/getGraphcomission',UserSellerController.getGraphcomission);
-
-router.post('/apply-for-seller', upload1.single("image"), UserSellerController.applyForSeller); 
-router.get('/seller-approval-status/:id', UserSellerController.getSellerApprovalStatus);
 
 
 
