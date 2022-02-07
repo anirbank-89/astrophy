@@ -202,6 +202,12 @@ const viewProductList = async( req ,res )=>
       
         Product.aggregatePaginate(Product.aggregate(
             [
+                (req.query.currency!='' && typeof req.query.currency!='undefined') ?
+                {
+                    $match: {
+                        currency: req.query.currency
+                    }
+                } : { $project: { __v: 0 } },
                 {
                     $lookup:{
                         from:"categories",
@@ -226,7 +232,7 @@ const viewProductList = async( req ,res )=>
                         as:"wishlist_data",
                     }
                 },
-                (req.params.userid!='' && typeof req.params.userid!=='undefined')?
+                (req.params.userid!='' && typeof req.params.userid!='undefined')?
                 {
                     $lookup: {
                     from: "carts",
