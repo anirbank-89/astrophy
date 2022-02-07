@@ -8,7 +8,6 @@ var User = require('../../Models/user');
 var Product = require('../../Models/product');
 var emailVerify = require('../../service/emailsend');
 var Contact = require('../../Models/contactus');
-var ShopService = require('../../Models/shop_service')
 var Service = require('../../Models/service');
 
 

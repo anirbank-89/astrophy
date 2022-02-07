@@ -1,9 +1,7 @@
 var mongoose = require('mongoose');
 var Service = require('../../Models/service');
-var Shop = require('../../Models/shop');
 var Subcategory = require('../../Models/subcategory');
 var ShopService = require('../../Models/shop_service');
-var ServiceReview = require('../../Models/servicereview');
 
 
 const viewAllServices = async (req,res)=>{
@@ -89,6 +87,12 @@ const viewShopServicesPerService = async (req,res)=>{
 
             ShopService.aggregatePaginate(ShopService.aggregate(
                 [
+                    (req.query.currency!='' && typeof req.query.currency!='undefined') ? 
+                    {
+                        $match: {
+                            currency: req.query.currency
+                        }
+                    } : { $project: { __v: 0 } },
                     {
                         $match:{
                             category_id: {$in: [mongoose.Types.ObjectId(id)]},
