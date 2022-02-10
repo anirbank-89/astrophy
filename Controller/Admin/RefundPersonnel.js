@@ -3,7 +3,6 @@ var passwordHash = require('password-hash');
 var jwt = require('jsonwebtoken');
 const { Validator } = require('node-input-validator');
 
-// var Admin = require('../../Models/admin');
 var Admin = require('../../Models/admin');
 var Upload = require('../../service/upload');
 

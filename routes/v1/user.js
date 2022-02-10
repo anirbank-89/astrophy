@@ -120,13 +120,18 @@ router.post('/checkout', CheckoutController.create);
 
 router.get('/orderdetails/:user_id', MyaccountController.viewAll);
 router.put('/refundProduct/:id', MyaccountController.refundProduct);
-router.put('/refundService/:id', MyaccountController.refundService);
 router.put('/update-profile/:id', upload1.single("image"), MyaccountController.updateProfile);
 router.put('/update-password/:id', MyaccountController.updatePassword);
 
-router.post('/productreview', ProductreviewController.create);
+router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
+router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
+router.put('/refundService/:id', ServiceMyaccountController.refundService);
 
+router.post('/productreview', ProductreviewController.create);
 router.get('/productreview/:prod_id', ProductreviewController.getReviews);
+
+router.post('/servicereview', ServicereviewController.create);
+router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
 
 
 //krittika
@@ -146,13 +151,7 @@ router.post('/withdraw-request',UserSellerController.applyWithdraw);            
 router.post('/tips', ServiceCheckoutController.setTips);
 router.get('/getSellersettlement/:id', ServiceCheckoutController.getSellerSettlement);
 
-
-
-router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
-router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
 router.post('/sellerbookhistoryrepo', SellerMyaccountController.reportViewAll);
-router.post('/servicereview', ServicereviewController.create);
-router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
 router.get('/sellersingleBookinghis/:id', SellerMyaccountController.viewSingleOrder);
 
 

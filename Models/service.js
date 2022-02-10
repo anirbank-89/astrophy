@@ -5,9 +5,11 @@ var Schema = mongoose.Schema;
 
 const ServiceSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
+    cat_id: mongoose.Schema.Types.ObjectId, // comes from 'categories' table
     name:{
         type: String,
-        required: true
+        required: true,
+        unique:true
     },
     description:{
         type: String,

@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
-var SubCategory = require('../../Models/subcategory')
-
 const { Validator } = require('node-input-validator')
+
+var SubCategory = require('../../Models/subcategory')
 
 const create = async (req, res) => {
     const v = new Validator(req.body, {

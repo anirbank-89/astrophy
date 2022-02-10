@@ -109,7 +109,7 @@ router.put('/user/set-status/:id', UserSellersController.setStatus)// added by a
 router.put('/user/set-block/:id', UserSellersController.setBlock)// added by anirbank-93
 
 router.post('/service',upload.single("image"),ServiceController.create)// added by anirbank-93
-router.get('/service', ServiceController.viewAllServices)              // added by anirbank-93
+router.get('/service/:cat_id', ServiceController.viewServicesByCat)    // added by anirbank-93
 router.put('/service/:id',upload.single("image"),ServiceController.update)// added by anirbank-93
 router.delete('/service/:id', ServiceController.Delete)                   // added by anirbank-93
 router.put('/service/set-status/:id',ServiceController.setStatus)// added by anirbank-93

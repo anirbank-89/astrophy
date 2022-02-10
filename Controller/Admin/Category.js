@@ -1,14 +1,7 @@
 var mongoose = require('mongoose');
-var Category = require("../../Models/category");
-var passwordHash = require('password-hash');
 const { Validator } = require('node-input-validator');
-var jwt = require('jsonwebtoken')
-var uuidv1 = require('uuid').v1;
 
-function createtoken(data) {
-    data.hase = uuidv1();
-    return jwt.sign(data, "DonateSmile");
-}
+var Category = require("../../Models/category");
 
 const create = async (req, res) => {
     const v = new Validator(req.body, {
@@ -27,7 +20,7 @@ const create = async (req, res) => {
     let categoryDate = {
         _id: mongoose.Types.ObjectId(),
         name: req.body.name,
-        content:req.body.name
+        content:req.body.content
     }
 
     const category = await new Category(categoryDate)

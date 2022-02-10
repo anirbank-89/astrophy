@@ -1,9 +1,9 @@
 var mongoose = require('mongoose');
-var jwt = require('jsonwebtoken');
-var uuidv1 = require('uuid').v1;
+
+
 var Service = require('../../Models/service');
 var Upload = require("../../service/upload");
-const Servicecommission = require("../../Models/servicecommission");
+var Servicecommission = require("../../Models/servicecommission");
 
 const { Validator } = require('node-input-validator');
 
@@ -34,6 +34,7 @@ const create = async (req, res) => {
     let image_url = await Upload.uploadFile(req, "services");
     let serviceData = {
         _id: mongoose.Types.ObjectId(),
+        cat_id: mongoose.Types.ObjectId(req.body.cat_id),
         name: req.body.name,
         description: req.body.description,
         image: image_url
@@ -58,22 +59,25 @@ const create = async (req, res) => {
         });
 }
 
-const viewAllServices = async (req, res) => {
-    return Service.find()
-        .then((docs) => {
-            res.status(200).json({
-                status: true,
-                message: "All services get successfully.",
-                data: docs
-            });
-        })
-        .catch((err) => {
-            res.status(500).json({
-                status: false,
-                message: "Server error. Please try again.",
-                errors: err
-            });
-        }).sort({ _id: 'desc' });
+const viewServicesByCat = async (req, res) => {
+    var id = req.params.cat_id;
+
+    let services = await Service.find({ cat_id: mongoose.Types.ObjectId(id) }).sort({ _id: 'desc' });
+
+    if (services.length > 0) {
+        return res.status(200).json({
+            status: true,
+            message: "Data get successfully.",
+            data: services
+        });
+    }
+    else {
+        return res.status(200).json({
+            status: true,
+            message: "No service is available for this category.",
+            data: []
+        });
+    }
 }
 
 const update = async (req, res) => {
@@ -96,9 +100,10 @@ const update = async (req, res) => {
     }
 
     return Service.findOneAndUpdate(
-        { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
+        { _id: mongoose.Types.ObjectId(req.params.id) },
         req.body,
-        async (err, docs) => {
+        { new: true },
+        (err, docs) => {
             if (err) {
                 res.status(500).json({
                     status: false,
@@ -202,57 +207,57 @@ const sellercomHistory = async (req, res) => {
     return Servicecommission.aggregate([
         {
             $match: { seller_id: { $in: [mongoose.Types.ObjectId(req.body.id)] } },
-          },
-      {
-        $project: {
-          _v: 0,
         },
-      },
-      {
-        $lookup: {
-          from: "servicecheckouts",
-          localField: "order_id",
-          foreignField: "_id",
-          as: "booking_data",
+        {
+            $project: {
+                _v: 0,
+            },
         },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "seller_id",
-          foreignField: "_id",
-          as: "seller_data",
+        {
+            $lookup: {
+                from: "servicecheckouts",
+                localField: "order_id",
+                foreignField: "_id",
+                as: "booking_data",
+            },
         },
-      },
-      { $sort: { _id: -1 } },
+        {
+            $lookup: {
+                from: "users",
+                localField: "seller_id",
+                foreignField: "_id",
+                as: "seller_data",
+            },
+        },
+        { $sort: { _id: -1 } },
     ])
-      .then((data) => {
-        if (data != null && data != "") {
-          res.status(200).send({
-            status: true,
-            data: data,
-            error: null,
-            message: "Comission history Get Successfully",
-          });
-        } else {
-          res.status(400).send({
-            status: false,
-            data: null,
-            error: "No Data",
-          });
-        }
-      })
-      .catch((err) => {
-        res.status(500).send({
-          status: false,
-          data: null,
-          error: err,
-          message: "Server Error",
+        .then((data) => {
+            if (data != null && data != "") {
+                res.status(200).send({
+                    status: true,
+                    data: data,
+                    error: null,
+                    message: "Comission history Get Successfully",
+                });
+            } else {
+                res.status(400).send({
+                    status: false,
+                    data: null,
+                    error: "No Data",
+                });
+            }
+        })
+        .catch((err) => {
+            res.status(500).send({
+                status: false,
+                data: null,
+                error: err,
+                message: "Server Error",
+            });
         });
-      });
-  };
+};
 
-  const updateAdminaccept = async (req, res) => {
+const updateAdminaccept = async (req, res) => {
 
     return Servicecommission.findOneAndUpdate(
         { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
@@ -286,7 +291,7 @@ const sellercomHistory = async (req, res) => {
 
 module.exports = {
     create,
-    viewAllServices,
+    viewServicesByCat,
     update,
     Delete,
     setStatus,

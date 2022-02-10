@@ -1,25 +1,41 @@
 var mongoose = require('mongoose');
+
+const CATEGORY = require('../../Models/category');
 var Service = require('../../Models/service');
 var Subcategory = require('../../Models/subcategory');
 var ShopService = require('../../Models/shop_service');
 
 
 const viewAllServices = async (req,res)=>{
-    return Service.find()
-      .then((docs)=>{
-          res.status(200).json({
-              status: true,
-              message: "All services get successfully.",
-              data: docs
-          });
-      })
-      .catch((err)=>{
-          res.status(500).json({
-              status: false,
-              message: "Server error. Please try again.",
-              errors: err
-          });
-      });
+    return CATEGORY.aggregate([
+        {
+            $lookup: {
+                from: "services",
+                localField: "_id",
+                foreignField: "cat_id",
+                as: "service_data"
+            }
+        },
+        {
+            $project: {
+                __v: 0
+            }
+        }
+    ])
+        .then(docs => {
+            res.status(200).json({
+                status: true,
+                message: "Data successfully get.",
+                data: docs
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Failed to get data. Server error.",
+                error: err.message
+            });
+        });
 }
 
 const viewService = async (req,res)=>{
