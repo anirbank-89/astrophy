@@ -8,6 +8,7 @@ const aggregatePaginate = require("mongoose-aggregate-paginate-v2");
 const ShopServiceSchema = new Schema({
     _id:mongoose.Schema.Types.ObjectId,
     shop_id: mongoose.Schema.Types.ObjectId,
+    seller_id: mongoose.Schema.Types.ObjectId,
     category_id: mongoose.Schema.Types.ObjectId,
     subcategory_id: mongoose.Schema.Types.ObjectId,
     name:{
@@ -29,11 +30,13 @@ const ShopServiceSchema = new Schema({
         type: Number,
         required: true
     },
-    // total: Number,
     image:{
         type: Array,
-        required: false,
         default: null
+    },
+    pageViews: {
+        type: Number,
+        default: 0
     },
     status:{
         type: Boolean,

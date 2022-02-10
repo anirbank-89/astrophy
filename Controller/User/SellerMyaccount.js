@@ -4,6 +4,8 @@ var moment = require("moment")
 var ServiceCheckout = require('../../Models/servicecheckout')
 var ServiceCommission = require('../../Models/servicecommission')
 var Withdraw = require('../../Models/withdraw')
+var Shop = require('../../Models/shop')
+var ShopServices = require('../../Models/shop_service')
 
 const viewAll = async (req, res) => {
     return ServiceCheckout.aggregate(
@@ -162,12 +164,12 @@ var getClaimableCommissions = async (req, res) => {
     }
 }
 
-var claimCommission = async (req,res) => {
+var claimCommission = async (req, res) => {
     var id = req.params.id;
 
     return ServiceCommission.findOneAndUpdate(
-        { _id: mongoose.Types.ObjectId(id) }, 
-        { $set: { sellerapply: true } }, 
+        { _id: mongoose.Types.ObjectId(id) },
+        { $set: { sellerapply: true } },
         { new: true }
     )
         .then(docs => {
@@ -191,7 +193,7 @@ var claimCommission = async (req,res) => {
 
             const NEW_WITHDRAW = new Withdraw(obj);
             NEW_WITHDRAW.save();
-            
+
             res.status(200).json({
                 status: true,
                 message: "Data successfully updated.",
@@ -207,10 +209,53 @@ var claimCommission = async (req,res) => {
         });
 }
 
+var summaryStats = async (req, res) => {
+    var id = req.params.id;
+
+    let activeShopServices = await ShopServices.find(
+        {
+            seller_id: mongoose.Types.ObjectId(id),
+            status: true
+        }
+    ).exec();
+    var totalActiveServices = activeShopServices.length;
+
+    let inactiveShopServices = await ShopServices.find(
+        {
+            seller_id: mongoose.Types.ObjectId(id),
+            status: false
+        }
+    ).exec();
+    var totalInactiveServices = inactiveShopServices.length;
+
+    let shopServices = await ShopServices.find({ seller_id: mongoose.Types.ObjectId(id) }).exec();
+
+    var totalViews = 0;
+
+    shopServices.forEach(element => {
+        if (element.pageViews == null || element.pageViews == "" || typeof element.pageViews == "undefined") {
+            totalViews = totalViews;
+        }
+        else {
+            totalViews += element.pageViews;
+        }
+    });
+
+    return res.status(200).json({
+        status: true,
+        message: "Data successfully get.",
+        total_active_services: totalActiveServices,
+        total_inactive_Services: totalInactiveServices,
+        total_views: totalViews,
+        revenue_this_year: 0
+    });
+}
+
 module.exports = {
     viewAll,
     reportViewAll,
     viewSingleOrder,
     getClaimableCommissions,
-    claimCommission
+    claimCommission,
+    summaryStats
 }

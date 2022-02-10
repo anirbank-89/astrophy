@@ -24,6 +24,7 @@ const register = async (req, res) => {
     let shopServiceData = {
         _id: mongoose.Types.ObjectId(),
         shop_id: mongoose.Types.ObjectId(req.body.shop_id),
+        seller_id: mongoose.Types.ObjectId(req.body.seller_id),
         category_id: mongoose.Types.ObjectId(req.body.category_id),
         subcategory_id: mongoose.Types.ObjectId(req.body.subcategory_id),
         name: req.body.name,
@@ -38,7 +39,7 @@ const register = async (req, res) => {
     if (typeof (req.body.hashtags) != 'undefined' || req.body.hashtags != '') {
         shopServiceData.hashtags = req.body.hashtags
     }
-    if(typeof(req.body.image)=='undefined' || req.body.image=='' || req.body.image==null){
+    if (typeof (req.body.image) == 'undefined' || req.body.image == '' || req.body.image == null) {
         shopServiceData.image = null
     } else {
         shopServiceData.image = JSON.parse(req.body.image)
@@ -115,7 +116,8 @@ const viewAllShopServices = async (req, res) => {
 }
 
 const viewShopServicesPerSeller = async (req, res) => {
-    let id = req.params.id          // shop_id of shop_services
+    var id = req.params.id          // shop_id of shop_services
+
     ShopService.find({ shop_id: { $in: [mongoose.Types.ObjectId(id)] } })
         .then((data) => {
             if (data == null || data == '') {
@@ -197,125 +199,124 @@ const viewShopServicesPerSeller = async (req, res) => {
 }
 
 const viewOneService = async (req, res) => {
-    let id = req.params.id          // _id of shop_services
-    ShopService.findOne({ _id: { $in: [mongoose.Types.ObjectId(id)] } })
-        .then((data) => {
-            if (data == null || data == '') {
-                res.status(200).json({
-                    status: true,
-                    message: "Invalid id",
-                    data: []
-                })
-            }
-            else {
-                ShopService.aggregate(
-                    [
-                        {
-                            $match: {
-                                _id: { $in: [mongoose.Types.ObjectId(id)] }
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: "servicereviews",
-                                localField: "_id",
-                                foreignField: "service_id",
-                                as: "rev_data",
-                            }
-                        },
-                        {
-                            $addFields: {
-                                avgRating: {
-                                    $avg: {
-                                        $map: {
-                                            input: "$rev_data",
-                                            in: "$$this.rating"
-                                        }
-                                    }
+    var id = req.params.id          // _id of shop_services
+
+    let shopServiceData = await ShopService.findOne({ _id: mongoose.Types.ObjectId(id) }).exec();
+
+    if (shopServiceData == null || shopServiceData == '') {
+        return res.status(500).json({
+            status: false,
+            message: "Invalid id. Server error.",
+            data: null
+        })
+    }
+    else {
+        // Incrementing the count of page view by 1
+        if (shopServiceData.pageViews == null ||
+            shopServiceData.pageViews == "" ||
+            typeof shopServiceData.pageViews == "undefined"
+        ) {
+            shopServiceData.pageViews = 1;
+        }
+        else {
+            shopServiceData.pageViews += 1;
+        }
+
+        // Saving to the database
+        let newPageView = await shopServiceData.save();
+
+        let docs = await ShopService.aggregate(
+            [
+                {
+                    $match: {
+                        _id: { $in: [mongoose.Types.ObjectId(id)] }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "servicereviews",
+                        localField: "_id",
+                        foreignField: "service_id",
+                        as: "rev_data",
+                    }
+                },
+                {
+                    $addFields: {
+                        avgRating: {
+                            $avg: {
+                                $map: {
+                                    input: "$rev_data",
+                                    in: "$$this.rating"
                                 }
                             }
-                        },
-                        // {
-                        //     $addFields:{
-                        //         total_sales:{
-                        //             $size:{
-                        //                 $filter:{
-                        //                     input: "$servicecarts",
-                        //                     as: "shop_service_sales",
-                        //                     cond:{
-                        //                         serv_id: {$in: [mongoose.Types.ObjectId(id)]}
-                        //                     }
-                        //                 }
-                        //             }
-                        //         }
-                        //     }
-                        // },
-                        {
-                            $lookup: {
-                                from: 'servicecarts',
-                                localField: "_id",
-                                foreignField: "serv_id",
-                                as: 'cart_data'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: "shops",
-                                localField: "shop_id",
-                                foreignField: "_id",
-                                as: "shop_details"
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: "$shop_details",
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: "users",
-                                localField: "shop_details.userid",
-                                foreignField: "_id",
-                                as: 'shop_details.user_data'
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: "$shop_details.user_data",
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-                        {
-                            $project: {
-                                _v: 0
-                            }
                         }
-                    ]
-                )
-                    .then((docs) => {
-                        res.status(200).json({
-                            status: true,
-                            message: "This shop service get successfully",
-                            data: docs
-                        })
-                    })
-                    .catch((fault) => {
-                        res.status(500).json({
-                            status: false,
-                            message: "Server error2. Please try again.",
-                            error: fault
-                        })
-                    })
-            }
-        })
-        .catch((err) => {
-            res.status(500).json({
-                status: false,
-                message: "Server error. Please try again.",
-                error: err
-            })
-        })
+                    }
+                },
+                // {
+                //     $addFields:{
+                //         total_sales:{
+                //             $size:{
+                //                 $filter:{
+                //                     input: "$servicecarts",
+                //                     as: "shop_service_sales",
+                //                     cond:{
+                //                         serv_id: {$in: [mongoose.Types.ObjectId(id)]}
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //     }
+                // },
+                {
+                    $lookup: {
+                        from: 'servicecarts',
+                        localField: "_id",
+                        foreignField: "serv_id",
+                        as: 'cart_data'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "shops",
+                        localField: "shop_id",
+                        foreignField: "_id",
+                        as: "shop_details"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$shop_details",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "shop_details.userid",
+                        foreignField: "_id",
+                        as: 'shop_details.user_data'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$shop_details.user_data",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $project: {
+                        _v: 0
+                    }
+                }
+            ]
+        ).exec();
+
+        return res.status(200).json({
+            status: true,
+            message: "Data get successfully.",
+            data: docs
+        });
+    }
 }
 
 const update = async (req, res) => {
@@ -370,6 +371,30 @@ const update = async (req, res) => {
             }
         }
     )
+}
+
+const deactivateService = async (req, res) => {
+    var id = req.params.id;
+
+    return ShopService.findOneAndUpdate(
+        { _id: mongoose.Types.ObjectId(id) },
+        { $set: { status: false } },
+        { new: true }
+    )
+        .then(docs => {
+            res.status(200).json({
+                status: true,
+                message: "Data successfully edited.",
+                data: docs
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err.message
+            });
+        });
 }
 
 const deleteService = async (req, res) => {
@@ -543,55 +568,6 @@ const viewTopServiceProvider = async (req, res) => {
     //         },
     //         {
     //             $lookup:{
-    //                 from:"shop_services",
-    //                 localField:"cart_data._id",
-    //                 foreignField:"_id",
-    //                 as:"service_data"
-    //             }
-    //         },
-    //         {
-    //             $unwind:"$service_data"
-    //         },
-    //         {
-    //             $lookup:{
-    //                 from:"services",
-    //                 localField:"service_data.category_id",
-    //                 foreignField:"_id",
-    //                 as:"category_data"
-    //             }
-    //         },
-    //         {
-    //             $unwind:"$category_data"
-    //         },
-    //         {
-    //             $lookup:{
-    //                 from:"shops",
-    //                 localField:"service_data.shop_id",
-    //                 foreignField:"_id",
-    //                 as:"shop_data"
-    //             }
-    //         },
-    //         {
-    //             $unwind:"$shop_data"
-    //         },
-    //         {
-    //             $lookup:{
-    //                 from:"users",
-    //                 localField:"shop_data.userid",
-    //                 foreignField:"_id",
-    //                 as:"provider_data"
-    //             }
-    //         },
-    //         {
-    //             $unwind:"$provider_data"
-    //         },
-    //         {
-    //             $project:{
-    //                 _v:0
-    //             }
-    //         },
-    //         {
-    //             $lookup:{
     //                 from:"servicereviews",
     //                 localField:"service_data._id",
     //                 foreignField: "service_id",
@@ -613,21 +589,7 @@ const viewTopServiceProvider = async (req, res) => {
 
 
     //     ]
-    // )
-    // .then((data)=>{
-    //     res.status(200).json({
-    //         status: true,
-    //         message: "Top Provider get successfully",
-    //         data: data
-    //     });
-    // })
-    // .catch((err)=>{
-    //     res.status(500).json({
-    //         status: false,
-    //         message: "Server error. Please try again.",
-    //         error: err
-    //     });
-    // });
+    // ).exec()
 
     User
         .aggregate(
@@ -916,6 +878,7 @@ module.exports = {
     viewShopServicesPerSeller,
     viewOneService,
     update,
+    deactivateService,
     deleteService,
     chatServiceregister,
     chatImageUrl,

@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
 
-const ProductController = require("../../Controller/User/Product");
 const UserSellerController=require('../../Controller/User/UserSellers');//added by anirbank-93
 const SubscriptionController = require("../../Controller/User/Subscription");// added by anirbank-93
 const ServiceController = require('../../Controller/User/Service');          // added by anirbank-93
@@ -13,12 +12,11 @@ const Servicewishlist = require('../../Controller/User/Servicewishlist')
 const CheckoutController = require('../../Controller/User/Checkout')
 const MyaccountController = require('../../Controller/User/Myaccount')
 const ProductreviewController = require('../../Controller/User/ProductReview')
+const ServicereviewController = require('../../Controller/User/ServiceReview')
 const ServiceMyaccountController = require('../../Controller/User/ServiceMyaccount')//krittika
 const ServiceCartController = require('../../Controller/User/ServiceCart')//krittika
 const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout')//krittika
 const SellerMyaccountController = require('../../Controller/User/SellerMyaccount')//krittika
-const ServicereviewController = require('../../Controller/User/ServiceReview')
-const SeaarchController = require('../../Controller/User/Search')
 const ContactUsController = require('../../Controller/User/ContactUs')
 
 
@@ -93,6 +91,7 @@ router.get('/shop/all-services/:id', ShopServiceController.viewShopServicesPerSe
 // route to fetch one service of a shop
 router.get('/shop/view-shopservice/:id', ShopServiceController.viewOneService);        // added by anirbank-93
 router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.update);// added by anirbank-93
+router.put('/deactivate-service/:id', ShopServiceController.deactivateService);        // added by anirbank-93
 router.delete('/shop/services/:id', ShopServiceController.deleteService);              // added by anirbank-93
 router.post('/shop/chatservices', upload1.single("image"), ShopServiceController.chatServiceregister);// added by anirbank-93
 router.post('/image-uploadurl', upload1.single("image"), ShopServiceController.chatImageUrl);
@@ -154,6 +153,7 @@ router.get('/getSellersettlement/:id', ServiceCheckoutController.getSellerSettle
 router.post('/sellerbookhistoryrepo', SellerMyaccountController.reportViewAll);
 router.get('/sellersingleBookinghis/:id', SellerMyaccountController.viewSingleOrder);
 
+router.get('/summary-stats/:id', SellerMyaccountController.summaryStats);
 
 // contact us
 router.post('/sellercontact', ContactUsController.sellerContactUsInfo);
