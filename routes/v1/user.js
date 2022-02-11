@@ -105,7 +105,7 @@ router.put('/updateCart/:id', CartController.updateCart);
 router.get('/get-cart/:user_id', CartController.getCart);
 router.delete('/cartDelete/:id',CartController.Delete)
 
-router.post('/wishlist', WishlistController.create);
+router.post('/wishlist', WishlistController.create);// add route to server
 router.get('/getWishlist/:user_id', WishlistController.getWish);
 router.delete('/deleteWishlist/:id', WishlistController.Delete);
 
