@@ -4,8 +4,8 @@ var moment = require("moment")
 var ServiceCheckout = require('../../Models/servicecheckout')
 var ServiceCommission = require('../../Models/servicecommission')
 var Withdraw = require('../../Models/withdraw')
-var Shop = require('../../Models/shop')
 var ShopServices = require('../../Models/shop_service')
+var ServiceRefund = require('../../Models/service_refund');
 
 const viewAll = async (req, res) => {
     return ServiceCheckout.aggregate(
@@ -241,13 +241,66 @@ var summaryStats = async (req, res) => {
         }
     });
 
+    let commissionsReceived = await ServiceCommission.find(
+        {
+            $expr:
+            {
+                $and: [
+                    {
+                        $eq:
+                            ["$seller_id", mongoose.Types.ObjectId(id)]
+                    },
+                    {
+                        $eq:
+                            [{ $dateToString: { format: '%Y', date: "$created_on" } }, `${new Date().getFullYear()}`]
+                    }
+                ]
+            }
+        }
+    ).exec();
+    console.log(commissionsReceived);
+
+    var serviceCommissions = 0;
+
+    commissionsReceived.forEach(element => {
+        serviceCommissions = parseInt(serviceCommissions) + parseInt(element.seller_commission);
+    });
+    console.log("Total commission ", serviceCommissions);
+
+    let commissionAmtRef = await ServiceRefund.find(
+        {
+            $expr:
+            {
+                $and: [
+                    { $eq: ["$seller_id", mongoose.Types.ObjectId(id)] },
+                    { $eq: [{ $dateToString: { format: '%Y', date: "$request_date" } }, `${new Date().getFullYear()}`] },
+                    { $eq: ["$request_status", "approved"] }
+                ]
+            }
+        }
+    ).exec();
+
+    var refundedAmt = 0;
+
+    if (commissionAmtRef.length > 0) {
+        refundedAmt = refundedAmt;
+    }
+    else {
+        commissionAmtRef.forEach(element => {
+            refundedAmt = parseInt(refundedAmt) + parseInt(element.refund_amount);
+        });
+    }
+    console.log("Total refunds ", refundedAmt);
+
+    var currentYearRev = serviceCommissions - refundedAmt;
+
     return res.status(200).json({
         status: true,
         message: "Data successfully get.",
         total_active_services: totalActiveServices,
         total_inactive_Services: totalInactiveServices,
         total_views: totalViews,
-        revenue_this_year: 0
+        revenue_this_year: currentYearRev
     });
 }
 
