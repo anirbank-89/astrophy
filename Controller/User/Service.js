@@ -111,14 +111,14 @@ const viewShopServicesPerService = async (req,res)=>{
                     } : { $project: { __v: 0 } },
                     {
                         $match:{
-                            category_id: {$in: [mongoose.Types.ObjectId(id)]},
+                            subcategory_id: {$in: [mongoose.Types.ObjectId(id)]},
                             chataddstatus : false
                         }
                     },
                     {
                         $lookup:{
                             from: "services",
-                            localField: "category_id",
+                            localField: "subcategory_id",
                             foreignField: "_id",
                             as: "category_details"
                         }
