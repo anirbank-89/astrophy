@@ -196,7 +196,7 @@ var claimCommission = async (req, res) => {
 
             res.status(200).json({
                 status: true,
-                message: "Data successfully updated.",
+                message: "Claim successfully. Amount will be credited to account after 15 days.",
                 data: docs
             });
         })

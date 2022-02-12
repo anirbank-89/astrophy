@@ -425,6 +425,7 @@ const getKyc = async (req, res) => {
 }
 
 const getGraphcomission = async (req, res) => {
+  var id = req.params.id;
 
   var today = new Date();
   var dd = today.getDate();
@@ -480,7 +481,7 @@ const getGraphcomission = async (req, res) => {
   dy.setMonth(dy.getMonth() - 12);
   console.log(dy.toLocaleDateString());
 
-  let servicecommission = await Servicecommission.find({ seller_id: { $in: [mongoose.Types.ObjectId(req.body.id)] } }).exec();
+  let servicecommission = await Servicecommission.find({ seller_id: mongoose.Types.ObjectId(id) }).exec();
   var newdata = servicecommission
   var newD = [];
   var todaysTotal = 0;

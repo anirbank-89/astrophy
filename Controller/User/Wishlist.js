@@ -4,87 +4,169 @@ var Wishlist = require('../../Models/wishlist')
 
 const { Validator } = require('node-input-validator');
 
-const create = async (req,res)=>{
-   const v = new Validator(req.body,{
-    user_id:"required",
-    prod_id:"required",
-    productname:"required",
-    qty:"required",
-    price:"required",
-    image:"required"
-   })
+// const create = async (req,res)=>{
+//    const v = new Validator(req.body,{
+//     user_id:"required",
+//     prod_id:"required",
+//     productname:"required",
+//     qty:"required",
+//     price:"required",
+//     image:"required"
+//    })
 
-   let matched = await v.check().then((val)=>val)
-   if(!matched)
-   {
-       return res.status(400).json({
-           status:false,
-           data:null,
-           message:v.errors
-       })
-   }
+//    let matched = await v.check().then((val)=>val)
+//    if(!matched)
+//    {
+//        return res.status(400).json({
+//            status:false,
+//            data:null,
+//            message:v.errors
+//        })
+//    }
 
-   let subData = await Wishlist.findOne({
-    user_id: mongoose.Types.ObjectId(req.body.user_id),
-    prod_id: mongoose.Types.ObjectId(req.body.prod_id)
-  }).exec();
-  if (subData == null || subData == "") {
+//    let subData = await Wishlist.findOne({
+//     user_id: mongoose.Types.ObjectId(req.body.user_id),
+//     prod_id: mongoose.Types.ObjectId(req.body.prod_id)
+//   }).exec();
+//   if (subData == null || subData == "") {
     
-        let dataSubmit = {
-            _id:mongoose.Types.ObjectId(),
-            user_id:mongoose.Types.ObjectId(req.body.user_id),
-            prod_id:mongoose.Types.ObjectId(req.body.prod_id),
-            productname:req.body.productname,
-            qty:req.body.qty,
-            price:req.body.price,
-            image:req.body.image
-        }
+//         let dataSubmit = {
+//             _id:mongoose.Types.ObjectId(),
+//             user_id:mongoose.Types.ObjectId(req.body.user_id),
+//             prod_id:mongoose.Types.ObjectId(req.body.prod_id),
+//             productname:req.body.productname,
+//             qty:req.body.qty,
+//             price:req.body.price,
+//             image:req.body.image
+//         }
 
-        const saveData = new Wishlist(dataSubmit);
-        return saveData
-        .save()
-        .then((data)=>{
-            Cart.remove({
-                user_id: mongoose.Types.ObjectId(req.body.user_id),
-                prod_id: mongoose.Types.ObjectId(req.body.prod_id)
-              }, function (err, result){
-                if (err) 
-                {
-                    res.status(500).json({
-                        status: false,
-                        message: "Server error. Please try again.",
-                        error: err,
-                      });
-                }
-                else
-                {
-                    res.status(200).json({
-                        status:true,
-                        message:'Item Added to Successfully',
-                        data:data
-                    })
-                }
-              })
+//         const saveData = new Wishlist(dataSubmit);
+//         return saveData
+//         .save()
+//         .then((data)=>{
+//             Cart.remove({
+//                 user_id: mongoose.Types.ObjectId(req.body.user_id),
+//                 prod_id: mongoose.Types.ObjectId(req.body.prod_id)
+//               }, function (err, result){
+//                 if (err) 
+//                 {
+//                     res.status(500).json({
+//                         status: false,
+//                         message: "Server error. Please try again.",
+//                         error: err,
+//                       });
+//                 }
+//                 else
+//                 {
+//                     res.status(200).json({
+//                         status:true,
+//                         message:'Item Added to Successfully',
+//                         data:data
+//                     })
+//                 }
+//               })
             
-        })
-        .catch((err)=>{
-            res.status(500).json({
-                status: false,
-                message: "Server error. Please try again.",
-                error: err,
-              });
-        })
-  }
-  else
-  {
-    return res.status(400).json({
-        status:false,
-        data:null,
-        message:"Item Already Added"
-    })
-  }
+//         })
+//         .catch((err)=>{
+//             res.status(500).json({
+//                 status: false,
+//                 message: "Server error. Please try again.",
+//                 error: err,
+//               });
+//         })
+//   }
+//   else
+//   {
+//     return res.status(400).json({
+//         status:false,
+//         data:null,
+//         message:"Item Already Added"
+//     })
+//   }
     
-}
+// }
+
+const addToWishlist = async (req,res)=>{
+    const v = new Validator(req.body,{
+     user_id:"required",
+     prod_id:"required",
+     productname:"required",
+     qty:"required",
+     price:"required",
+     image:"required"
+    })
+ 
+    let matched = await v.check().then((val)=>val)
+    if(!matched)
+    {
+        return res.status(400).json({
+            status:false,
+            data:null,
+            message:v.errors
+        })
+    }
+ 
+    let subData = await Wishlist.findOne({
+     user_id: mongoose.Types.ObjectId(req.body.user_id),
+     prod_id: mongoose.Types.ObjectId(req.body.prod_id)
+   }).exec();
+   if (subData == null || subData == "") {
+     
+         let dataSubmit = {
+             _id:mongoose.Types.ObjectId(),
+             user_id:mongoose.Types.ObjectId(req.body.user_id),
+             prod_id:mongoose.Types.ObjectId(req.body.prod_id),
+             productname:req.body.productname,
+             qty:req.body.qty,
+             price:req.body.price,
+             image:req.body.image
+         }
+ 
+         const saveData = new Wishlist(dataSubmit);
+         return saveData
+         .save()
+         .then((data)=>{
+             Cart.remove({
+                 user_id: mongoose.Types.ObjectId(req.body.user_id),
+                 prod_id: mongoose.Types.ObjectId(req.body.prod_id)
+               }, function (err, result){
+                 if (err) 
+                 {
+                     res.status(500).json({
+                         status: false,
+                         message: "Server error. Please try again.",
+                         error: err,
+                       });
+                 }
+                 else
+                 {
+                     res.status(200).json({
+                         status:true,
+                         message:'Item Added to Successfully',
+                         data:data
+                     })
+                 }
+               })
+             
+         })
+         .catch((err)=>{
+             res.status(500).json({
+                 status: false,
+                 message: "Server error. Please try again.",
+                 error: err,
+               });
+         })
+   }
+   else
+   {
+     return res.status(400).json({
+         status:false,
+         data:null,
+         message:"Item Already Added"
+     })
+   }
+     
+ }
 
 const getWish = async (req,res)=>{
 
@@ -147,7 +229,7 @@ const Delete = async (req ,res)=>{
 } 
 
 module.exports = {
-    create,
+    addToWishlist,
     getWish,
     Delete
 }

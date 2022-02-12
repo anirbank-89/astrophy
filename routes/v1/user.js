@@ -105,7 +105,13 @@ router.put('/updateCart/:id', CartController.updateCart);
 router.get('/get-cart/:user_id', CartController.getCart);
 router.delete('/cartDelete/:id',CartController.Delete)
 
-// See wishlist api's in line 172
+router.post('/product-wishlist', WishlistController.addToWishlist);
+router.get('/product-wishlist/:user_id', WishlistController.getWish);
+router.delete('/product-wishlist/:id', WishlistController.Delete);
+
+router.post('/servicewishlist', Servicewishlist.create);
+router.get('/servicegetWishlist/:user_id', Servicewishlist.getWish);
+router.delete('/servicedeleteWishlist/:id', Servicewishlist.Delete);
 
 router.post('/checkCoupon', CartController.checkCoupon);
 
@@ -158,7 +164,7 @@ router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingc
 router.get('/withdraw-history/:id',UserSellerController.withdrawHistory);
 router.post('/Kyc',UserSellerController.kyccreateNUpdate);
 router.get('/Kyc/:id',UserSellerController.getKyc);
-router.post('/getGraphcomission',UserSellerController.getGraphcomission);
+router.get('/getGraphcomission/:id',UserSellerController.getGraphcomission);
 
 
 
@@ -167,15 +173,6 @@ router.post('/getGraphcomission',UserSellerController.getGraphcomission);
 
 // router.post('/searchSevice', SeaarchController.serviceSearch);
 // router.post('/searchProduct', SeaarchController.productSearch);
-
-
-router.post('/productWishlist', WishlistController.create);
-router.get('/product-wishlist/:user_id', WishlistController.getWish);
-router.delete('/product-wishlist/:id', WishlistController.Delete);
-
-router.post('/servicewishlist', Servicewishlist.create);
-router.get('/servicegetWishlist/:user_id', Servicewishlist.getWish);
-router.delete('/servicedeleteWishlist/:id', Servicewishlist.Delete);
 
 
 
