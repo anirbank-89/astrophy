@@ -169,7 +169,7 @@ router.post('/getGraphcomission',UserSellerController.getGraphcomission);
 // router.post('/searchProduct', SeaarchController.productSearch);
 
 
-router.post('/product/ProductWishlist', WishlistController.create);
+router.post('/productWishlist', WishlistController.create);
 router.get('/product-wishlist/:user_id', WishlistController.getWish);
 router.delete('/product-wishlist/:id', WishlistController.Delete);
 
