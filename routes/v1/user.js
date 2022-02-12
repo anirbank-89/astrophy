@@ -105,9 +105,9 @@ router.put('/updateCart/:id', CartController.updateCart);
 router.get('/get-cart/:user_id', CartController.getCart);
 router.delete('/cartDelete/:id',CartController.Delete)
 
-router.post('/wishlist', WishlistController.create);// product wishlist
-router.get('/getWishlist/:user_id', WishlistController.getWish);
-router.delete('/deleteWishlist/:id', WishlistController.Delete);
+router.post('/productwishlist', WishlistController.create);
+router.get('/getProductWishlist/:user_id', WishlistController.getWish);
+router.delete('/deleteProductWishlist/:id', WishlistController.Delete);
 
 router.post('/servicewishlist', Servicewishlist.create);
 router.get('/servicegetWishlist/:user_id', Servicewishlist.getWish);
