@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 const { Validator } = require('node-input-validator');
 
-const LEGAL_NOTICE = require('../../Models/legal_notice');
+const GRIEVANCE = require('../../Models/grievance');
 var Upload = require('../../service/upload');
 
 var addNotice = async (req, res) => {
@@ -57,8 +57,4 @@ var addNotice = async (req, res) => {
                 error: err.message
             });
         });
-}
-
-module.exports = {
-    addNotice
 }

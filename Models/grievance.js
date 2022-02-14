@@ -3,8 +3,7 @@ var Schema = mongoose.Schema;
 
 const COMPLAINT_SCHEMA = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    user_id: mongoose.Schema.Types.ObjectId,
-    name: {
+    fullname: {
         type: String,
         required: true
     },
@@ -12,6 +11,7 @@ const COMPLAINT_SCHEMA = new Schema({
         type: String,
         required: true
     },
+    phone: String,
     url: String,
     report_against: {
         type: String,
@@ -21,7 +21,7 @@ const COMPLAINT_SCHEMA = new Schema({
         type: String,
         required: true
     },
-    attachment: String,
+    file: String,
     resolution_status: {
         type: Boolean,
         default: false
