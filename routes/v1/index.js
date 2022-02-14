@@ -24,6 +24,7 @@ const StripesubscriptionController = require("../../Controller/User/Stripesubscr
 const FeedbackController = require('../../Controller/User/Feedback');
 const CmsController = require('../../Controller/User/Cms');
 const LegalNotice = require('../../Controller/User/LegalNotice');
+const GrievanceController = require('../../Controller/User/Grievance');
 // new updates
 
 
@@ -109,7 +110,7 @@ router.post('/user/createCservice',CmsController.createCservice);
 router.post('/user/createSubscribe',CmsController.createSubscribe);
 
 router.post('/user/legal-notice', upload.single("file"), LegalNotice.addNotice);
-
+router.post('/user/grievance', upload.single("file"), GrievanceController.reportGrievance);
 
 
 

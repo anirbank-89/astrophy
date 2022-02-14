@@ -27,6 +27,7 @@ const StatsController = require('../../Controller/Admin/Stats');
 const UserQueries = require('../../Controller/Admin/UserQueries');
 const ProblemReport = require('../../Controller/Admin/ReportProblem');
 const LegalNotice = require('../../Controller/Admin/LegalNotice');
+const GrievanceController = require('../../Controller/Admin/Grievance');
 
 const AutomatedApi = require('../../Controller/Admin/AutomatedApi');
 
@@ -215,6 +216,7 @@ router.put('/reject-seller-requests/:id', UserSellersController.rejectSellerRequ
 router.get('/user_queries', UserQueries.getUserQueries);
 router.get('/problem-report', ProblemReport.getNewReports);
 router.get('/legal-notice', LegalNotice.getNewNotices);
+router.get('/grievance', GrievanceController.getNewGrievances);
 
 /**=================================== Analytics Section =====================================*/
 router.get('/summary-stats', StatsController.summaryStats);

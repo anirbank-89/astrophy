@@ -39,6 +39,12 @@ var addNotice = async (req, res) => {
         report_details: req.body.report_details,
         file: fileUrl
     }
+    if(req.body.phone != "" || req.body.phone != null || typeof req.body.phone != "undefined") {
+        saveData.phone = req.body.phone;
+    }
+    if(req.body.url != "" || req.body.url != null || typeof req.body.url != "undefined") {
+        saveData.url = req.body.url;
+    }
 
     const NEW_LEGAL_NOTICE = new LEGAL_NOTICE(saveData);
 

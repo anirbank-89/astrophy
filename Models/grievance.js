@@ -17,7 +17,7 @@ const COMPLAINT_SCHEMA = new Schema({
         type: String,
         required: true
     },
-    report_detail: {
+    report_details: {
         type: String,
         required: true
     },

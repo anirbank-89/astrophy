@@ -4,7 +4,7 @@ const { Validator } = require('node-input-validator');
 const GRIEVANCE = require('../../Models/grievance');
 var Upload = require('../../service/upload');
 
-var addNotice = async (req, res) => {
+var reportGrievance = async (req, res) => {
     const V = new Validator(req.body, {
         fullname: 'required',
         email: 'required|email',
@@ -29,7 +29,7 @@ var addNotice = async (req, res) => {
         });
     }
 
-    var fileUrl = await Upload.uploadDocFile(req, "legal_notices");
+    var fileUrl = await Upload.uploadDocFile(req, "grievances");
 
     let saveData = {
         _id: mongoose.Types.ObjectId(),
@@ -39,10 +39,16 @@ var addNotice = async (req, res) => {
         report_details: req.body.report_details,
         file: fileUrl
     }
+    if(req.body.phone != "" || req.body.phone != null || typeof req.body.phone != "undefined") {
+        saveData.phone = req.body.phone;
+    }
+    if(req.body.url != "" || req.body.url != null || typeof req.body.url != "undefined") {
+        saveData.url = req.body.url;
+    }
 
-    const NEW_LEGAL_NOTICE = new LEGAL_NOTICE(saveData);
+    const NEW_GRIEVANCE = new GRIEVANCE(saveData);
 
-    return NEW_LEGAL_NOTICE.save()
+    return NEW_GRIEVANCE.save()
         .then(docs => {
             res.status(200).json({
                 status: true,
@@ -57,4 +63,8 @@ var addNotice = async (req, res) => {
                 error: err.message
             });
         });
+}
+
+module.exports = {
+    reportGrievance
 }
