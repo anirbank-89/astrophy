@@ -25,6 +25,7 @@ const FaqController = require('../../Controller/Admin/Faq');
 const FeedbackController= require('../../Controller/Admin/Feedback');
 const StatsController = require('../../Controller/Admin/Stats');
 const UserQueries = require('../../Controller/Admin/UserQueries');
+const ProblemReport = require('../../Controller/Admin/ReportProblem');
 
 const AutomatedApi = require('../../Controller/Admin/AutomatedApi');
 
@@ -211,6 +212,7 @@ router.put('/approve-seller-requests/:id', UserSellersController.approveSellerRe
 router.put('/reject-seller-requests/:id', UserSellersController.rejectSellerRequest);
 
 router.get('/user_queries', UserQueries.getUserQueries);
+router.get('/problem-report', ProblemReport.getNewReports);
 
 /**=================================== Analytics Section =====================================*/
 router.get('/summary-stats', StatsController.summaryStats);

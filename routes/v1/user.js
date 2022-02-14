@@ -19,7 +19,7 @@ const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout
 const SellerMyaccountController = require('../../Controller/User/SellerMyaccount')//krittika
 const ContactUsController = require('../../Controller/User/ContactUs')
 
-
+const ProblemReport = require('../../Controller/User/ReportProblem');
 
 
 
@@ -166,7 +166,7 @@ router.post('/Kyc',UserSellerController.kyccreateNUpdate);
 router.get('/Kyc/:id',UserSellerController.getKyc);
 router.get('/getGraphcomission/:id',UserSellerController.getGraphcomission);
 
-
+router.post('/problem-report', ProblemReport.reportProblem);
 
 
 
