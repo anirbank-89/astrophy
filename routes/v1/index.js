@@ -1,6 +1,11 @@
 var express = require('express');
+// var nodeCron = require('node-cron');
+var multer = require('multer');
+
 var router = express.Router();
-// const CRON = require('node-cron');
+
+var storage = multer.memoryStorage();
+let upload = multer({ storage: storage });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -18,7 +23,7 @@ const PaypalPaymentController = require("../../Controller/User/Paypalpayment");
 const StripesubscriptionController = require("../../Controller/User/Stripesubscription");
 const FeedbackController = require('../../Controller/User/Feedback');
 const CmsController = require('../../Controller/User/Cms');
-
+const LegalNotice = require('../../Controller/User/LegalNotice');
 // new updates
 
 
@@ -103,7 +108,7 @@ router.get('/user/condition',CmsController.getCondition)
 router.post('/user/createCservice',CmsController.createCservice);
 router.post('/user/createSubscribe',CmsController.createSubscribe);
 
-
+router.post('/user/legal-notice', upload.single("file"), LegalNotice.addNotice);
 
 
 

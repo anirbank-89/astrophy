@@ -1,0 +1,11 @@
+var orderDetails = {
+date_of_booking: checkout_data.booking_date,
+order_no: checkout_data.order_id,
+name: checkout_data.firstname.toString() + checkout_data.lastname.toString(),
+email: "",
+address: checkout_data.address1 + " ," + checkout_data.state + " ," + checkout_data.country + " ," + checkout_data.zip,
+seller_name: <service details>,
+subtotal: checkout_data.subtotal,
+discount: checkout_data.discount + "%",
+total: checkout_data.total
+}
