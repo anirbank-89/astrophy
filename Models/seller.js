@@ -20,14 +20,8 @@ const SELLER = new Schema({
         type: String,
         required: true,
     },
-    country: {
-        type: Object,
-        required: true
-    },
-    currency: {
-        type: String,
-        required: true
-    },
+    // country: String,
+    currency: String,
     govt_id_name: {
         type: String,
         required: true

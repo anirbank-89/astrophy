@@ -540,10 +540,8 @@ var applyForSeller = async (req, res) => {
     const V = new Validator(req.body, {
       name: 'required',
       address: 'required',
-      email: 'required',
+      email: 'required|email',
       phone: 'required',
-      country: 'required',
-      currency: 'required',
       govt_id_name: 'required',
       govt_id: 'required'
     });
@@ -574,11 +572,15 @@ var applyForSeller = async (req, res) => {
       address: req.body.address,
       email: req.body.email,
       phone: req.body.phone,
-      country: JSON.parse(req.body.country),
-      currency: req.body.currency,
       govt_id_name: req.body.govt_id_name,
       govt_id: req.body.govt_id,
       image: image_url
+    }
+    // if (req.body.country != "" || req.body.country != null || typeof req.body.country != "undefined") {
+    //   saveData.country = JSON.parse(req.body.country);
+    // }
+    if (req.body.currency != "" || req.body.currency != null || typeof req.body.currency != "undefined") {
+      saveData.currency = req.body.currency;
     }
     
     const NEW_SELLER = new SELLER(saveData);
