@@ -249,7 +249,68 @@ const setStatus = async (req, res) => {
             let userData = await User.findOne({ _id: mongoose.Types.ObjectId(docs.user_id) }).exec();
             let cartData = await ServiceCart.findOne({ order_id: docs.order_id }).exec();
 
-            let sendMail = await emailSend.buyerOrderConfirmation(docs,cartData,userData.email);
+            let sendMail = emailSend.buyerOrderConfirmation(docs, cartData, userData.email);
+
+            // enter data in service commission earned and total commission throughout history
+            let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(docs.seller_id), status: true }).exec();
+
+            let sellerCom = 0;
+
+            let comType = subDataf.comission_type
+
+            let comValue = subDataf.seller_comission
+
+
+
+            if (subDataf.comission_type == "Flat comission") {
+              sellerCom = subDataf.seller_comission
+            }
+            else {
+              sellerCom = (docs.total * subDataf.seller_comission) / 100;
+            }
+
+            let dataComision = {
+              _id: mongoose.Types.ObjectId(),
+              seller_id: mongoose.Types.ObjectId(docs.seller_id),
+              order_id: docs.order_id,
+              commision_type: comType,
+              commision_value: comValue,
+              price: docs.total,
+              seller_commission: sellerCom
+            };
+
+            //     console.log(dataComision);
+            // return false;
+            const saveCom = new Servicecommission(dataComision);
+            saveCom.save()
+
+            let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(docs.seller_id) }).exec();
+            console.log(totalcomission)
+
+            if (totalcomission != null) {
+              console.log('a')
+
+              let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
+              Totalcomission.findOneAndUpdate(
+                { seller_id: mongoose.Types.ObjectId(docs.seller_id) },
+                { $set: { comission_total: totalComcal, comission_all: totalComcal } },
+                (err, writeResult) => {
+                  // console.log(err);
+                }
+              );
+            }
+            else {
+              console.log('b')
+              let dataComisionTotalval = {
+                _id: mongoose.Types.ObjectId(),
+                seller_id: mongoose.Types.ObjectId(docs.seller_id),
+                comission_total: sellerCom,
+                comission_all: sellerCom
+              };
+              console.log(dataComisionTotalval)
+              const saveComTotal = new Totalcomission(dataComisionTotalval);
+              saveComTotal.save()
+            }
 
             res.status(200).json({
               status: true,
@@ -310,67 +371,7 @@ var completeServiceRequest = async (req, res) => {
     { new: true }
   )
     .then(async (docs) => {
-      let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(docs.seller_id), status: true }).exec();
-
-      let sellerCom = 0;
-
-      let comType = subDataf.comission_type
-
-      let comValue = subDataf.seller_comission
-
-
-
-      if (subDataf.comission_type == "Flat comission") {
-        sellerCom = subDataf.seller_comission
-      }
-      else {
-        sellerCom = (docs.total * subDataf.seller_comission) / 100;
-      }
-
-      let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(docs.seller_id) }).exec();
-      let dataComision = {
-        _id: mongoose.Types.ObjectId(),
-        seller_id: mongoose.Types.ObjectId(docs.seller_id),
-        order_id: docs.order_id,
-        commision_type: comType,
-        commision_value: comValue,
-        price: docs.total,
-        seller_commission: sellerCom
-      };
-
-      //     console.log(dataComision);
-      // return false;
-      const saveCom = new Servicecommission(dataComision);
-      saveCom.save()
-
-
-      console.log(totalcomission)
-
-      if (totalcomission != null) {
-        console.log('a')
-
-
-        let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
-        Totalcomission.findOneAndUpdate(
-          { seller_id: mongoose.Types.ObjectId(docs.seller_id) },
-          { $set: { comission_total: totalComcal, comission_all: totalComcal } },
-          (err, writeResult) => {
-            // console.log(err);
-          }
-        );
-      }
-      else {
-        console.log('b')
-        let dataComisionTotalval = {
-          _id: mongoose.Types.ObjectId(),
-          seller_id: mongoose.Types.ObjectId(docs.seller_id),
-          comission_total: sellerCom,
-          comission_all: sellerCom
-        };
-        console.log(dataComisionTotalval)
-        const saveComTotal = new Totalcomission(dataComisionTotalval);
-        saveComTotal.save()
-      }
+      // enter data in service commission earned and total commission throughout history
 
       res.status(200).json({
         status: true,
@@ -580,7 +581,7 @@ var getSellerSettlement = async (req, res) => {
   var comType = subDataf.comission_type;
 
   var comValue = subDataf.seller_comission;
-  
+
   if (comType == "Flat comission") {
     totalEarnings = comValue * Number(serviceCheckout.length);
 
@@ -588,7 +589,7 @@ var getSellerSettlement = async (req, res) => {
   else {
     totalEarnings = (totalServiceValue * comValue) / 100;
   }
-  
+
   console.log("Total commission earned = ", totalEarnings);
   /**-------------------------------------------------------------------------------------- */
 
@@ -601,7 +602,7 @@ var getSellerSettlement = async (req, res) => {
       paystatus: true
     }
   ).exec();
-  
+
   var earningSettled = 0;
 
   settlementEarnings.forEach(element => {
@@ -620,7 +621,7 @@ var getSellerSettlement = async (req, res) => {
       paystatus: false
     }
   ).exec();
-  
+
   var pendingSettlement = 0;
 
   settlementPending.forEach(element => {
@@ -641,7 +642,7 @@ var getSellerSettlement = async (req, res) => {
   ).exec();
   // console.log(serviceCommission);
   var claimableEarnings = 0;
-  
+
   claimableCommissions.forEach(element => {
     claimableEarnings = parseInt(claimableEarnings) + parseInt(element.seller_commission);
   });

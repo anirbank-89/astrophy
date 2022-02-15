@@ -159,7 +159,7 @@ router.get('/summary-stats/:id', SellerMyaccountController.summaryStats);
 router.post('/sellercontact', ContactUsController.sellerContactUsInfo);
 router.post('/user_questions', ContactUsController.userContactUsInfo);
 // contact us
-router.get('/sellercomission/:id',UserSellerController.sellercomHistory);
+router.get('/sellercomission/:id',UserSellerController.sellercomHistory); // same as '/claimable-commissions/:id' in line 144           
 router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingcomission);
 router.get('/withdraw-history/:id',UserSellerController.withdrawHistory);
 router.post('/Kyc',UserSellerController.kyccreateNUpdate);

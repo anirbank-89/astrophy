@@ -2,6 +2,7 @@ var mongoose = require('mongoose')
 
 var ServiceCheckout = require('../../Models/servicecheckout')
 var ServiceRefund = require('../../Models/service_refund')
+var ServiceCart = require('../../Models/servicecart')
 
 const viewAll = async (req, res) => {
   return ServiceCheckout.aggregate(
@@ -134,13 +135,30 @@ const refundService = async (req, res) => {
 }
 
 var buyHistFromSeller = async (req, res) => {
-  let boughtServices = await ServiceCheckout.find(
+  let boughtServices = await ServiceCart.aggregate([
     {
-      user_id: mongoose.Types.ObjectId(req.body.user_id),
-      seller_id: mongoose.Types.ObjectId(req.body.seller_id),
-      status: "true"
+      $match: {
+        user_id: mongoose.Types.ObjectId(req.body.user_id),
+        seller_id: mongoose.Types.ObjectId(req.body.seller_id),
+      }
+    },
+    {
+      $lookup: {
+        from: "shop_services",
+        localField: "serv_id",
+        foreignField: "_id",
+        as: "service_data"
+      }
+    },
+    {
+      $unwind: "$service_data"
+    },
+    {
+      $project: {
+        __v: 0
+      }
     }
-  ).exec();
+  ]).exec();
 
   if (boughtServices.length > 0) {
     return res.status(200).json({
