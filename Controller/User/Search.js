@@ -18,14 +18,14 @@ const serviceSearch = async (req, res) => {
         type: "Seller",
       },
     },
-    {
-      $lookup: {
-        from: "shops",
-        localField: "shop_id",
-        foreignField: "_id",
-        as: "shop_details",
-      },
-    },
+    // {
+    //   $lookup: {
+    //     from: "shops",
+    //     localField: "shop_id",
+    //     foreignField: "_id",
+    //     as: "shop_details",
+    //   },
+    // },
     {
       $lookup: {
         from: "shops",
@@ -45,6 +45,7 @@ const serviceSearch = async (req, res) => {
       },
     },
   ]).exec();
+  console.log("Probable providers", providerMatch);
   providerMatch.forEach((item) => {
     item.shop_details.forEach((ele) => {
       shopId.push(ele._id);

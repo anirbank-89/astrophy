@@ -1,23 +1,23 @@
 var express = require("express");
 var router = express.Router();
 
-const UserSellerController=require('../../Controller/User/UserSellers');//added by anirbank-93
+const UserSellerController = require('../../Controller/User/UserSellers');//added by anirbank-93
 const SubscriptionController = require("../../Controller/User/Subscription");// added by anirbank-93
 const ServiceController = require('../../Controller/User/Service');          // added by anirbank-93
 const ShopController = require("../../Controller/User/Shop");      // added by anirbank-93
 const ShopServiceController = require("../../Controller/User/ShopServices"); // added by anirbank-93
-const CartController = require('../../Controller/User/Cart')
-const WishlistController = require('../../Controller/User/Wishlist')
-const Servicewishlist = require('../../Controller/User/Servicewishlist')
-const CheckoutController = require('../../Controller/User/Checkout')
-const MyaccountController = require('../../Controller/User/Myaccount')
-const ProductreviewController = require('../../Controller/User/ProductReview')
-const ServicereviewController = require('../../Controller/User/ServiceReview')
-const ServiceMyaccountController = require('../../Controller/User/ServiceMyaccount')//krittika
-const ServiceCartController = require('../../Controller/User/ServiceCart')//krittika
-const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout')//krittika
-const SellerMyaccountController = require('../../Controller/User/SellerMyaccount')//krittika
-const ContactUsController = require('../../Controller/User/ContactUs')
+const CartController = require('../../Controller/User/Cart');
+const WishlistController = require('../../Controller/User/Wishlist');
+const Servicewishlist = require('../../Controller/User/Servicewishlist');
+const CheckoutController = require('../../Controller/User/Checkout');
+const MyaccountController = require('../../Controller/User/Myaccount');
+const ProductreviewController = require('../../Controller/User/ProductReview');
+const ServicereviewController = require('../../Controller/User/ServiceReview');
+const ServiceMyaccountController = require('../../Controller/User/ServiceMyaccount');//krittika
+const ServiceCartController = require('../../Controller/User/ServiceCart');//krittika
+const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout');//krittika
+const SellerMyaccountController = require('../../Controller/User/SellerMyaccount');//krittika
+const ContactUsController = require('../../Controller/User/ContactUs');
 
 const ProblemReport = require('../../Controller/User/ReportProblem');
 
@@ -109,13 +109,19 @@ router.post('/product-wishlist', WishlistController.addToWishlist);
 router.get('/product-wishlist/:user_id', WishlistController.getWish);
 router.delete('/product-wishlist/:id', WishlistController.Delete);
 
+router.post('/checkCoupon', CartController.checkCoupon);
+
+router.post('/checkout', CheckoutController.create);
+
 router.post('/servicewishlist', Servicewishlist.create);
 router.get('/servicegetWishlist/:user_id', Servicewishlist.getWish);
 router.delete('/servicedeleteWishlist/:id', Servicewishlist.Delete);
 
-router.post('/checkCoupon', CartController.checkCoupon);
+router.post('/servicecart', ServiceCartController.addToServiceCart);
+router.get('/servicecart/:user_id', ServiceCartController.getServiceCart);
+router.delete('/servicecart/:id',ServiceCartController.Delete)
 
-router.post('/checkout', CheckoutController.create);
+router.post('/servicecheckout', ServiceCheckoutController.create);
 
 router.get('/orderdetails/:user_id', MyaccountController.viewAll);
 router.put('/refundProduct/:id', MyaccountController.refundProduct);
@@ -123,8 +129,8 @@ router.put('/update-profile/:id', upload1.single("image"), MyaccountController.u
 router.put('/update-password/:id', MyaccountController.updatePassword);
 
 router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
-router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
 router.put('/refundService/:id', ServiceMyaccountController.refundService);
+router.post('/buy-history-from-seller', ServiceMyaccountController.buyHistFromSeller);
 
 router.post('/productreview', ProductreviewController.create);
 router.get('/productreview/:prod_id', ProductreviewController.getReviews);
@@ -134,19 +140,13 @@ router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
 
 
 //krittika
-router.post('/servicecart', ServiceCartController.addToServiceCart);
-router.get('/servicecart/:user_id', ServiceCartController.getServiceCart);
-router.delete('/servicecart/:id',ServiceCartController.Delete)
-
-router.post('/servicecheckout', ServiceCheckoutController.create);
-
-router.post('/accept_status', ServiceCheckoutController.setStatus);
-router.put('/complete-service-request/:id', ServiceCheckoutController.completeServiceRequest);
-
+router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
 router.get('/claimable-commissions/:id', SellerMyaccountController.getClaimableCommissions);
 router.put('/claimable-commissions/:id', SellerMyaccountController.claimCommission);
 router.post('/withdraw-request',UserSellerController.applyWithdraw);                        // same as above route
 
+router.post('/accept_status', ServiceCheckoutController.setStatus);
+router.put('/complete-service-request/:id', ServiceCheckoutController.completeServiceRequest);
 router.post('/tips', ServiceCheckoutController.setTips);
 router.get('/getSellersettlement/:id', ServiceCheckoutController.getSellerSettlement);
 

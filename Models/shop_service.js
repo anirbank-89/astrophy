@@ -19,6 +19,24 @@ const ShopServiceSchema = new Schema({
         type: String,
         required: true
     },
+    // category: {
+    //     cat_id: {
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         required: true
+    //     },
+    //     cat_name: {
+    //         type: String,
+    //         required: true
+    //     }
+    // },
+    cat_name: {
+        type: String,
+        required: true
+    },
+    subcat_name: {
+        type: String,
+        required: true
+    },
     personalization: String,
     hashtags: String,
     currency: {
