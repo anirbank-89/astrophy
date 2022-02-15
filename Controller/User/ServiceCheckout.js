@@ -240,7 +240,12 @@ const setStatus = async (req, res) => {
     if (acceptstatus == 'accept') {
       return ServiceCheckout.findByIdAndUpdate(
         { _id: id },
-        { $set: { acceptstatus: acceptstatus } },
+        {
+          $set: {
+            acceptstatus: acceptstatus,
+            completestatus: true       // might need to change this later - 15/02/2022
+          }
+        },
         // { new: true },
         async (err, docs) => {
           docs = { ...docs._doc, ...req.body };
