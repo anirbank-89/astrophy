@@ -611,7 +611,7 @@ var getSellerSettlement = async (req, res) => {
   var earningSettled = 0;
 
   settlementEarnings.forEach(element => {
-    earningSettled = parseInt(earningSettled) + parseInt(element.seller_commission);
+    earningSettled = earningSettled + element.seller_commission;
   });
   console.log("Earning setlled = ", earningSettled);
   /**-------------------------------------------------------------------------------------- */
@@ -649,7 +649,7 @@ var getSellerSettlement = async (req, res) => {
   var claimableEarnings = 0;
 
   claimableCommissions.forEach(element => {
-    claimableEarnings = parseInt(claimableEarnings) + parseInt(element.seller_commission);
+    claimableEarnings = claimableEarnings + element.seller_commission;
   });
   console.log("Cleared earnings = ", claimableEarnings);
   /**-------------------------------------------------------------------------------------- */
