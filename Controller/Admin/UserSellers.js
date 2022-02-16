@@ -91,17 +91,89 @@ const viewSellerList = async (req, res) => {
       }
     },
     {
-      $lookup: {
-        from: "shop_services",
-        localField: "_id",
-        foreignField: "seller_id",
-        as: "service_data"
+      $unwind: {
+        path: "$shop_data",
+        preserveNullAndEmptyArrays: true
       }
     },
     {
       $lookup: {
-        from: "sellercomissions", 
-        let: { seller_id: '$_id' }, 
+        from: "shop_services",
+        // let: {
+        //   seller_id: "$_id", 
+        //   cat_id: "$category_id", 
+        //   subcat_id: "$subcategory_id"
+        // },
+        // pipeline: [
+        //   {
+        //     $match: {
+        //       $expr: {
+        //         $and: [
+        //           { $eq: ["$seller_id", "$$seller_id"] }
+        //         ]
+        //       }
+        //     }
+        //   },
+        //   {
+        //     $lookup: {
+        //       from: "categories",
+        //       localField: "cat_id",
+        //       foreignField: "categories._id",
+        //       as: "category_data"
+        //     }
+        //   },
+        //   {
+        //     $lookup: {
+        //       from: "services",
+        //       localField: "subcat_id",
+        //       foreignField: "services.id",
+        //       as: "subcategory_data"
+        //     }
+        //   },
+        // ],
+        localField: "_id",
+        foreignField: "seller_id",
+        as: "service_data"
+      },
+    },
+    {
+      $unwind: {
+        path: "$service_data",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "service_data.category_id",
+        foreignField: "_id",
+        as: "service_data.category_data"
+      }
+    },
+    {
+      $unwind: {
+        path: "$service_data.category_data",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $lookup: {
+        from: "services",
+        localField: "service_data.subcategory_id",
+        foreignField: "_id",
+        as: "service_data.subcategory_data"
+      }
+    },
+    {
+      $unwind: {
+        path: "$service_data.subcategory_data",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $lookup: {
+        from: "sellercomissions",
+        let: { seller_id: '$_id' },
         pipeline: [
           {
             $match: {
