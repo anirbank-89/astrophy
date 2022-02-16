@@ -91,12 +91,6 @@ const viewSellerList = async (req, res) => {
       }
     },
     {
-      $unwind: {
-        path: "$shop_data",
-        preserveNullAndEmptyArrays: true
-      }
-    },
-    {
       $lookup: {
         from: "shop_services",
         // let: {
@@ -136,40 +130,34 @@ const viewSellerList = async (req, res) => {
         as: "service_data"
       },
     },
-    {
-      $unwind: {
-        path: "$service_data",
-        preserveNullAndEmptyArrays: true
-      }
-    },
-    {
-      $lookup: {
-        from: "categories",
-        localField: "service_data.category_id",
-        foreignField: "_id",
-        as: "service_data.category_data"
-      }
-    },
-    {
-      $unwind: {
-        path: "$service_data.category_data",
-        preserveNullAndEmptyArrays: true
-      }
-    },
-    {
-      $lookup: {
-        from: "services",
-        localField: "service_data.subcategory_id",
-        foreignField: "_id",
-        as: "service_data.subcategory_data"
-      }
-    },
-    {
-      $unwind: {
-        path: "$service_data.subcategory_data",
-        preserveNullAndEmptyArrays: true
-      }
-    },
+    // {
+    //   $lookup: {
+    //     from: "categories",
+    //     localField: "service_data.category_id",
+    //     foreignField: "_id",
+    //     as: "service_data.category_data"
+    //   }
+    // },
+    // {
+    //   $unwind: {
+    //     path: "$service_data.category_data",
+    //     preserveNullAndEmptyArrays: true
+    //   }
+    // },
+    // {
+    //   $lookup: {
+    //     from: "services",
+    //     localField: "service_data.subcategory_id",
+    //     foreignField: "_id",
+    //     as: "service_data.subcategory_data"
+    //   }
+    // },
+    // {
+    //   $unwind: {
+    //     path: "$service_data.subcategory_data",
+    //     preserveNullAndEmptyArrays: true
+    //   }
+    // },
     {
       $lookup: {
         from: "sellercomissions",
