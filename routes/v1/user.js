@@ -76,7 +76,7 @@ router.get('/list-of-sellers', UserSellerController.viewSellerList);// added by 
 
 router.get('/service', ServiceController.viewAllServices); // added by anirbank-93
 router.get('/service/:id', ServiceController.viewService); // added by anirbank-93
-router.get('/service/subcategory/:id', ServiceController.viewServiceSubCategory);// added by anirbank-93
+router.get('/service/subcategory/:id', ServiceController.viewServicePerCategory);// added by anirbank-93
 // route to fetch all shop services available for a service category
 router.get('/service/shop-services/:id', ServiceController.viewShopServicesPerService);// added by anirbank-93
 

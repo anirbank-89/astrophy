@@ -60,20 +60,20 @@ const viewService = async (req,res)=>{
     });
 }
 
-const viewServiceSubCategory = async (req,res)=>{
-    Subcategory.find({serviceid: {$in: [mongoose.Types.ObjectId(req.params.id)]}})
+const viewServicePerCategory = async (req,res)=>{
+    Service.find({ cat_id: mongoose.Types.ObjectId(req.params.id) })
       .then((data)=>{
           res.status(200).json({
               status: true,
-              message: "Service sub-categries get successfully.",
+              message: "Services for category get successfully.",
               data: data
           })
       })
       .catch((err)=>{
           res.status(500).json({
               status: false,
-              message: "Server error. Please try again.",
-              error: err
+              message: "Invalid id. Server error.",
+              error: err.message
           })
       })
 }
@@ -184,6 +184,6 @@ const viewShopServicesPerService = async (req,res)=>{
 module.exports = {
     viewAllServices,
     viewService,
-    viewServiceSubCategory,
+    viewServicePerCategory,
     viewShopServicesPerService
 }
