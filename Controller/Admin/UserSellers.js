@@ -78,15 +78,56 @@ const viewSellerList = async (req, res) => {
 
   return User.aggregate([
     {
-      $match: { type: { $in: ["Seller"] } },
+      $match: {
+        type: "Seller"
+      },
     },
     {
       $lookup: {
-        from: "totalcomissions",
+        from: "shops",
+        localField: "_id",
+        foreignField: "userid",
+        as: "shop_data"
+      }
+    },
+    {
+      $lookup: {
+        from: "shop_services",
         localField: "_id",
         foreignField: "seller_id",
-        as: "comission_data",
-      },
+        as: "service_data"
+      }
+    },
+    {
+      $lookup: {
+        from: "sellercomissions", 
+        let: { seller_id: '$_id' }, 
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$seller_id", "$$seller_id"] },
+                  { $eq: ["$status", true] }
+                ]
+              }
+            }
+          }
+        ],
+        as: "commission_data"
+      }
+    },
+    {
+      $addFields: {
+        total_earned_claimable_commission: {
+          $sum: {
+            $map: {
+              input: "$commission_data",
+              in: "$$this.seller_commission"
+            }
+          }
+        }
+      }
     },
     { $sort: { _id: -1 } },
     {
