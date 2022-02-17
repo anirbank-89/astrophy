@@ -308,7 +308,7 @@ const productSearch = async (req, res) => {
         });
       } else {
         res.status(200).json({
-          status: false,
+          status: true,
           message: "No Data ",
           data: data,
         });
