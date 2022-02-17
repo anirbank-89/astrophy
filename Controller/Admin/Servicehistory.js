@@ -17,10 +17,16 @@ const viewAll = async (req, res) => {
                 }
             },
             {
+                $unwind: {
+                    path: "$user_data",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
                 $lookup: {
                     from: "servicecarts",//
-                    let: { order_id: "$order_id" },
-                    pipeline: [
+                    let: { order_id: "$order_id"},//
+                    pipeline:[
                         {
                             $match: {
                                 $expr: {
@@ -29,31 +35,37 @@ const viewAll = async (req, res) => {
                                     ]
                                 }
                             }
-                        },
-                        {
-                            $lookup: {
-                                from: "users",
-                                localField: "servicecarts.seller_id",
-                                foreignField: "users._id",
-                                as: "seller_data"
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: "$seller_data",
-                                preserveNullAndEmptyArrays: true
-                            }
-                        }
-                    ],
+                        }    
+                    ],//
                     as: "servicecart_data"//
+                }
+            },
+            {
+                $unwind: {
+                    path: "$servicecart_data",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    let: { seller_id: "$servicecart_data.seller_id" }, 
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$_id", "$$seller_id"] }] } } }], 
+                    as: "servicecart_data.seller_data"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$servicecart_data.seller_data",
+                    preserveNullAndEmptyArrays: true
                 }
             },
             {
                 $lookup: {
                     from: "shop_services",
-                    localField: "servicecarts.serv_id",
-                    foreignField: "shop_services._id",
-                    as: "servicecart_data.seller_data"
+                    let: { seller_id: "$seller_data._id" }, 
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$seller_id", "$$seller_id"] }] } } }], 
+                    as: "servicecart_data.seller_data.service_data"
                 }
             },
             { $sort: { _id: -1 } },

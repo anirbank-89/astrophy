@@ -16,7 +16,6 @@ const addToServiceCart = async (req, res) => {
     servicename: "required",
     price: "required",
     image: "required",
-
   });
 
   let matched = await v.check().then((val) => val);
