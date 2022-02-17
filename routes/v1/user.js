@@ -152,6 +152,7 @@ router.get('/getSellersettlement/:id', ServiceCheckoutController.getSellerSettle
 
 router.post('/sellerbookhistoryrepo', SellerMyaccountController.reportViewAll);
 router.get('/sellersingleBookinghis/:id', SellerMyaccountController.viewSingleOrder);
+router.post('/buy-history-of-buyer', SellerMyaccountController.buyHistFromUser);
 
 router.get('/summary-stats/:id', SellerMyaccountController.summaryStats);
 

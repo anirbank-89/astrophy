@@ -19,8 +19,37 @@ const viewAll = async (req,res)=>{
             {
                 $lookup:{
                     from:"servicecarts",//
-                    localField:"order_id",//
-                    foreignField:"order_id",
+                    let: { order_id: "$order_id"},
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$order_id", "$$order_id"] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "$this.seller_id",
+                                foreignField: "_id",
+                                as: "seller_data"
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$seller_data",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        // {
+                        //     $lookup: {
+                        //         from: 
+                        //     }
+                        // }
+                    ],
                     as:"servicecart_data"//
                 }
             },

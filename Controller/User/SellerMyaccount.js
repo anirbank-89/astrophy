@@ -2,10 +2,11 @@ var mongoose = require('mongoose')
 var moment = require("moment")
 
 var ServiceCheckout = require('../../Models/servicecheckout')
+var ServiceCart = require('../../Models/servicecart')
 var ServiceCommission = require('../../Models/servicecommission')
 var Withdraw = require('../../Models/withdraw')
 var ShopServices = require('../../Models/shop_service')
-var ServiceRefund = require('../../Models/service_refund');
+var ServiceRefund = require('../../Models/service_refund')
 
 const viewAll = async (req, res) => {
     return ServiceCheckout.aggregate(
@@ -136,6 +137,50 @@ const viewSingleOrder = async (req, res) => {
                 error: err
             })
         })
+}
+
+var buyHistFromUser = async (req,res) => {
+    let boughtServices = await ServiceCart.aggregate([
+        {
+          $match: {
+            seller_id: mongoose.Types.ObjectId(req.body.self_id),
+            user_id: mongoose.Types.ObjectId(req.body.buyer_id),
+          }
+        },
+        {
+          $lookup: {
+            from: "shop_services",
+            localField: "serv_id",
+            foreignField: "_id",
+            as: "service_data"
+          }
+        },
+        {
+          $unwind: "$service_data"
+        },
+        {
+          $project: {
+            __v: 0
+          }
+        }
+      ]).exec();
+    
+      if (boughtServices.length > 0) {
+        return res.status(200).json({
+          status: true,
+          message: "Data successfully get.",
+          no_of_buys: boughtServices.length,
+          purchase_data: boughtServices
+        });
+      }
+      else {
+        return res.status(200).json({
+          status: true,
+          message: "No previous buys from this seller.",
+          no_of_buys: 0,
+          purchase_data: []
+        });
+      }
 }
 
 var getClaimableCommissions = async (req, res) => {
@@ -308,6 +353,7 @@ module.exports = {
     viewAll,
     reportViewAll,
     viewSingleOrder,
+    buyHistFromUser,
     getClaimableCommissions,
     claimCommission,
     summaryStats
