@@ -74,46 +74,52 @@ const viewSellerList = async (req, res) => {
     {
       $lookup: {
         from: "shop_services",
-        let: {
-          seller_id: "$_id", 
-          cat_id: "$category_id", 
-          subcat_id: "$subcategory_id"
-        },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ["$seller_id", "$$seller_id"] }
-                ]
-              }
-            }
-          },
-          {
-            $lookup: {
-              from: "categories",
-              localField: "cat_id",
-              foreignField: "categories._id",
-              as: "category_data"
-            }
-          },
-          {
-            $unwind: {
-              path: "$category_data",
-              preserveNullAndEmptyArrays: true
-            }
-          },
-          {
-            $lookup: {
-              from: "services",
-              localField: "subcat_id",
-              foreignField: "services.id",
-              as: "subcategory_data"
-            }
-          },
-        ],
-        // localField: "_id",
-        // foreignField: "seller_id",
+        // let: {
+        //   seller_id: "$_id", 
+        //   cat_id: "$category_id", 
+        //   subcat_id: "$subcategory_id"
+        // },
+        // pipeline: [
+        //   {
+        //     $match: {
+        //       $expr: {
+        //         $and: [
+        //           { $eq: ["$seller_id", "$$seller_id"] }
+        //         ]
+        //       }
+        //     }
+        //   },
+        //   {
+        //     $lookup: {
+        //       from: "categories",
+        //       localField: "cat_id",
+        //       foreignField: "categories._id",
+        //       as: "category_data"
+        //     }
+        //   },
+        //   {
+        //     $unwind: {
+        //       path: "$category_data",
+        //       preserveNullAndEmptyArrays: true
+        //     }
+        //   },
+        //   {
+        //     $lookup: {
+        //       from: "services",
+        //       localField: "subcat_id",
+        //       foreignField: "services.id",
+        //       as: "subcategory_data"
+        //     }
+        //   },
+        //   {
+        //     $unwind: {
+        //       path: "$subcategory_data",
+        //       preserveNullAndEmptyArrays: true
+        //     }
+        //   }
+        // ],
+        localField: "_id",
+        foreignField: "seller_id",
         as: "service_data"
       },
     },
@@ -147,6 +153,14 @@ const viewSellerList = async (req, res) => {
     // },
     {
       $lookup: {
+        from: "totalcomissions",
+        localField: "_id",
+        foreignField: "seller_id",
+        as: "totalcommission_data"
+      }
+    },
+    {
+      $lookup: {
         from: "sellercomissions",
         let: { seller_id: '$_id' },
         pipeline: [
@@ -158,15 +172,35 @@ const viewSellerList = async (req, res) => {
                   { $eq: ["$status", true] }
                 ]
               }
-            }
+            },
           }
         ],
         as: "commission_data"
       }
     },
     {
+      $lookup: {
+        from: "total_service_commission_refunds",
+        localField: "_id",
+        foreignField: "seller_id",
+        as: "totalservicecom_refund_data"
+      }
+    },
+    {
       $addFields: {
-        total_earned_claimable_commission: {
+        total_commission_earned: {
+          $sum: {
+            $map: {
+              input: "$totalcommission_data",
+              in: "$$this.comission_total"
+            }
+          }
+        }
+      }
+    },
+    {
+      $addFields: {
+        settled_and_claimable_commission: {
           $sum: {
             $map: {
               input: "$commission_data",
@@ -176,6 +210,25 @@ const viewSellerList = async (req, res) => {
         }
       }
     },
+    {
+      $addFields: {
+        commission_refunded: {
+          $sum: {
+            $map: {
+              input: "$totalservicecom_refund_data",
+              in: "$$this.total_refunded"
+            }
+          }
+        }
+      }
+    },
+    // {
+    //   $addFields: {
+    //     pending_settlement: {
+    //       $subtract: [ "$total_commission_earned", "$settled_and_claimable_commission"]
+    //     }
+    //   }
+    // },
     { $sort: { _id: -1 } },
     {
       $project: {

@@ -2,6 +2,8 @@ var mongoose = require('mongoose');
 
 const SERVICE_REFUND = require('../../Models/service_refund');
 const SERVICE_COMMISSION = require('../../Models/servicecommission');
+const SUBSCRIBED_BY = require('../../Models/subscr_purchase');
+const TOTAL_SERVICE_COMMISSION_REFUND = require('../../Models/total_servicecomission_refund');
 
 var getAllRefundRequests = async (req, res) => {
     var refundRequests = await SERVICE_REFUND.aggregate([
@@ -64,14 +66,51 @@ var approveRefund = async (req, res) => {
         { $set: { request_status: "approved" } },
         { new: true }
     )
-        .then(docs => {
-            // Instead of calculating total refund amount in 'setSellersettlement' of User/ServiceCheckout.js and 'applyWithdraw' of User/UserSellers.js, 
-            // deduct 'commission_total' and 'commission_all' with refunded seller commision amount here.
-            console.log(docs);
+        .then(async (docs) => {
+            console.log("Service refund", docs);
+
             SERVICE_COMMISSION.findOneAndUpdate(
                 { order_id: docs.order_id },
                 { $set: { refund: true } }
             ).exec();
+            
+            // Incrementing the total service commission refunded amount
+            let subDataf = await SUBSCRIBED_BY.findOne(
+                {
+                    userid: docs.seller_id,
+                    status: true
+                }
+            ).exec();
+
+            let sellerCom = 0;
+
+            let comType = subDataf.comission_type
+
+            let comValue = subDataf.seller_comission
+
+
+
+            if (comType == "Flat comission") {
+                sellerCom = comValue;
+            }
+            else {
+                sellerCom = (docs.refund_amount * comValue) / 100;
+            }
+
+            let total_refund_commission = await TOTAL_SERVICE_COMMISSION_REFUND.findOne({ seller_id: docs.seller_id }).exec();
+
+            if (total_refund_commission == null || total_refund_commission == "") {
+                let saveData = {
+                    seller_id: docs.seller_id,
+                    total_refunded: sellerCom
+                }
+                const NEW_REFUNDED_COMMISSION = new TOTAL_SERVICE_COMMISSION_REFUND(saveData);
+                NEW_REFUNDED_COMMISSION.save();
+            }
+            else {
+                total_refund_commission.total_refunded += sellerCom;
+                total_refund_commission.save();
+            }
 
             res.status(200).json({
                 status: true,
