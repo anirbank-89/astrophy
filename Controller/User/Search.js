@@ -180,8 +180,8 @@ const serviceSearch = async (req, res) => {
         });
       } else {
         res.status(200).json({
-          status: false,
-          message: "No Data ",
+          status: true,
+          message: "No Data",
           data: data,
         });
       }
