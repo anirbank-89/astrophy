@@ -4,6 +4,7 @@ const { Validator } = require("node-input-validator");
 const ServiceCart = require("../../Models/servicecart");
 //var Coupon = require("../../Models/coupon");
 const ServiceCheckout = require("../../Models/servicecheckout");
+const UserAddresses = require('../../Models/user_address');
 const Servicecommission = require("../../Models/servicecommission");
 const SubscribedBy = require("../../Models/subscr_purchase");
 const Totalcomission = require("../../Models/totalcomission");
@@ -54,37 +55,39 @@ const create = async (req, res) => {
     state: req.body.state,
     zip: req.body.zip,
     paymenttype: req.body.paymenttype,
-  };
-
-  let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(req.body.seller_id), status: true }).exec();
-
-  // let sellerCom = 0;
-
-  // let comType = subDataf.comission_type
-
-  // let comValue = subDataf.seller_comission
-
-
-
-  // if(subDataf.comission_type=="Flat comission")
-  // {
-  //   sellerCom = subDataf.seller_comission
-  // }
-  // else
-  // {
-  //   sellerCom = (req.body.total * subDataf.seller_comission )/100;
-  // }
-
-  // console.log(sellerCom);
-  // return false;
-
-  //  if (
-  //   req.body.coupon_id != "" &&
-  //   req.body.coupon_id != null &&
-  //   typeof req.body.coupon_id != undefined
-  // ) {
-  //   dataSubmit.coupon_id = mongoose.Types.ObjectId(req.body.coupon_id);
-  // }
+  }
+  if (req.body.address2 != "" || req.body.address2 != null || typeof req.body.address2 != undefined) {
+    dataSubmit.address2 = req.body.address2;
+  }
+  if (req.body.tokenid != "" || req.body.tokenid != null || typeof req.body.tokenid != undefined) {
+    dataSubmit.tokenid = req.body.tokenid
+  }
+  if (req.body.shipping_address != "" || req.body.shipping_address != null || typeof req.body.shipping_address != "undefined") {
+    dataSubmit.shipping_address = req.body.shipping_address;
+  }
+  if (req.body.address_future_use != "" || req.body.address_future_use != null || typeof req.body.address_future_use != "undefined") {
+    dataSubmit.address_future_use = req.body.address_future_use;
+  }
+  /*if (
+  req.body.coupon_id != "" &&
+  req.body.coupon_id != null &&
+  typeof req.body.coupon_id != undefined
+) {
+  let coupData = await Coupon.findOne({
+    _id: mongoose.Types.ObjectId(req.body.coupon_id),
+    status: true,
+  }).exec();
+  let coupLimit = parseInt(coupData.times) - parseInt(1);
+  Coupon.updateMany(
+    { _id: mongoose.Types.ObjectId(req.body.coupon_id) },
+    { $set: { times: coupLimit } },
+    { multi: true },
+    (err, writeResult) => {
+      // console.log(err);
+    }
+  );
+}
+*/
   // if (
   //   req.body.coupon != "" &&
   //   req.body.coupon != null &&
@@ -99,44 +102,12 @@ const create = async (req, res) => {
   // ) {
   //   dataSubmit.tip = mongoose.Types.ObjectId(req.body.tip);
   // }
-  if (
-    req.body.address2 != "" &&
-    req.body.address2 != null &&
-    typeof req.body.address2 != undefined
-  ) {
-    dataSubmit.address2 = req.body.address2;
-  }
   console.log(dataSubmit);
-  //   return false;
-  /*if (
-    req.body.coupon_id != "" &&
-    req.body.coupon_id != null &&
-    typeof req.body.coupon_id != undefined
-  ) {
-    let coupData = await Coupon.findOne({
-      _id: mongoose.Types.ObjectId(req.body.coupon_id),
-      status: true,
-    }).exec();
-    let coupLimit = parseInt(coupData.times) - parseInt(1);
-    Coupon.updateMany(
-      { _id: mongoose.Types.ObjectId(req.body.coupon_id) },
-      { $set: { times: coupLimit } },
-      { multi: true },
-      (err, writeResult) => {
-        // console.log(err);
-      }
-    );
-  }
-*/
-  // let totalcomission = await Totalcomission.findOne({seller_id:mongoose.Types.ObjectId(req.body.seller_id)}).exec();
-  if (req.body.tokenid != '' && typeof req.body.tokenid != undefined) {
-    dataSubmit.tokenid = req.body.tokenid
-  }
+
   const saveData = new ServiceCheckout(dataSubmit);
-  return saveData
-    .save()
-    .then((data) => {
-      ServiceCart.updateMany(
+  return saveData.save()
+    .then(async (data) => {
+      let cartUpdate = await ServiceCart.updateMany(
         { user_id: mongoose.Types.ObjectId(req.body.user_id), status: true },
         { $set: { status: false, order_id: data.order_id } },
         { multi: true },
@@ -145,55 +116,76 @@ const create = async (req, res) => {
         }
       );
 
-      // let dataComision = {
-      //   _id: mongoose.Types.ObjectId(),
-      //   order_id: mongoose.Types.ObjectId(data._id),
-      //   seller_id: mongoose.Types.ObjectId(req.body.seller_id),
-      //   commision_type: comType,        
-      //   commision_value: comValue,
-      //   price: req.body.total,
-      //   seller_commission: sellerCom        
-      // };
+      // Save billing and/or shipping address
+      if (data.address_future_use != "" || data.address_future_use != null || typeof data.address_future_use != "undefined") {
+        let billingDetails = await UserAddresses.findOne({ userid: data.user_id, future_use: true }).exec();
 
-      //     console.log(dataComision);
-      // return false;
-      // const saveCom = new Servicecommission(dataComision);
-      // saveCom.save()
+        if (billingDetails == null) {
+          let billingData = {
+            _id: mongoose.Types.ObjectId(),
+            userid: data.user_id,
+            address1: data.address1,
+            state: data.state,
+            country: data.country,
+            zip: data.zip,
+            future_use: data.address_future_use
+          }
+          if (data.address2 != "" || data.address2 != null || typeof data.address2 != "undefined") {
+            billingData.address2 = data.address2;
+          }
+          if (data.shipping_address != "" || data.shipping_address != null || typeof data.shipping_address != "undefined") {
+            billingData.shipping = data.shipping_address;
+          }
 
+          const NEW_BILLING_ADDRESS = new UserAddresses(billingData);
+          NEW_BILLING_ADDRESS.save();
+        }
+        else {
+          billingDetails.delete();
 
-      // console.log(totalcomission)
+          let billingData = {
+            _id: mongoose.Types.ObjectId(),
+            userid: data.user_id,
+            address1: data.address1,
+            state: data.state,
+            country: data.country,
+            zip: data.zip,
+            future_use: data.address_future_use
+          }
+          if (data.address2 != "" || data.address2 != null || typeof data.address2 != "undefined") {
+            billingData.address2 = data.address2;
+          }
+          if (data.shipping_address != "" || data.shipping_address != null || typeof data.shipping_address != "undefined") {
+            billingData.shipping = data.shipping_address;
+          }
 
-      // if(totalcomission!=null)
-      // {
-      //   console.log('a')
+          const NEW_BILLING_ADDRESS = new UserAddresses(billingData);
+          NEW_BILLING_ADDRESS.save();
+        }
+      }
+      else {
+        let billingData = {
+          _id: mongoose.Types.ObjectId(),
+          userid: data.user_id,
+          address1: data.address1,
+          state: data.state,
+          country: data.country,
+          zip: data.zip
+        }
+        if (data.address2 != "" || data.address2 != null || typeof data.address2 != "undefined") {
+          billingData.address2 = data.address2;
+        }
+        if (data.shipping_address != "" || data.shipping_address != null || typeof data.shipping_address != "undefined") {
+          billingData.shipping = data.shipping_address;
+        }
 
-
-      //   let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
-      //   Totalcomission.findOneAndUpdate(
-      //     { seller_id: mongoose.Types.ObjectId(req.body.seller_id)},
-      //     { $set: { comission_total: totalComcal,comission_all:totalComcal} },
-      //     (err, writeResult) => {
-      //       // console.log(err);
-      //     }
-      //   );
-      // }
-      // else
-      // {
-      //   console.log('b')
-      //   let dataComisionTotalval = {
-      //     _id: mongoose.Types.ObjectId(),
-      //     seller_id: mongoose.Types.ObjectId(req.body.seller_id),
-      //     comission_total: sellerCom,        
-      //     comission_all: sellerCom     
-      //   };
-      //   console.log(dataComisionTotalval)
-      //   const saveComTotal = new Totalcomission(dataComisionTotalval);
-      //   saveComTotal.save()
-      // }
+        const NEW_BILLING_ADDRESS = new UserAddresses(billingData);
+        NEW_BILLING_ADDRESS.save();
+      }
 
       res.status(200).json({
         status: true,
-        message: "Service Order Placed Successfully",
+        message: "Service Order Placed Successfully.",
         data: data,
       });
     })
@@ -201,7 +193,7 @@ const create = async (req, res) => {
       res.status(500).json({
         status: false,
         message: "Server error. Please try again.",
-        error: err,
+        error: err.message
       });
     });
 };

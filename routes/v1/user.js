@@ -112,6 +112,9 @@ router.delete('/product-wishlist/:id', WishlistController.Delete);
 router.post('/checkCoupon', CartController.checkCoupon);
 
 router.post('/checkout', CheckoutController.create);
+var UserAddresses = require('../../Controller/User/Address');
+router.post('/add-billing-address', UserAddresses.saveAddress);
+router.post('/future_use_address', UserAddresses.getAddressForFutureUse);
 
 router.post('/servicewishlist', Servicewishlist.create);
 router.get('/servicegetWishlist/:user_id', Servicewishlist.getWish);

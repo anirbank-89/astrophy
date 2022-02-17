@@ -63,6 +63,8 @@ const ServiceCheckoutSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
+    shipping_address: Boolean,
+    address_future_use: Boolean,
     paymenttype:{
         type:String,
         required:true
