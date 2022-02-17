@@ -111,10 +111,10 @@ const newSubscription = async (req, res) => {
     return new_subscription
       .save()
       .then(async (data) => {
-        let changeUserType = await User.findOneAndUpdate(
-          { _id: mongoose.Types.ObjectId(req.body.userid) }, 
-          { $set: { type: "Seller" } }
-        );
+        // let changeUserType = await User.findOneAndUpdate(
+        //   { _id: mongoose.Types.ObjectId(req.body.userid) }, 
+        //   { $set: { type: "Seller" } }
+        // );
 
         res.status(200).json({
           status: true,

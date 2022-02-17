@@ -610,7 +610,12 @@ var approveSellerRequest = async (req, res) => {
     .then(data => {
       User.findOneAndUpdate(
         { _id: mongoose.Types.ObjectId(data.seller_id) },
-        { $set: { seller_approval: true } }
+        {
+          $set: {
+            type: "Seller",
+            seller_approval: true
+          }
+        }
       )
         .then(docs => {
           res.status(200).json({

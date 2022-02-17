@@ -5,21 +5,21 @@ var ServiceCart = require('../../Models/servicecart')
 const { Validator } = require('node-input-validator')
 var moment = require("moment");
 
-const viewAll = async (req,res)=>{
+const viewAll = async (req, res) => {
     return ServiceCheckout.aggregate(
         [
             {
-                $lookup:{
-                    from:"users",//
-                    localField:"user_id",//
-                    foreignField:"_id",
-                    as:"user_data"//
+                $lookup: {
+                    from: "users",//
+                    localField: "user_id",//
+                    foreignField: "_id",
+                    as: "user_data"//
                 }
             },
             {
-                $lookup:{
-                    from:"servicecarts",//
-                    let: { order_id: "$order_id"},
+                $lookup: {
+                    from: "servicecarts",//
+                    let: { order_id: "$order_id" },
                     pipeline: [
                         {
                             $match: {
@@ -33,8 +33,8 @@ const viewAll = async (req,res)=>{
                         {
                             $lookup: {
                                 from: "users",
-                                localField: "servicecarts.seller_id", 
-                                foreignField: "users._id", 
+                                localField: "servicecarts.seller_id",
+                                foreignField: "users._id",
                                 as: "seller_data"
                             }
                         },
@@ -44,115 +44,109 @@ const viewAll = async (req,res)=>{
                                 preserveNullAndEmptyArrays: true
                             }
                         }
-                        // {
-                        //     $lookup: {
-                        //         from: "shop_services",
-                        //         let: { serv_id: "$servicecarts.serv_id" }, 
-                        //         pipeline: [
-                        //             {
-                        //                 $match: {
-                        //                     $expr: {
-                        //                         $and: [
-                        //                             { $eq: ["$shop_services._id", "$$serv_id"] }
-                        //                         ]
-                        //                     }
-                        //                 }
-                        //             }
-                        //         ], 
-                        //         as: "service_data"
-                        //     }
-                        // }
                     ],
-                    as:"servicecart_data"//
+                    as: "servicecart_data"//
+                }
+            },
+            {
+                $lookup: {
+                    from: "shop_services",
+                    localField: "servicecarts.serv_id",
+                    foreignField: "shop_services._id",
+                    as: "servicecart_data.seller_data"
                 }
             },
             { $sort: { _id: -1 } },
             {
-                $project:{
-                    _v:0
+                $project: {
+                    _v: 0
                 }
             }
         ]
+        // {
+        //     allowDiskUse: true,
+        //     cursor: { batchSize: 1000 }
+        // }
     )
-    .then((docs)=>{
-        res.status(200).json({
-            status: true,
-            message: "Service History get successfully",
-            data: docs
+        .then((docs) => {
+            res.status(200).json({
+                status: true,
+                message: "Service History get successfully",
+                data: docs
+            })
         })
-    })
-    .catch((err)=>{
-        console.log(err);
-        res.status(500).json({
-            status: false,
-            message: "Server error. Please try again.",
-            error: err.message
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err.message
+            })
         })
-    })
 }
 
-const reportViewAll = async (req,res)=>{
+const reportViewAll = async (req, res) => {
     return ServiceCheckout.aggregate(
         [
             (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
-            (req.body.dateto != "" && typeof req.body.dateto != "undefined")
-            ? {
-                $match: {
-                    "booking_date": {
-                        "$gte": new Date(req.body.datefrom),
-                        "$lte": moment.utc(req.body.dateto).endOf('day').toDate()
-                    }
-                },
-              }
-            : { $project: { __v: 0 } },
+                (req.body.dateto != "" && typeof req.body.dateto != "undefined")
+                ? {
+                    $match: {
+                        "booking_date": {
+                            "$gte": new Date(req.body.datefrom),
+                            "$lte": moment.utc(req.body.dateto).endOf('day').toDate()
+                        }
+                    },
+                }
+                : { $project: { __v: 0 } },
             {
-                $lookup:{
-                    from:"servicecarts",
-                    localField:"order_id",
-                    foreignField:"order_id",
-                    as:"servicecart_data"
+                $lookup: {
+                    from: "servicecarts",
+                    localField: "order_id",
+                    foreignField: "order_id",
+                    as: "servicecart_data"
                 }
             },
             {
-                $lookup:{
-                    from:"users",//
-                    localField:"user_id",//
-                    foreignField:"_id",
-                    as:"user_data"//
+                $lookup: {
+                    from: "users",//
+                    localField: "user_id",//
+                    foreignField: "_id",
+                    as: "user_data"//
                 }
             },
-            { $unwind : "$user_data" },
+            { $unwind: "$user_data" },
             {
-                $lookup:{
-                    from:"users",//
-                    localField:"seller_id",//
-                    foreignField:"_id",
-                    as:"seller_data"//
+                $lookup: {
+                    from: "users",//
+                    localField: "seller_id",//
+                    foreignField: "_id",
+                    as: "seller_data"//
                 }
             },
-            { $unwind : "$seller_data" },
+            { $unwind: "$seller_data" },
             { $sort: { _id: -1 } },
             {
-                $project:{
-                    _v:0
+                $project: {
+                    _v: 0
                 }
             }
         ]
     )
-    .then((docs)=>{
-        res.status(200).json({
-            status: true,
-            message: "Order History get successfully",
-            data: docs
+        .then((docs) => {
+            res.status(200).json({
+                status: true,
+                message: "Order History get successfully",
+                data: docs
+            })
         })
-    })
-    .catch((err)=>{
-        res.status(500).json({
-            status: false,
-            message: "Server error. Please try again.",
-            error: err
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err
+            })
         })
-    })
 }
 
 
