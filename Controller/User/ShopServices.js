@@ -10,6 +10,8 @@ const register = async (req, res) => {
     const v = new Validator(req.body, {
         name: "required",
         details: "required",
+        cat_name: "required",
+        subcat_name: "required",
         currency: "required",
         price: "required"
     })
@@ -30,6 +32,8 @@ const register = async (req, res) => {
         subcategory_id: mongoose.Types.ObjectId(req.body.subcategory_id),
         name: req.body.name,
         details: req.body.details,
+        cat_name: req.body.cat_name,
+        subcat_name: req.body.subcat_name,
         currency: req.body.currency,
         price: req.body.price
     }
@@ -324,6 +328,8 @@ const update = async (req, res) => {
     const v = new Validator(req.body, {
         name: "required",
         details: "required",
+        cat_name: "required",
+        subcat_name: "required",
         currency: "required",
         price: "required"
     })

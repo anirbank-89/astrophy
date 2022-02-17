@@ -9,49 +9,48 @@ var User = require("../../Models/user");
 
 const serviceSearch = async (req, res) => {
   let shopId = [];
-  if(req.body.providername != "" && typeof req.body.providername != "undefined")
-  {
-  let providerMatch = await User.aggregate([
-    {
-      $match: {
-        firstName: { $regex: ".*" + req.body.providername + ".*", $options: "i" },
-        type: "Seller",
-      },
-    },
-    // {
-    //   $lookup: {
-    //     from: "shops",
-    //     localField: "shop_id",
-    //     foreignField: "_id",
-    //     as: "shop_details",
-    //   },
-    // },
-    {
-      $lookup: {
-        from: "shops",
-        let: {
-          user_id: "$_id",
+  if (req.body.providername != "" && typeof req.body.providername != "undefined") {
+    let providerMatch = await User.aggregate([
+      {
+        $match: {
+          firstName: { $regex: ".*" + req.body.providername + ".*", $options: "i" },
+          type: "Seller",
         },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [{ $eq: ["$userid", "$$user_id"] }],
+      },
+      // {
+      //   $lookup: {
+      //     from: "shops",
+      //     localField: "shop_id",
+      //     foreignField: "_id",
+      //     as: "shop_details",
+      //   },
+      // },
+      {
+        $lookup: {
+          from: "shops",
+          let: {
+            user_id: "$_id",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$userid", "$$user_id"] }],
+                },
               },
             },
-          },
-        ],
-        as: "shop_details",
+          ],
+          as: "shop_details",
+        },
       },
-    },
-  ]).exec();
-  console.log("Probable providers", providerMatch);
-  providerMatch.forEach((item) => {
-    item.shop_details.forEach((ele) => {
-      shopId.push(ele._id);
+    ]).exec();
+    console.log("Probable providers", providerMatch);
+    providerMatch.forEach((item) => {
+      item.shop_details.forEach((ele) => {
+        shopId.push(ele._id);
+      });
     });
-  });
-  shopId = shopId.map(function(el) { return mongoose.Types.ObjectId(el) })
+    shopId = shopId.map(function (el) { return mongoose.Types.ObjectId(el) })
   }
 
   console.log(shopId)
@@ -60,39 +59,37 @@ const serviceSearch = async (req, res) => {
   return ShopService.aggregate([
     req.body.servicename != "" && typeof req.body.servicename != "undefined"
       ? {
-          $match: { name: { $in: [req.body.servicename.toString()] } },
-        }
+        $match: { name: { $in: [req.body.servicename.toString()] } },
+      }
       : { $project: { __v: 0 } },
-    req.body.category_id != "" && typeof req.body.category_id != "undefined"
+    req.body.serv_cat_name != "" && typeof req.body.serv_cat_name != "undefined"
       ? {
-          $match: {
-            category_id: {
-              $in: [mongoose.Types.ObjectId(req.body.category_id)],
-            },
-          },
-        }
+        $match: {
+          subcat_name: { $regex: ".*" + req.body.serv_cat_name + ".*", $options: "i" }
+        },
+      }
       : { $project: { __v: 0 } },
-      shopId.length>0
+    shopId.length > 0
       ? {
-          $match: { shop_id: { $in: shopId} },
-        }
+        $match: { shop_id: { $in: shopId } },
+      }
       : { $project: { __v: 0 } },
     (req.body.min != "" && typeof req.body.min != "undefined") ||
-    (req.body.max != "" && typeof req.body.max != "undefined")
+      (req.body.max != "" && typeof req.body.max != "undefined")
       ? {
-          $match: {
-            $expr: {
-              $and: [
-                {
-                  $gte: ["$price", req.body.min],
-                },
-                {
-                  $lte: ["$price", req.body.max],
-                },
-              ],
-            },
+        $match: {
+          $expr: {
+            $and: [
+              {
+                $gte: ["$price", req.body.min],
+              },
+              {
+                $lte: ["$price", req.body.max],
+              },
+            ],
           },
-        }
+        },
+      }
       : { $project: { __v: 0 } },
     {
       $lookup: {
@@ -203,25 +200,25 @@ const productSearch = async (req, res) => {
   return Product.aggregate([
     req.body.delivery != "" && typeof req.body.delivery != "undefined"
       ? {
-          $match: { delivery: { $in: [req.body.delivery.toString()] } },
-        }
+        $match: { delivery: { $in: [req.body.delivery.toString()] } },
+      }
       : { $project: { __v: 0 } },
     (req.body.min != "" && typeof req.body.min != "undefined") ||
-    (req.body.max != "" && typeof req.body.max != "undefined")
+      (req.body.max != "" && typeof req.body.max != "undefined")
       ? {
-          $match: {
-            $expr: {
-              $and: [
-                {
-                  $gte: ["$selling_price", req.body.min],
-                },
-                {
-                  $lte: ["$selling_price", req.body.max],
-                },
-              ],
-            },
+        $match: {
+          $expr: {
+            $and: [
+              {
+                $gte: ["$selling_price", req.body.min],
+              },
+              {
+                $lte: ["$selling_price", req.body.max],
+              },
+            ],
           },
-        }
+        },
+      }
       : { $project: { __v: 0 } },
     {
       $lookup: {
@@ -347,7 +344,7 @@ const autoSearch = async (req, res) => {
       } else {
       }
     })
-    .catch((err) => {});
+    .catch((err) => { });
 
   let Service = await ShopService.aggregate([
     {
@@ -367,7 +364,7 @@ const autoSearch = async (req, res) => {
       } else {
       }
     })
-    .catch((err) => {});
+    .catch((err) => { });
 
   console.log(prod);
   if (prod.length > 0) {
