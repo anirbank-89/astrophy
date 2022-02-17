@@ -14,7 +14,7 @@ const viewAllsubscription = async (req, res) => {
         from: "usersubscriptions",
         let: {
           subscr_id: "$_id",
-          status :true
+          status: true
 
         },
         pipeline: [
@@ -25,12 +25,12 @@ const viewAllsubscription = async (req, res) => {
                   { $eq: ["$userid", mongoose.Types.ObjectId(req.params.id)] },
                   { $eq: ["$subscr_id", "$$subscr_id"] },
                   { $eq: ["$status", "$$status"] }
-                  
+
                 ],
               },
             },
           },
-          
+
         ],
         as: "speakers",
       },
@@ -43,13 +43,12 @@ const viewAllsubscription = async (req, res) => {
   ])
     .then((data) => {
       var arr = [];
-      data.forEach(function(item) { 
+      data.forEach(function (item) {
         console.log(item.speakers.length)
-        if(item.speakers.length>0)
-        {
+        if (item.speakers.length > 0) {
           item.purchase = item.speakers;
         }
-        
+
       })
       res.status(200).json({
         status: true,
@@ -68,12 +67,12 @@ const viewAllsubscription = async (req, res) => {
 
 
 const viewUsersubscription = async (req, res) => {
-  let userData = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(req.body.userid),status:true }).exec();
+  let userData = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(req.body.userid), status: true }).exec();
   // console.log('adminData', adminData);
   return res.send({
-    status:true,
-    data:userData,
-    error:null
+    status: true,
+    data: userData,
+    error: null
   });
 };
 
@@ -87,7 +86,7 @@ const newSubscription = async (req, res) => {
       _id: mongoose.Types.ObjectId(),
       userid: mongoose.Types.ObjectId(req.body.userid),
       subscr_id: mongoose.Types.ObjectId(req.body.subscr_id),
-      comission_type:req.body.comission_type,
+      comission_type: req.body.comission_type,
       seller_comission: req.body.seller_comission,
       price: req.body.price,
       subscribed_on: moment.tz(Date.now(), "Asia/Kolkata"),
@@ -98,14 +97,12 @@ const newSubscription = async (req, res) => {
     // listing_info = subscription.no_of_listing
     // console.log(listing_info)
     // userData.no_of_listing = listing_info
-    
-    if(req.body.tokenid!='' && typeof req.body.tokenid!=undefined)
-    {
+
+    if (req.body.tokenid != '' && typeof req.body.tokenid != undefined) {
       userData.tokenid = req.body.tokenid
     }
 
-    if(req.body.subs_id!='' && typeof req.body.subs_id!=undefined)
-    {
+    if (req.body.subs_id != '' && typeof req.body.subs_id != undefined) {
       userData.subs_id = req.body.subs_id
     }
 
@@ -113,24 +110,12 @@ const newSubscription = async (req, res) => {
 
     return new_subscription
       .save()
-      .then((data) => {
-        // User.findOneAndUpdate(
-        //   { _id: req.body.userid },
-        //   {
-        //     $set: { type: "Seller" },
-        //   },
-        //   {
-        //     returnNewDocument: true,
-        //   },
-        //   function (error, result) {
-        //     res.status(200).json({
-        //       status: true,
-        //       success: true,
-        //       message: "New subscription applied successfully.",
-        //       data: data,
-        //     });
-        //   }
-        // );
+      .then(async (data) => {
+        let changeUserType = await User.findOneAndUpdate(
+          { _id: mongoose.Types.ObjectId(req.body.userid) }, 
+          { $set: { type: "Seller" } }
+        );
+
         res.status(200).json({
           status: true,
           message: "New subscription applied successfully.",

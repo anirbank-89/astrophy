@@ -33,8 +33,8 @@ const viewAll = async (req,res)=>{
                         {
                             $lookup: {
                                 from: "users",
-                                localField: "$this.seller_id",
-                                foreignField: "_id",
+                                localField: "servicecarts.seller_id", 
+                                foreignField: "users._id", 
                                 as: "seller_data"
                             }
                         },
@@ -43,10 +43,23 @@ const viewAll = async (req,res)=>{
                                 path: "$seller_data",
                                 preserveNullAndEmptyArrays: true
                             }
-                        },
+                        }
                         // {
                         //     $lookup: {
-                        //         from: 
+                        //         from: "shop_services",
+                        //         let: { serv_id: "$servicecarts.serv_id" }, 
+                        //         pipeline: [
+                        //             {
+                        //                 $match: {
+                        //                     $expr: {
+                        //                         $and: [
+                        //                             { $eq: ["$shop_services._id", "$$serv_id"] }
+                        //                         ]
+                        //                     }
+                        //                 }
+                        //             }
+                        //         ], 
+                        //         as: "service_data"
                         //     }
                         // }
                     ],
@@ -69,10 +82,11 @@ const viewAll = async (req,res)=>{
         })
     })
     .catch((err)=>{
+        console.log(err);
         res.status(500).json({
             status: false,
             message: "Server error. Please try again.",
-            error: err
+            error: err.message
         })
     })
 }

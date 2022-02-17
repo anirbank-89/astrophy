@@ -107,7 +107,7 @@ const viewSellerList = async (req, res) => {
         //     $lookup: {
         //       from: "services",
         //       localField: "subcat_id",
-        //       foreignField: "services.id",
+        //       foreignField: "services._id",
         //       as: "subcategory_data"
         //     }
         //   },

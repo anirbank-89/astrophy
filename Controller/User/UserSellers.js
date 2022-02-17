@@ -584,17 +584,16 @@ var applyForSeller = async (req, res) => {
     }
     
     const NEW_SELLER = new SELLER(saveData);
-
-    return NEW_SELLER.save()
+    NEW_SELLER.save()
       .then(data => {
         User.findOneAndUpdate(   // var editUserType = await
           { _id: mongoose.Types.ObjectId(data.seller_id) },
-          { $set: { type: "Seller", seller_request: true } }
+          { $set: { seller_request: true } }
         )
           .then(docs => {
             res.status(200).json({
               status: true,
-              message: "Data saved successfully.",
+              message: "Successfully applied.",
               data: data
             });
           })
