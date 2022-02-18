@@ -118,6 +118,21 @@ var filterReviews = async (req,res) => {
     (typeof req.body.sortby != "undefined" && req.body.sortby == "5 star")
     ? { $match: { rating: 5 } }
     :{ $project: { __v: 0} },
+
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user_data"
+      }
+    },
+    // {
+    //   $unwind: {
+    //     path: "$user_data",
+    //     preserveNullAndEmptyArrays: true
+    //   }
+    // }
   ]).exec();
 
   if (reviews.length > 0) {
