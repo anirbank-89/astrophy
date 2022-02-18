@@ -133,6 +133,14 @@ var filterReviews = async (req,res) => {
     //     preserveNullAndEmptyArrays: true
     //   }
     // }
+    {
+      $lookup: {
+        from: "shop_services",
+        localField: "service_id",
+        foreignField: "_id",
+        as: "service_data"
+      }
+    }
   ]).exec();
 
   if (reviews.length > 0) {
