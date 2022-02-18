@@ -141,7 +141,7 @@ router.get('/productreview/:prod_id', ProductreviewController.getReviews);
 
 router.post('/servicereview', ServicereviewController.create);
 router.get('/servicereview/:serv_id', ServicereviewController.getReviews);
-
+router.post('/filter-reviews', ServicereviewController.filterReviews);
 
 //krittika
 router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
