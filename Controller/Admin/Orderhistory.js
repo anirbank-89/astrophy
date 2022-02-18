@@ -1,14 +1,14 @@
 var mongoose = require('mongoose')
 var Checkout = require('../../Models/checkout')
-var Coupon = require('../../Models/coupon')
-var User = require('../../Models/user')
-var Cart = require('../../Models/cart')
+// var Coupon = require('../../Models/coupon')
+// var User = require('../../Models/user')
+// var Cart = require('../../Models/cart')
 var moment = require("moment");
 
 
 
 
-const { Validator } = require('node-input-validator')
+// const { Validator } = require('node-input-validator')
 
 
 const viewAll = async (req,res)=>{
@@ -28,6 +28,20 @@ const viewAll = async (req,res)=>{
                     localField:"order_id",//
                     foreignField:"order_id",
                     as:"cart_data"//
+                }
+            },
+            {
+                $unwind: {
+                    path: "$cart_data",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: "product_refunds",
+                    localField: "order_id",
+                    foreignField: "order_id",
+                    as: "cart_data.refund_data"
                 }
             },
             { $sort: { _id: -1 } },
@@ -83,6 +97,20 @@ const productViewAllrepo = async (req,res)=>{
                     localField:"order_id",//
                     foreignField:"order_id",
                     as:"cart_data"//
+                }
+            },
+            {
+                $unwind: {
+                    path: "$cart_data",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: "product_refunds",
+                    localField: "order_id",
+                    foreignField: "order_id",
+                    as: "cart_data.refund_data"
                 }
             },
             { $sort: { _id: -1 } },

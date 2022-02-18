@@ -65,8 +65,7 @@ const refundService = async (req, res) => {
 
   var checkStatus = await ServiceCheckout.findOne({ _id: mongoose.Types.ObjectId(id) }).exec();
 
-  if ((checkStatus.acceptstatus == "accept" && checkStatus.completestatus == false) ||
-    (checkStatus.acceptstatus == "accept" && checkStatus.completestatus == true)) {
+  if (checkStatus.acceptstatus == "accept") {
     return ServiceCheckout.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(id) },
       { status: 'cancel' },

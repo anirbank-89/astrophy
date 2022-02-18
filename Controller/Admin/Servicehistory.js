@@ -68,6 +68,14 @@ const viewAll = async (req, res) => {
                     as: "servicecart_data.seller_data.service_data"
                 }
             },
+            {
+                $lookup: {
+                    from: "service_refunds",
+                    let: { seller_id: "$servicecart_data.seller_id" }, 
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$seller_id", "$$seller_id"] }] } } }], 
+                    as: "servicecart_data.service_refund"
+                }
+            },
             { $sort: { _id: -1 } },
             {
                 $project: {
@@ -117,6 +125,20 @@ const reportViewAll = async (req, res) => {
                     localField: "order_id",
                     foreignField: "order_id",
                     as: "servicecart_data"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$servicecart_data",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: "service_refunds",
+                    let: { seller_id: "$servicecart_data.seller_id" }, 
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$seller_id", "$$seller_id"] }] } } }], 
+                    as: "servicecart_data.service_refund"
                 }
             },
             {

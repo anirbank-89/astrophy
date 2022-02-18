@@ -53,7 +53,7 @@ const viewAll = async (req, res) => {
 }
 
 const refundProduct = async (req, res) => {
-  return Checkout.findOneAndUpdate(
+  return Checkout.findOneAndUpdate(        // refund will be from product 'cart'
     { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
     { status: 'cancel' },
     { new: true },
@@ -69,7 +69,8 @@ const refundProduct = async (req, res) => {
         console.log("Checkout data", data);
 
         let refundData = {
-          user_id: mongoose.Types.ObjectId(data.user_id),
+          user_id: data.user_id,
+          // prod_id: data.prod_id,
           order_id: data.order_id,
           refund_amount: data.total,
           firstname: data.firstname,

@@ -112,6 +112,7 @@ router.delete('/product-wishlist/:id', WishlistController.Delete);
 router.post('/checkCoupon', CartController.checkCoupon);
 
 router.post('/checkout', CheckoutController.create);
+
 var UserAddresses = require('../../Controller/User/Address');
 router.post('/add-billing-address', UserAddresses.saveAddress);
 router.post('/future_use_address', UserAddresses.getAddressForFutureUse);
@@ -127,7 +128,7 @@ router.delete('/servicecart/:id',ServiceCartController.Delete)
 router.post('/servicecheckout', ServiceCheckoutController.create);
 
 router.get('/orderdetails/:user_id', MyaccountController.viewAll);
-router.put('/refundProduct/:id', MyaccountController.refundProduct);
+router.put('/refundProduct/:id', MyaccountController.refundProduct);  // from product cart in future
 router.put('/update-profile/:id', upload1.single("image"), MyaccountController.updateProfile);
 router.put('/update-password/:id', MyaccountController.updatePassword);
 

@@ -7,6 +7,7 @@ var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 
 const PRODUCT_REFUND_SCHEMA = new Schema({
     user_id:mongoose.Schema.Types.ObjectId,
+    prod_id: mongoose.Schema.Types.ObjectId,
     order_id:
     {
         type:Number,
