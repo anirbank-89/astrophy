@@ -139,9 +139,9 @@ var lastDayMostSalesPerSeller = async (req,res) => {
                 as:'cart_data'
             }
         },
-        {
-            $unwind:"$cart_data"
-        },
+        // {
+        //     $unwind:"$cart_data"
+        // },
         {
             $lookup:{
                 from:"shop_services",
@@ -150,9 +150,9 @@ var lastDayMostSalesPerSeller = async (req,res) => {
                 as:"service_data"
             }
         },
-        {
-            $unwind:"$service_data"
-        },
+        // {
+        //     $unwind:"$service_data"
+        // },
         {
             $lookup:{
                 from:"services",
@@ -161,9 +161,9 @@ var lastDayMostSalesPerSeller = async (req,res) => {
                 as:"category_data"
             }
         },
-        {
-            $unwind:"$category_data"
-        },
+        // {
+        //     $unwind:"$category_data"
+        // },
         {
             $lookup:{
                 from:"shops",
@@ -172,9 +172,9 @@ var lastDayMostSalesPerSeller = async (req,res) => {
                 as:"shop_data"
             }
         },
-        {
-            $unwind:"$shop_data"
-        },
+        // {
+        //     $unwind:"$shop_data"
+        // },
         {
             $lookup:{
                 from:"users",
@@ -183,9 +183,9 @@ var lastDayMostSalesPerSeller = async (req,res) => {
                 as:"provider_data"
             }
         },
-        {
-            $unwind:"$provider_data"
-        },
+        // {
+        //     $unwind:"$provider_data"
+        // },
         {
             $project:{
                 _v:0
