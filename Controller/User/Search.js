@@ -332,46 +332,40 @@ const autoSearch = async (req, res) => {
         name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
       },
     },
-  ])
-    .then((data) => {
-      if (data.length > 0) {
-        // proDarr.push(data);
-        data.forEach((item) => {
-          // console.log(item)
-          proDarr.push({ id: item._id, name: item.name, type: "product" });
-        });
-        return proDarr;
-      } else {
-      }
-    })
-    .catch((err) => { });
+  ]).exec();
+  prod.forEach(element => {
+    proDarr.push({ item: element, type: "product" });
+  });
 
   let Service = await ShopService.aggregate([
     {
       $match: {
-        name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
+        $or: [
+          {name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" }}, 
+          {cat_name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" }}, 
+          {subcat_name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" }}
+        ]
       },
     },
-  ])
-    .then((data) => {
-      if (data.length > 0) {
-        // proDarr.push(data);
-        data.forEach((item) => {
-          // console.log(item)
-          proDarr.push({ id: item._id, name: item.name, type: "service" });
-        });
-        return proDarr;
-      } else {
-      }
-    })
-    .catch((err) => { });
+  ]).exec();
+  Service.forEach(element => {
+    proDarr.push({ item: element, type: "service" });
+  });
 
-  console.log(prod);
-  if (prod.length > 0) {
+  console.log("Search results", proDarr);
+
+  if (proDarr.length > 0) {
     return res.status(200).json({
       status: true,
-      message: "Product Get Successfully",
-      data: proDarr,
+      message: "Data successfully get",
+      data: proDarr
+    });
+  }
+  else {
+    return res.status(200).json({
+      status: true,
+      message: "No match.",
+      data: proDarr
     });
   }
 };
