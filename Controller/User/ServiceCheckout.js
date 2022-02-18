@@ -124,6 +124,8 @@ const create = async (req, res) => {
           let billingData = {
             _id: mongoose.Types.ObjectId(),
             userid: data.user_id,
+            firstname: data.firstname,
+            lastname: data.lastname,
             address1: data.address1,
             state: data.state,
             country: data.country,
@@ -146,6 +148,8 @@ const create = async (req, res) => {
           let billingData = {
             _id: mongoose.Types.ObjectId(),
             userid: data.user_id,
+            firstname: data.firstname,
+            lastname: data.lastname,
             address1: data.address1,
             state: data.state,
             country: data.country,
@@ -167,6 +171,8 @@ const create = async (req, res) => {
         let billingData = {
           _id: mongoose.Types.ObjectId(),
           userid: data.user_id,
+          firstname: data.firstname,
+          lastname: data.lastname,
           address1: data.address1,
           state: data.state,
           country: data.country,

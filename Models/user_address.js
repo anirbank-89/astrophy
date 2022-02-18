@@ -4,6 +4,14 @@ var Schema = mongoose.Schema;
 const ADDRESS_SCHEMA = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
     userid: mongoose.Schema.Types.ObjectId,
+    firstname: {
+        type: String,
+        required: true
+    },
+    lastname: {
+        type: String,
+        required: true
+    },
     address1: {
         type: String,
         required: true

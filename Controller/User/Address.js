@@ -14,6 +14,8 @@ var saveAddress = async (req, res) => {
 
         if (adminCheck == null) {
             const V = new Validator(req.body, {
+                firstname: "required",
+                lastname: "required",
                 address1: "required",
                 state: "required",
                 country: "required",
@@ -28,6 +30,8 @@ var saveAddress = async (req, res) => {
             let saveData = {
                 _id: mongoose.Types.ObjectId(),
                 userid: mongoose.Types.ObjectId(req.body.userid),
+                firstname: req.body.firstname,
+                lastname: req.body.lastname,
                 address1: req.body.address1,
                 state: req.body.state,
                 country: req.body.country,
@@ -65,6 +69,8 @@ var saveAddress = async (req, res) => {
             adminCheck.delete();
 
             const V = new Validator(req.body, {
+                firstname: "required",
+                lastname: "required",
                 address1: "required",
                 state: "required",
                 country: "required",
@@ -79,6 +85,8 @@ var saveAddress = async (req, res) => {
             let saveData = {
                 _id: mongoose.Types.ObjectId(),
                 userid: mongoose.Types.ObjectId(req.body.userid),
+                firstname: req.body.firstname,
+                lastname: req.body.lastname,
                 address1: req.body.address1,
                 state: req.body.state,
                 country: req.body.country,
@@ -115,6 +123,8 @@ var saveAddress = async (req, res) => {
     }
     else {
         const V = new Validator(req.body, {
+            firstname: "required",
+            lastname: "required",
             address1: "required",
             state: "required",
             country: "required",
@@ -129,6 +139,8 @@ var saveAddress = async (req, res) => {
         let saveData = {
             _id: mongoose.Types.ObjectId(),
             userid: mongoose.Types.ObjectId(req.body.userid),
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
             address1: req.body.address1,
             state: req.body.state,
             country: req.body.country,
