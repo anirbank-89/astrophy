@@ -1,3 +1,5 @@
+var moment = require('moment');
+
 const PRODUCT_CHECKOUTS = require('../../Models/checkout');
 const SELLER = require('../../Models/seller');
 const SERVICE_CHECKOUTS = require('../../Models/servicecheckout');
@@ -164,28 +166,105 @@ var totalOrdersNRevenues = async (req, res) => {
 }
 
 var ordersNRevenuesByDate = async (req, res) => {
+    var today = new Date();
+    var thirtyDaysAgo = today.setDate(today.getDate() - 30);
+    var date30DaysBack = new Date(thirtyDaysAgo);
+    var lastDay = today.setDate(today.getDate() - 1);
+    var lastDate = new Date(lastDay);
+
     let totalProductRev = await PRODUCT_CHECKOUTS.aggregate([
+        /** date filtering for custom period selection */
         (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
             (req.body.dateto != "" && typeof req.body.dateto != "undefined")
             ? {
                 $match: {
-                    "booking_date": {
-                        "$gte": new Date(req.body.datefrom),
-                        "$lte": moment.utc(req.body.dateto).endOf('day').toDate()
+                    booking_date: {
+                        $lt: new Date(req.body.datefrom),
+                        $gte: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
                     }
                 },
-              }
-              : { $project: { __v: 0 } },
-            {
-                $group: {
-                    _id: "$status",
-                    numberOfOrders: { $sum: 1 },
-                    totalRevenue: { $sum: "$total" }
-                }
             }
+            : { $project: { __v: 0 } },
+        /**  date filtering for last month */
+        req.body.last_month == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $lte: moment.utc().toDate(),
+                        $gt: date30DaysBack
+                    }
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for yesterday */
+        req.body.yesterday == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $lte: moment.utc().toDate(),
+                        $gt: lastDate
+                    }
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for today */
+        req.body.today == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $gt: today
+                    }
+                }
+            } : { $project: { __v: 0 } },
+        {
+            $group: {
+                _id: "$status",
+                numberOfOrders: { $sum: 1 },
+                totalRevenue: { $sum: "$total" }
+            }
+        }
     ]).exec();
 
     let totalServiceRev = await SERVICE_CHECKOUTS.aggregate([
+        /** date filtering for custom period selection */
+        (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
+            (req.body.dateto != "" && typeof req.body.dateto != "undefined")
+            ? {
+                $match: {
+                    booking_date: {
+                        $lt: new Date(req.body.datefrom),
+                        $gte: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
+                    }
+                },
+            }
+            : { $project: { __v: 0 } },
+        /**  date filtering for last month */
+        req.body.last_month == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $lte: moment.utc().toDate(),
+                        $gt: date30DaysBack
+                    }
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for yesterday */
+        req.body.yesterday == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $lte: moment.utc().toDate(),
+                        $gt: lastDate
+                    }
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for today */
+        req.body.today == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $gt: today
+                    }
+                }
+            } : { $project: { __v: 0 } },
         {
             $group: {
                 _id: "$acceptstatus",

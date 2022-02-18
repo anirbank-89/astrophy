@@ -1,14 +1,15 @@
 var mongoose = require('mongoose')
+// const { Validator } = require('node-input-validator')
+var moment = require("moment")
+
 var Checkout = require('../../Models/checkout')
 // var Coupon = require('../../Models/coupon')
 // var User = require('../../Models/user')
 // var Cart = require('../../Models/cart')
-var moment = require("moment");
 
 
 
 
-// const { Validator } = require('node-input-validator')
 
 
 const viewAll = async (req,res)=>{
