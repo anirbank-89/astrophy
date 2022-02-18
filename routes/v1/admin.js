@@ -223,6 +223,7 @@ router.get('/summary-stats', StatsController.summaryStats);
 router.post('/product-sales-report', StatsController.productSalesReport);
 router.post('/service-sales-report', StatsController.serviceSalesReport);
 router.get('/total-orders-and-revenues', StatsController.totalOrdersNRevenues);
+router.post('/orders-and-rev-by-date', StatsController.ordersNRevenuesByDate);
 router.get('/website-revenue-and-profit', StatsController.totalRevenueNProfit);
 /**===========================================================================================*/
 

@@ -135,7 +135,7 @@ var serviceSalesReport = async (req, res) => {
 
 // add a separate function for service refunds
 
-var totalOrdersNRevenues = async (req,res) => {
+var totalOrdersNRevenues = async (req, res) => {
     let totalProductRev = await PRODUCT_CHECKOUTS.aggregate([
         {
             $group: {
@@ -145,7 +145,46 @@ var totalOrdersNRevenues = async (req,res) => {
             }
         }
     ]).exec();
-    
+
+    let totalServiceRev = await SERVICE_CHECKOUTS.aggregate([
+        {
+            $group: {
+                _id: "$acceptstatus",
+                numberOfOrders: { $sum: 1 },
+                totalRevenue: { $sum: "$total" }
+            }
+        }
+    ]).exec();
+
+    return res.status(200).json({
+        status: true,
+        products: totalProductRev,
+        services: totalServiceRev
+    });
+}
+
+var ordersNRevenuesByDate = async (req, res) => {
+    let totalProductRev = await PRODUCT_CHECKOUTS.aggregate([
+        (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
+            (req.body.dateto != "" && typeof req.body.dateto != "undefined")
+            ? {
+                $match: {
+                    "booking_date": {
+                        "$gte": new Date(req.body.datefrom),
+                        "$lte": moment.utc(req.body.dateto).endOf('day').toDate()
+                    }
+                },
+              }
+              : { $project: { __v: 0 } },
+            {
+                $group: {
+                    _id: "$status",
+                    numberOfOrders: { $sum: 1 },
+                    totalRevenue: { $sum: "$total" }
+                }
+            }
+    ]).exec();
+
     let totalServiceRev = await SERVICE_CHECKOUTS.aggregate([
         {
             $group: {
@@ -165,7 +204,7 @@ var totalOrdersNRevenues = async (req,res) => {
 
 // add a separate function for total lost revenue to service and product refunds
 
-var totalRevenueNProfit = async (req,res) => {
+var totalRevenueNProfit = async (req, res) => {
     let totalSoldProduct = await PRODUCT_CHECKOUTS.find({ status: "true" }).exec();
     // console.log(totalSoldProduct);
     let soldProductRev = 0;
@@ -180,9 +219,9 @@ var totalRevenueNProfit = async (req,res) => {
     });
     var productRevenue = soldProductRev - refundValue;
     console.log("Product revenue", productRevenue);
-    
+
     let totalServices = await SERVICE_CHECKOUTS.find({}).exec()
-    
+
     var totalCompletedServices = totalServices.filter(item => item.completestatus == true);
     // console.log(totalCompletedServices);
     let completedServiceRev = 0;
@@ -202,7 +241,7 @@ var totalRevenueNProfit = async (req,res) => {
     console.log("Expected service revenue", expectedServiceRevenue);
 
     let sellerTotalCommissions = await TOTAL_COMMISSION.find({}).exec();
-    
+
     let paidTotalCommissions = 0;
     sellerTotalCommissions.forEach(element => {
         paidTotalCommissions = paidTotalCommissions + Number(element.comission_total);
@@ -230,5 +269,6 @@ module.exports = {
     productSalesReport,
     serviceSalesReport,
     totalOrdersNRevenues,
+    ordersNRevenuesByDate,
     totalRevenueNProfit
 }
