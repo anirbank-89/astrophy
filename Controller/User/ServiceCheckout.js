@@ -1,26 +1,28 @@
 const mongoose = require("mongoose");
 const { Validator } = require("node-input-validator");
 
-const ServiceCart = require("../../Models/servicecart");
-//var Coupon = require("../../Models/coupon");
 const ServiceCheckout = require("../../Models/servicecheckout");
+const NEW_SERVICE_CHECKOUT = require("../../Models/new_service_checkout");
+const ServiceCart = require("../../Models/servicecart");
+const NEW_SERVICECART = require("../../Models/new_servicecart");
+//var Coupon = require("../../Models/coupon");
 const UserAddresses = require('../../Models/user_address');
+const User = require('../../Models/user');
 const Servicecommission = require("../../Models/servicecommission");
 const SubscribedBy = require("../../Models/subscr_purchase");
 const Totalcomission = require("../../Models/totalcomission");
 const Withdraw = require('../../Models/withdraw');
 const ServiceRefund = require('../../Models/service_refund');
-const User = require('../../Models/user');
+const TOTAL_SERV_COMM_REFUNDS = require("../../Models/total_servicecomission_refund");
 
 const emailSend = require('../../service/emailsend');
 
 const create = async (req, res) => {
   const v = new Validator(req.body, {
     user_id: "required",
-    seller_id: "required",
     subtotal: "required",
     //discount_percent: "required",
-    total: "required",
+    // total: "required",
     firstname: "required",
     lastname: "required",
     address1: "required",
@@ -29,25 +31,18 @@ const create = async (req, res) => {
     zip: "required",
     paymenttype: "required",
   });
-
   let matched = await v.check().then((val) => val);
   if (!matched) {
-    return res.status(400).json({
-      status: false,
-      data: null,
-      message: v.errors,
-    });
+    return res.status(400).json({ status: false, errors: v.errors });
   }
 
   let dataSubmit = {
     _id: mongoose.Types.ObjectId(),
     user_id: mongoose.Types.ObjectId(req.body.user_id),
-    seller_id: mongoose.Types.ObjectId(req.body.seller_id),
     order_id: Number(
       `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`
     ),
     subtotal: req.body.subtotal,
-    total: req.body.total,
     firstname: req.body.firstname,
     lastname: req.body.lastname,
     address1: req.body.address1,
@@ -55,6 +50,12 @@ const create = async (req, res) => {
     state: req.body.state,
     zip: req.body.zip,
     paymenttype: req.body.paymenttype,
+  }
+  if (req.body.discount_percent != "" || req.body.discount_percent != null || typeof req.body.discount_percent != undefined) {
+    dataSubmit.discount_percent = req.body.discount_percent;
+  }
+  if (req.body.total != "" || req.body.total != null || typeof req.body.total != undefined) {
+    dataSubmit.total = req.body.total;
   }
   if (req.body.address2 != "" || req.body.address2 != null || typeof req.body.address2 != undefined) {
     dataSubmit.address2 = req.body.address2;
@@ -102,17 +103,27 @@ const create = async (req, res) => {
   // ) {
   //   dataSubmit.tip = mongoose.Types.ObjectId(req.body.tip);
   // }
-  console.log(dataSubmit);
 
-  const saveData = new ServiceCheckout(dataSubmit);
+  const saveData = new NEW_SERVICE_CHECKOUT(dataSubmit);
   return saveData.save()
     .then(async (data) => {
-      let cartUpdate = await ServiceCart.updateMany(
-        { user_id: mongoose.Types.ObjectId(req.body.user_id), status: true },
-        { $set: { status: false, order_id: data.order_id } },
+      console.log("Checkout data ", data);
+      // Update the cart items with order id
+      let cartUpdate = await NEW_SERVICECART.updateMany(
+        { user_id: data.user_id, status: true },
+        {
+          $set:
+          {
+            status: false,
+            order_id: data.order_id,
+            discount_percent: data.discount_percent
+          }
+        },
         { multi: true },
         (err, writeResult) => {
-          // console.log(err);
+          if (err) {
+            console.log(err.message);
+          }
         }
       );
 
@@ -229,19 +240,19 @@ const setStatus = async (req, res) => {
   var id = req.body.id;
   var acceptstatus = req.body.acceptstatus;
 
-  var current_status = await ServiceCheckout.findById({ _id: id }).exec();
+  var current_status = await NEW_SERVICECART.findById({ _id: id }).exec();
 
-  console.log("Shop Service data", current_status);
+  console.log("Cart data", current_status);
 
   if (current_status.acceptstatus === "pending") {
     console.log(true);
     if (acceptstatus == 'accept') {
-      return ServiceCheckout.findByIdAndUpdate(
+      return NEW_SERVICECART.findByIdAndUpdate(
         { _id: id },
         {
           $set: {
-            acceptstatus: acceptstatus,
-            completestatus: true       // might need to change this later - 15/02/2022
+            acceptstatus: acceptstatus
+            // completestatus: true
           }
         },
         // { new: true },
@@ -249,27 +260,39 @@ const setStatus = async (req, res) => {
           docs = { ...docs._doc, ...req.body };
           if (!err) {
 
-            let userData = await User.findOne({ _id: mongoose.Types.ObjectId(docs.user_id) }).exec();
-            let cartData = await ServiceCart.findOne({ order_id: docs.order_id }).exec();
+            let userData = await User.findOne({ _id: docs.user_id }).exec();
+            let checkoutData = await NEW_SERVICE_CHECKOUT.findOne({ order_id: docs.order_id }).exec();
 
-            let sendMail = emailSend.buyerOrderConfirmation(docs, cartData, userData.email);
+            let sendMail = emailSend.buyerOrderConfirmation(checkoutData, docs, userData.email);
 
             // enter data in service commission earned and total commission throughout history
-            let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(docs.seller_id), status: true }).exec();
+            let servTotalVal = 0;
+
+            if (docs.discount_percent == 0) {
+              servTotalVal = docs.price;
+            }
+            else {
+              servTotalVal = docs.price - ((docs.price * docs.discount_percent) / 100);
+            }
+
+            let subDataf = await SubscribedBy.findOne(
+              {
+                userid: docs.seller_id,
+                status: true
+              }
+            ).exec();
 
             let sellerCom = 0;
 
-            let comType = subDataf.comission_type
+            let comType = subDataf.comission_type;
 
-            let comValue = subDataf.seller_comission
+            let comValue = subDataf.seller_comission;
 
-
-
-            if (subDataf.comission_type == "Flat comission") {
-              sellerCom = subDataf.seller_comission
+            if (comType == "Flat comission") {
+              sellerCom = comValue;
             }
             else {
-              sellerCom = (docs.total * subDataf.seller_comission) / 100;
+              sellerCom = (servTotalVal * comValue) / 100;
             }
 
             let dataComision = {
@@ -278,7 +301,7 @@ const setStatus = async (req, res) => {
               order_id: docs.order_id,
               commision_type: comType,
               commision_value: comValue,
-              price: docs.total,
+              price: servTotalVal,
               seller_commission: sellerCom
             };
 
@@ -332,7 +355,7 @@ const setStatus = async (req, res) => {
       );
     }
     else {
-      return ServiceCheckout.findByIdAndUpdate(
+      return NEW_SERVICECART.findByIdAndUpdate(
         { _id: id },
         { $set: { acceptstatus: acceptstatus } },
         // { new: true },
@@ -365,6 +388,7 @@ const setStatus = async (req, res) => {
   }
 }
 
+// Currently no need to change the collection to "NEW_SERVICECART"
 var completeServiceRequest = async (req, res) => {
   var id = req.params.id;
 
@@ -395,7 +419,7 @@ const setTips = async (req, res) => {
   var id = req.body.id;
 
   console.log(true);
-  return ServiceCheckout.findByIdAndUpdate(
+  return NEW_SERVICECART.findByIdAndUpdate(
     { _id: id },
     { $set: { tip: req.body.tip } },
     // { new: true },
@@ -559,41 +583,43 @@ const setSellersettlement = async (req, res) => {
   }
 }
 
+
+// let serviceCheckout = await ServiceCheckout.find(
+//   {
+//     seller_id: mongoose.Types.ObjectId(id),
+//     acceptstatus: "accept"
+//   }
+// ).exec();
+// // console.log(serviceCheckout);
+// var totalServiceValue = 0;
+
+// serviceCheckout.forEach(element => {
+//   totalServiceValue = parseInt(totalServiceValue) + parseInt(element.total);
+// });
+// // console.log("Total service value", totalServiceValue);
+
+// var totalEarnings = 0;
+
+// var comType = subDataf.comission_type;
+
+// var comValue = subDataf.seller_comission;
+
+// if (comType == "Flat comission") {
+//   totalEarnings = comValue * Number(serviceCheckout.length);
+
+// }
+// else {
+//   totalEarnings = (totalServiceValue * comValue) / 100;
+// }
+
+// console.log("Total commission earned = ", totalEarnings);
+
 var getSellerSettlement = async (req, res) => {
   var id = req.params.id;
 
   /**------------------------------------Total earnings------------------------------------ */
-  let serviceCheckout = await ServiceCheckout.find(
-    {
-      seller_id: mongoose.Types.ObjectId(id),
-      acceptstatus: "accept"
-    }
-  ).exec();
-  // console.log(serviceCheckout);
-  var totalServiceValue = 0;
-
-  serviceCheckout.forEach(element => {
-    totalServiceValue = parseInt(totalServiceValue) + parseInt(element.total);
-  });
-  // console.log("Total service value", totalServiceValue);
-
-  let subDataf = await SubscribedBy.findOne({ userid: mongoose.Types.ObjectId(id), status: true }).exec();
-
-  var totalEarnings = 0;
-
-  var comType = subDataf.comission_type;
-
-  var comValue = subDataf.seller_comission;
-
-  if (comType == "Flat comission") {
-    totalEarnings = comValue * Number(serviceCheckout.length);
-
-  }
-  else {
-    totalEarnings = (totalServiceValue * comValue) / 100;
-  }
-
-  console.log("Total commission earned = ", totalEarnings);
+  let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(id) }).exec();
+  let totalEarnings = totalcomission.comission_all;
   /**-------------------------------------------------------------------------------------- */
 
   /**---------------------------------- Settled earnings ---------------------------------- */
@@ -653,10 +679,16 @@ var getSellerSettlement = async (req, res) => {
   /**-------------------------------------------------------------------------------------- */
 
   /**-------------------------------- Service refund amount ------------------------------- */
-  let refunds = await ServiceRefund.find({ seller_id: mongoose.Types.ObjectId(id) }).exec();
+  let totalRefundsData = await TOTAL_SERV_COMM_REFUNDS.findOne({ seller_id: mongoose.Types.ObjectId(id) }).exec();
 
-  var refundedAmount = comValue * Number(refunds.length);
-  console.log("Refunded service amount = ", refundedAmount);
+  let refundedAmount = 0;
+
+  if (totalRefundsData == null) {
+    refundedAmount = 0;
+  }
+  else {
+    refundedAmount = totalRefundsData.total_refunded;
+  }
   /**-------------------------------------------------------------------------------------- */
 
   res.send({

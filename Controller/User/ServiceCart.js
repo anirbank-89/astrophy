@@ -1,12 +1,8 @@
-const mongoose = require("mongoose");
-const ServiceCart = require("../../Models/servicecart");
-const Service = require("../../Models/service");
-var User = require("../../Models/user");
-var Wishlist = require("../../Models/wishlist");
-//var Coupon = require("../../Models/coupon");
-
-
+var mongoose = require("mongoose");
 const { Validator } = require("node-input-validator");
+
+const ServiceCart = require("../../Models/servicecart");
+const NEW_SERVIECART = require("../../Models/new_servicecart");
 
 const addToServiceCart = async (req, res) => {
   const v = new Validator(req.body, {
@@ -27,8 +23,9 @@ const addToServiceCart = async (req, res) => {
     });
   }
 
-  let subData = await ServiceCart.findOne({
-    user_id: mongoose.Types.ObjectId(req.body.user_id),
+  let subData = await NEW_SERVIECART.findOne({
+    user_id: mongoose.Types.ObjectId(req.body.user_id), 
+    serv_id: mongoose.Types.ObjectId(req.body.serv_id), 
     status:true
   }).exec();
   if (subData == null || subData == "") {
@@ -42,9 +39,12 @@ const addToServiceCart = async (req, res) => {
       servicename: req.body.servicename,
       price: req.body.price,
       image: req.body.image,
-    };
+    }
+    if (req.body.currency != null || req.body.currency != "" || typeof req.body.currency != "undefined") {
+      dataSubmit.currency = req.body.currency;
+    }
 
-    const saveData = new ServiceCart(dataSubmit);
+    const saveData = new NEW_SERVIECART(dataSubmit);
     return saveData
       .save()
       .then((data) => {
@@ -101,7 +101,7 @@ const addToServiceCart = async (req, res) => {
 };*/
 
 const getServiceCart = async (req, res) => {
-  return ServiceCart.aggregate([
+  return NEW_SERVIECART.aggregate([
     {
       $match: {
         user_id: mongoose.Types.ObjectId(req.params.user_id),
@@ -141,7 +141,9 @@ const getServiceCart = async (req, res) => {
 };
 
 const Delete = async (req, res) => {
-  return ServiceCart.remove({ _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } })
+  var id = req.params.id;
+
+  return NEW_SERVIECART.findOneAndDelete({ _id: mongoose.Types.ObjectId(id) })
     .then((data) => {
       return res.status(200).json({
         status: true,
@@ -152,7 +154,7 @@ const Delete = async (req, res) => {
     .catch((err) => {
       res.status(500).json({
         status: false,
-        message: "Server error. Please try again.",
+        message: "Invalid id. Server error.",
         error: error,
       });
     });
