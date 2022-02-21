@@ -9,7 +9,7 @@ const EMAIL_SEND = require('../../service/emailsend');
 const sellerContactUsInfo = async (req, res) => {
     const v = new Validator(req.body, {
         name: "required",
-        email: "required",
+        email: "required|email",
         // cat_id : "required",
         message: "required"
 
@@ -57,7 +57,7 @@ const sellerContactUsInfo = async (req, res) => {
 var userContactUsInfo = async (req, res) => {
     const V = new Validator(req.body, {
         user_type: 'required',
-        email: 'required',
+        email: 'required|email',
         question: 'required'
     });
     let matched = await V.check().then(val => val);
