@@ -427,22 +427,20 @@ const deleteService = async (req, res) => {
 const chatServiceregister = async (req, res) => {
     const v = new Validator(req.body, {
         name: "required",
-        price: "required",
         details: "required",
         currency: "required",
         price: "required"
     })
     let matched = v.check().then((val) => val)
     if (!matched) {
-        res.status(200).send({ status: false, errors: v.errors })
+        res.status(400).json({ status: false, errors: v.errors })
     }
     console.log(req.file)
     let image_url = await Upload.uploadFile(req, "shop_services")
     let shopServiceData = {
         _id: mongoose.Types.ObjectId(),
         shop_id: mongoose.Types.ObjectId(req.body.shop_id),
-        category_id: mongoose.Types.ObjectId(req.body.category_id),
-        subcategory_id: mongoose.Types.ObjectId(req.body.subcategory_id),
+        seller_id: mongoose.Types.ObjectId(req.body.seller_id), 
         name: req.body.name,
         price: req.body.price,
         details: req.body.details,

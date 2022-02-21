@@ -89,7 +89,7 @@ const viewAll = async (req, res) => {
     });
 };
 
-const viewSubById = async (req,res) => {
+const viewSubById = async (req, res) => {
   var id = req.params.id;
 }
 
@@ -112,24 +112,24 @@ const update = async (req, res) => {
   var id = req.params.id;
 
   return Subsciption.findOneAndUpdate(
-    { _id: mongoose.Types.ObjectId(id) }, 
+    { _id: mongoose.Types.ObjectId(id) },
     req.body,
     { new: true }
   )
-      .then(docs => {
-        res.status(200).json({
-          status: true,
-          message: "Data successfully edited.",
-          data: docs
-        });
-      })
-      .catch(err => {
-        res.status(500).json({
-          status: false,
-          message: "Invalid id. Server error.",
-          error: err.message
-        });
+    .then(docs => {
+      res.status(200).json({
+        status: true,
+        message: "Data successfully edited.",
+        data: docs
       });
+    })
+    .catch(err => {
+      res.status(500).json({
+        status: false,
+        message: "Invalid id. Server error.",
+        error: err.message
+      });
+    });
 }
 
 const Delete = async (req, res) => {
@@ -155,11 +155,6 @@ const Delete = async (req, res) => {
 const subscriptionHistory = async (req, res) => {
   return SubscribedBy.aggregate([
     {
-      $project: {
-        _v: 0,
-      },
-    },
-    {
       $lookup: {
         from: "subscriptions",
         localField: "subscr_id",
@@ -176,22 +171,19 @@ const subscriptionHistory = async (req, res) => {
       },
     },
     { $sort: { _id: -1 } },
+    {
+      $project: {
+        _v: 0
+      },
+    }
   ])
     .then((data) => {
-      if (data != null && data != "") {
-        res.status(200).send({
-          status: true,
-          data: data,
-          error: null,
-          message: "Subscription History Data Get Successfully",
-        });
-      } else {
-        res.status(400).send({
-          status: false,
-          data: null,
-          error: "No Data",
-        });
-      }
+      res.status(200).json({
+        status: true,
+        data: data,
+        error: null,
+        message: "Data successfully get."
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -201,7 +193,7 @@ const subscriptionHistory = async (req, res) => {
         message: "Server Error",
       });
     });
-};
+}
 
 const subscriptionHistoryRepo = async (req, res) => {
   return SubscribedBy.aggregate([
@@ -325,7 +317,7 @@ module.exports = {
   viewSubById,
   update,
   Delete,
-  setStatus,
   subscriptionHistory,
-  subscriptionHistoryRepo
+  subscriptionHistoryRepo,
+  setStatus
 };

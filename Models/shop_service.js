@@ -29,14 +29,8 @@ const ShopServiceSchema = new Schema({
     //         required: true
     //     }
     // },
-    cat_name: {
-        type: String,
-        required: true
-    },
-    subcat_name: {
-        type: String,
-        required: true
-    },
+    cat_name: String, 
+    subcat_name: String,
     personalization: String,
     hashtags: String,
     currency: {
