@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 
 var ServiceCheckout = require('../../Models/servicecheckout')
-var NewServiceCheckout = require('../../Models/')
+// var NewServiceCheckout = require('../../Models/')
 var ServiceRefund = require('../../Models/service_refund')
 var ServiceCart = require('../../Models/servicecart')
 
