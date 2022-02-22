@@ -93,7 +93,80 @@ const getReviews = async (req, res) => {
     });
 };
 
+var filterReviews = async (req,res) => {
+  let reviews = await Productreview.aggregate([
+    {
+      $match: {
+        product_id: mongoose.Types.ObjectId(req.body.prod_id)
+      }
+    },
+    (typeof req.body.sortby != "undefined" && req.body.sortby == "Newly added")
+    ? { $sort: { rev_date: -1 } }
+    :{ $project: { __v: 0} },
+    (typeof req.body.sortby != "undefined" && req.body.sortby == "1 star")
+    ? { $match: { rating: 1 } }
+    :{ $project: { __v: 0} },
+    (typeof req.body.sortby != "undefined" && req.body.sortby == "2 star")
+    ? { $match: { rating: 2 } }
+    :{ $project: { __v: 0} },
+    (typeof req.body.sortby != "undefined" && req.body.sortby == "3 star")
+    ? { $match: { rating: 3 } }
+    :{ $project: { __v: 0} },
+    (typeof req.body.sortby != "undefined" && req.body.sortby == "4 star")
+    ? { $match: { rating: 4 } }
+    :{ $project: { __v: 0} },
+    (typeof req.body.sortby != "undefined" && req.body.sortby == "5 star")
+    ? { $match: { rating: 5 } }
+    :{ $project: { __v: 0} },
+
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user_data"
+      }
+    },
+    {
+      $unwind: {
+        path: "$user_data",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $lookup: {
+        from: "products",
+        localField: "product_id",
+        foreignField: "_id",
+        as: "product_data"
+      }
+    },
+    {
+      $unwind: {
+        path: "$product_data",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+  ]).exec();
+
+  if (reviews.length > 0) {
+    return res.status(200).json({
+      status: true,
+      message: "Data successfully get.",
+      data: reviews
+    });
+  }
+  else {
+    return res.status(200).json({
+      status: true,
+      message: "No match.",
+      data: reviews
+    });
+  }
+}
+
 module.exports = {
   create,
   getReviews,
+  filterReviews
 };

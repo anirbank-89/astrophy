@@ -138,6 +138,7 @@ router.post('/buy-history-from-seller', ServiceMyaccountController.buyHistFromSe
 
 router.post('/productreview', ProductreviewController.create);
 router.get('/productreview/:prod_id', ProductreviewController.getReviews);
+router.post('/filter-product-reviews', ProductreviewController.filterReviews);
 
 router.post('/servicereview', ServicereviewController.create);
 router.get('/servicereview/:serv_id', ServicereviewController.getReviews);

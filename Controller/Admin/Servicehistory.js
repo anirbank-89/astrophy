@@ -66,6 +66,8 @@ const viewAll = async (req, res) => {
                     preserveNullAndEmptyArrays: true
                 }
             },
+            // should've done in reverse order - servicecart_data.service_data (only 1), 
+            // servicecart_data.service_data.seller_data (only 1)
             {
                 $lookup: {
                     from: "shop_services",

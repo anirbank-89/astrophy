@@ -31,8 +31,7 @@ var summaryStats = async (req, res) => {
                     start: {
                         $lt: new Date(req.body.datefrom),
                         $gt: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
-                    },
-                    status: true
+                    }
                 },
             }
             : { $project: { __v: 0 } },
@@ -43,8 +42,7 @@ var summaryStats = async (req, res) => {
                     start: {
                         $lt: today,
                         $gt: date30DaysBack
-                    },
-                    status: true
+                    }
                 }
             } : { $project: { __v: 0 } },
         /** date filtering for yesterday */
@@ -54,8 +52,7 @@ var summaryStats = async (req, res) => {
                     start: {
                         $lt: today,
                         $gt: lastDate
-                    },
-                    status: true
+                    }
                 }
             } : { $project: { __v: 0 } },
         /** date filtering for today */
@@ -63,9 +60,9 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     start: {
-                        $gt: today
-                    },
-                    status: true
+                        $gt: moment.utc().startOf('day').toDate(),
+                        $lte: moment.utc().endOf('day').toDate()
+                    }
                 }
             } : { $project: { __v: 0 } },
     ]).exec();
@@ -80,7 +77,6 @@ var summaryStats = async (req, res) => {
                         $lt: new Date(req.body.datefrom),
                         $gt: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
                     },
-                    status: true,
                     type: "Seller"
                 },
             }
@@ -93,7 +89,6 @@ var summaryStats = async (req, res) => {
                         $lt: today,
                         $gt: date30DaysBack
                     },
-                    status: true,
                     type: "Seller"
                 }
             } : { $project: { __v: 0 } },
@@ -105,7 +100,6 @@ var summaryStats = async (req, res) => {
                         $lt: today,
                         $gt: lastDate
                     },
-                    status: true,
                     type: "Seller"
                 }
             } : { $project: { __v: 0 } },
@@ -114,9 +108,9 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     start: {
-                        $gt: today
+                        $gt: moment.utc().startOf('day').toDate(),
+                        $lte: moment.utc().endOf('day').toDate()
                     },
-                    status: true,
                     type: "Seller"
                 }
             } : { $project: { __v: 0 } },
@@ -165,7 +159,8 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     start: {
-                        $gt: today
+                        $gt: moment.utc().startOf('day').toDate(),
+                        $lte: moment.utc().endOf('day').toDate()
                     },
                     status: true
                 }
@@ -216,7 +211,8 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     created_on: {
-                        $gt: today
+                        $gt: moment.utc().startOf('day').toDate(),
+                        $lte: moment.utc().endOf('day').toDate()
                     },
                     status: true,
                     chataddstatus: false
@@ -355,12 +351,12 @@ var totalOrdersNRevenues = async (req, res) => {
         }
     ]).exec();
 
-    let totalServiceRev = await SERVICE_CHECKOUTS.aggregate([
+    let totalServiceRev = await SERVICE_CART.aggregate([
         {
             $group: {
                 _id: "$acceptstatus",
                 numberOfOrders: { $sum: 1 },
-                totalRevenue: { $sum: "$total" }
+                totalRevenue: { $sum: "$price" }
             }
         }
     ]).exec();
@@ -421,7 +417,8 @@ var ordersNRevenuesByDate = async (req, res) => {
             ? {
                 $match: {
                     booking_date: {
-                        $gt: today
+                        $gt: moment.utc().startOf('day').toDate(),
+                        $lte: moment.utc().endOf('day').toDate()
                     }
                 }
             } : { $project: { __v: 0 } },
@@ -434,7 +431,7 @@ var ordersNRevenuesByDate = async (req, res) => {
         }
     ]).exec();
 
-    let totalServiceRev = await SERVICE_CHECKOUTS.aggregate([
+    let totalServiceRev = await SERVICE_CART.aggregate([
         /** date filtering for custom period selection */
         (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
             (req.body.dateto != "" && typeof req.body.dateto != "undefined")
@@ -442,8 +439,10 @@ var ordersNRevenuesByDate = async (req, res) => {
                 $match: {
                     booking_date: {
                         $lt: new Date(req.body.datefrom),
-                        $gte: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
-                    }
+                        $gt: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
+                    },
+                    status: false,
+                    refund_request: ""
                 },
             }
             : { $project: { __v: 0 } },
@@ -452,9 +451,11 @@ var ordersNRevenuesByDate = async (req, res) => {
             ? {
                 $match: {
                     booking_date: {
-                        $lte: moment.utc().toDate(),
+                        $lt: today,
                         $gt: date30DaysBack
-                    }
+                    },
+                    status: false,
+                    refund_request: ""
                 }
             } : { $project: { __v: 0 } },
         /** date filtering for yesterday */
@@ -462,9 +463,11 @@ var ordersNRevenuesByDate = async (req, res) => {
             ? {
                 $match: {
                     booking_date: {
-                        $lte: moment.utc().toDate(),
+                        $lt: today,
                         $gt: lastDate
-                    }
+                    },
+                    status: false,
+                    refund_request: ""
                 }
             } : { $project: { __v: 0 } },
         /** date filtering for today */
@@ -472,17 +475,20 @@ var ordersNRevenuesByDate = async (req, res) => {
             ? {
                 $match: {
                     booking_date: {
-                        $gt: today
-                    }
+                        $gt: moment.utc().startOf('day').toDate(),
+                        $lte: moment.utc().endOf('day').toDate()
+                    },
+                    status: false,
+                    refund_request: ""
                 }
             } : { $project: { __v: 0 } },
-        {
-            $group: {
-                _id: "$acceptstatus",
-                numberOfOrders: { $sum: 1 },
-                totalRevenue: { $sum: "$total" }
+            {
+                $group: {
+                    _id: "$acceptstatus",
+                    numberOfOrders: { $sum: 1 }, 
+                    totalRevenue: { $sum: "$price" }
+                }
             }
-        }
     ]).exec();
 
     return res.status(200).json({
@@ -546,7 +552,7 @@ var totalRevenueNProfit = async (req, res) => {
             ? {
                 $match: {
                     booking_date: {
-                        $gt: lastDate,
+                        $gt: moment.utc().startOf('day').toDate(),
                         $lte: moment.utc().endOf('day').toDate()
                     },
                     status: "true"
@@ -603,7 +609,7 @@ var totalRevenueNProfit = async (req, res) => {
             ? {
                 $match: {
                     booking_date: {
-                        $gt: lastDate,
+                        $gt: moment.utc().startOf('day').toDate(),
                         $lte: moment.utc().endOf('day').toDate()
                     },
                     status: false,
@@ -614,7 +620,7 @@ var totalRevenueNProfit = async (req, res) => {
 
     let serviceRev = 0;
     serviceSales.forEach(element => {
-        totalPrice = element.price - ((element.price*element.discount_percent)/100);
+        var totalPrice = element.price - ((element.price*element.discount_percent)/100);
         serviceRev = productRev + totalPrice;
     });
 
@@ -661,7 +667,7 @@ var totalRevenueNProfit = async (req, res) => {
             ? {
                 $match: {
                     created_on: {
-                        $gt: lastDate,
+                        $gt: moment.utc().startOf('day').toDate(),
                         $lte: moment.utc().endOf('day').toDate()
                     },
                     status: true

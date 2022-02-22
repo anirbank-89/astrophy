@@ -140,6 +140,12 @@ var filterReviews = async (req,res) => {
         foreignField: "_id",
         as: "service_data"
       }
+    },
+    {
+      $unwind: {
+        path: "$service_data",
+        preserveNullAndEmptyArrays: true
+      }
     }
   ]).exec();
 
