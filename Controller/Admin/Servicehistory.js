@@ -26,6 +26,20 @@ const viewAll = async (req, res) => {
             },
             {
                 $lookup: {
+                    from: "useraddresses",
+                    localField: "user_id",
+                    foreignField: "userid",
+                    as: "user_data.user_address"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$user_data.user_address",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
                     from: "new_servicecarts",
                     localField: "order_id",
                     foreignField: "order_id",
