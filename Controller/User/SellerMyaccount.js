@@ -1,15 +1,17 @@
 var mongoose = require('mongoose')
 var moment = require("moment")
 
-var ServiceCheckout = require('../../Models/servicecheckout')
-var ServiceCart = require('../../Models/servicecart')
+// var ServiceCheckout = require('../../Models/servicecheckout')
+var NewServiceCheckout = require('../../Models/new_service_checkout')
+// var ServiceCart = require('../../Models/servicecart')
+var NewServiceCart = require('../../Models/new_servicecart')
 var ServiceCommission = require('../../Models/servicecommission')
 var Withdraw = require('../../Models/withdraw')
 var ShopServices = require('../../Models/shop_service')
 var ServiceRefund = require('../../Models/service_refund')
 
 const viewAll = async (req, res) => {
-    return ServiceCheckout.aggregate(
+    return NewServiceCheckout.aggregate(
         [
             {
                 $match: {
@@ -49,7 +51,7 @@ const viewAll = async (req, res) => {
 }
 
 const reportViewAll = async (req, res) => {
-    return ServiceCheckout.aggregate(
+    return NewServiceCheckout.aggregate(
         [
             {
                 $match: {
@@ -100,7 +102,7 @@ const reportViewAll = async (req, res) => {
 }
 
 const viewSingleOrder = async (req, res) => {
-    return ServiceCheckout.aggregate(
+    return NewServiceCheckout.aggregate(
         [
             {
                 $match: {
@@ -140,7 +142,7 @@ const viewSingleOrder = async (req, res) => {
 }
 
 var buyHistFromUser = async (req,res) => {
-    let boughtServices = await ServiceCart.aggregate([
+    let boughtServices = await NewServiceCart.aggregate([
         {
           $match: {
             seller_id: mongoose.Types.ObjectId(req.body.self_id),

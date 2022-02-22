@@ -137,9 +137,7 @@ router.put('/coupon/set-status/:id', CouponController.setStatus)
 router.get('/orderHistory', OrderhistoryController.viewAll)  
 router.post('/orderHistoryrepo', OrderhistoryController.productViewAllrepo)  
 
-
 router.get('/servicedetails', ServicehistoryController.viewAll);
-
 router.post('/servicedetailsrepo', ServicehistoryController.reportViewAll);
 
 router.get('/contactlist', UserController.ViewAllcontact);

@@ -1,12 +1,14 @@
-var mongoose = require('mongoose')
-var ServiceCheckout = require('../../Models/servicecheckout')
-var User = require('../../Models/user')
-var ServiceCart = require('../../Models/servicecart')
-const { Validator } = require('node-input-validator')
-var moment = require("moment");
+// var mongoose = require('mongoose')
+// const { Validator } = require('node-input-validator')
+var moment = require("moment")
+
+// var ServiceCheckout = require('../../Models/servicecheckout')
+var NewServiceCheckout = require('../../Models/new_service_checkout')
+// var User = require('../../Models/user')
+// var ServiceCart = require('../../Models/servicecart')
 
 const viewAll = async (req, res) => {
-    return ServiceCheckout.aggregate(
+    return NewServiceCheckout.aggregate(
         [
             {
                 $lookup: {
@@ -24,20 +26,10 @@ const viewAll = async (req, res) => {
             },
             {
                 $lookup: {
-                    from: "servicecarts",//
-                    let: { order_id: "$order_id"},//
-                    pipeline:[
-                        {
-                            $match: {
-                                $expr: {
-                                    $and: [
-                                        { $eq: ["$order_id", "$$order_id"] }
-                                    ]
-                                }
-                            }
-                        }    
-                    ],//
-                    as: "servicecart_data"//
+                    from: "new_servicecarts",
+                    localField: "order_id",
+                    foreignField: "order_id",
+                    as: "servicecart_data"
                 }
             },
             {
@@ -63,7 +55,7 @@ const viewAll = async (req, res) => {
             {
                 $lookup: {
                     from: "shop_services",
-                    let: { seller_id: "$seller_data._id" }, 
+                    let: { seller_id: "$servicecart_data.seller_data._id" }, 
                     pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$seller_id", "$$seller_id"] }] } } }], 
                     as: "servicecart_data.seller_data.service_data"
                 }
@@ -71,17 +63,31 @@ const viewAll = async (req, res) => {
             {
                 $lookup: {
                     from: "service_refunds",
-                    let: { seller_id: "$servicecart_data.seller_id" }, 
-                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$seller_id", "$$seller_id"] }] } } }], 
-                    as: "servicecart_data.service_refund"
+                    let: { order_id: "$order_id" }, 
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$order_id", "$$order_id"] }] } } }], 
+                    as: "service_refund"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$service_refund",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: { _id: 0 }
+            },
+            {
+                $group: {
+                    _id: "$order_id",
+                    order_subtotal: { $sum: "$servicecart_data.price" },
+                    discount: {$avg: "$servicecart_data.discount_percent"},
+                    user_data: { $push: "$user_data" }, 
+                    servicecart_data: { $push: "$servicecart_data" },
+                    service_refund: { $push: "$service_refund" }
                 }
             },
             { $sort: { _id: -1 } },
-            {
-                $project: {
-                    _v: 0
-                }
-            }
         ]
         // {
         //     allowDiskUse: true,
@@ -106,7 +112,7 @@ const viewAll = async (req, res) => {
 }
 
 const reportViewAll = async (req, res) => {
-    return ServiceCheckout.aggregate(
+    return NewServiceCheckout.aggregate(
         [
             (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
                 (req.body.dateto != "" && typeof req.body.dateto != "undefined")

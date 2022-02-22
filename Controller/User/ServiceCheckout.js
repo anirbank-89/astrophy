@@ -3,7 +3,7 @@ const { Validator } = require("node-input-validator");
 
 const ServiceCheckout = require("../../Models/servicecheckout");
 const NEW_SERVICE_CHECKOUT = require("../../Models/new_service_checkout");
-const ServiceCart = require("../../Models/servicecart");
+// const ServiceCart = require("../../Models/servicecart");
 const NEW_SERVICECART = require("../../Models/new_servicecart");
 //var Coupon = require("../../Models/coupon");
 const UserAddresses = require('../../Models/user_address');
@@ -40,7 +40,7 @@ const create = async (req, res) => {
     _id: mongoose.Types.ObjectId(),
     user_id: mongoose.Types.ObjectId(req.body.user_id),
     order_id: Number(
-      `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`
+      `${new Date().getDate()}${new Date().getMonth()}${new Date().getFullYear()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`
     ),
     subtotal: req.body.subtotal,
     firstname: req.body.firstname,

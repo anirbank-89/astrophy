@@ -8,10 +8,9 @@ var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 const SERVICE_REFUND_SCHEMA = new Schema({
     user_id:mongoose.Schema.Types.ObjectId,
     seller_id:mongoose.Schema.Types.ObjectId,
-    order_id:
-    {
-        type:Number,
-    },
+    serv_id: mongoose.Schema.Types.ObjectId,
+    cart_id: mongoose.Schema.Types.ObjectId,
+    order_id: Number,
     request_date:{
         type: Date,
 		default: dateKolkata,
@@ -66,10 +65,6 @@ const SERVICE_REFUND_SCHEMA = new Schema({
         required:false
     },
     cvv:{
-        type:Number,
-        required:false
-    },
-    tip:{
         type:Number,
         required:false
     },

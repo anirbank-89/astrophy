@@ -1,10 +1,10 @@
 var mongoose = require('mongoose')
-var Admin = require('../../Models/admin')
 var passwordHash = require('password-hash');
-var Upload = require('../../service/upload')
-
-var jwt = require('jsonwebtoken');
+// var jwt = require('jsonwebtoken');
 const { Validator } = require('node-input-validator');
+
+var Admin = require('../../Models/admin')
+var Upload = require('../../service/upload')
 
 // Admin update profile of user
 const updateProfile = async (req, res) => {
