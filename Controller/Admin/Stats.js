@@ -1,14 +1,15 @@
 var moment = require('moment');
 
-const PRODUCT_CHECKOUTS = require('../../Models/checkout');
-const SELLER = require('../../Models/seller');
-const SERVICE_CHECKOUTS = require('../../Models/new_service_checkout');
-const SERV_CATEGORY = require('../../Models/service');
+const USER = require('../../Models/user');
 const SHOP = require('../../Models/shop');
 const SHOP_SERVICE = require('../../Models/shop_service');
-const TOTAL_COMMISSION = require('../../Models/totalcomission');
-const USER = require('../../Models/user');
-const PRODUCT_REFUND = require('../../Models/product_refund');
+const SERV_CATEGORY = require('../../Models/service');
+const PRODUCT_CHECKOUTS = require('../../Models/checkout');
+const SERVICE_CHECKOUTS = require('../../Models/new_service_checkout');
+const SERVICE_CART = require('../../Models/new_servicecart');
+const SERVICE_COMMISSIONS = require('../../Models/servicecommission');
+// PRODUCT_REFUND
+// SERVICE_REFUND
 
 var summaryStats = async (req, res) => {
     var today =  new Date(); // moment.utc().toDate();
@@ -494,63 +495,196 @@ var ordersNRevenuesByDate = async (req, res) => {
 // add a separate function for total lost revenue to service and product refunds
 
 var totalRevenueNProfit = async (req, res) => {
-    let totalSoldProduct = await PRODUCT_CHECKOUTS.find({ status: "true" }).exec();
-    // console.log(totalSoldProduct);
-    let soldProductRev = 0;
-    totalSoldProduct.forEach(element => {
-        soldProductRev = soldProductRev + Number(element.total);
-        // no action with 'subtotal'
+    var today =  new Date(); // moment.utc().toDate();
+    var thirtyDaysAgo = new Date().setDate(today.getDate() - 30);
+    var date30DaysBack = new Date(thirtyDaysAgo);
+    var lastDay = new Date().setDate(today.getDate() - 1);
+    var lastDate = new Date(lastDay);
+
+    console.log("Today ", today);
+    console.log("Yesterday ", lastDate);
+    console.log("30 days back ", date30DaysBack);
+
+    let productSales = await PRODUCT_CHECKOUTS.aggregate([
+        /** date filtering for custom period selection */
+        (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
+            (req.body.dateto != "" && typeof req.body.dateto != "undefined")
+            ? {
+                $match: {
+                    booking_date: {
+                        $lt: new Date(req.body.datefrom),
+                        $gt: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
+                    },
+                    status: "true"
+                },
+            }
+            : { $project: { __v: 0 } },
+        /**  date filtering for last month */
+        req.body.last_month == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $lt: today,
+                        $gt: date30DaysBack
+                    },
+                    status: "true"
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for yesterday */
+        req.body.yesterday == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $lt: today,
+                        $gt: lastDate
+                    },
+                    status: "true"
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for today */
+        req.body.today == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $gt: lastDate,
+                        $lte: moment.utc().endOf('day').toDate()
+                    },
+                    status: "true"
+                }
+            } : { $project: { __v: 0 } }
+    ]).exec();
+
+    let productRev = 0;
+    productSales.forEach(element => {
+        productRev = productRev + element.total;
     });
-    let productRefund = await PRODUCT_REFUND.find({ request_status: "approved" }).exec();
-    let refundValue = 0;
-    productRefund.forEach(element => {
-        refundValue = refundValue + Number(element.refund_amount);
+
+    let serviceSales = await SERVICE_CART.aggregate([
+        /** date filtering for custom period selection */
+        (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
+            (req.body.dateto != "" && typeof req.body.dateto != "undefined")
+            ? {
+                $match: {
+                    booking_date: {
+                        $lt: new Date(req.body.datefrom),
+                        $gt: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
+                    },
+                    status: false,
+                    refund_request: ""
+                },
+            }
+            : { $project: { __v: 0 } },
+        /**  date filtering for last month */
+        req.body.last_month == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $lt: today,
+                        $gt: date30DaysBack
+                    },
+                    status: false,
+                    refund_request: ""
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for yesterday */
+        req.body.yesterday == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $lt: today,
+                        $gt: lastDate
+                    },
+                    status: false,
+                    refund_request: ""
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for today */
+        req.body.today == true
+            ? {
+                $match: {
+                    booking_date: {
+                        $gt: lastDate,
+                        $lte: moment.utc().endOf('day').toDate()
+                    },
+                    status: false,
+                    refund_request: ""
+                }
+            } : { $project: { __v: 0 } }
+    ]).exec();
+
+    let serviceRev = 0;
+    serviceSales.forEach(element => {
+        totalPrice = element.price - ((element.price*element.discount_percent)/100);
+        serviceRev = productRev + totalPrice;
     });
-    var productRevenue = soldProductRev - refundValue;
-    console.log("Product revenue", productRevenue);
 
-    let totalServices = await SERVICE_CHECKOUTS.find({}).exec()
+    var totalRev = productRev + serviceRev;
 
-    var totalCompletedServices = totalServices.filter(item => item.completestatus == true);
-    // console.log(totalCompletedServices);
-    let completedServiceRev = 0;
-    totalCompletedServices.forEach(element => {
-        completedServiceRev = completedServiceRev + Number(element.total);
+    let sellerCommissions = await SERVICE_COMMISSIONS.aggregate([
+        /** date filtering for custom period selection */
+        (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
+            (req.body.dateto != "" && typeof req.body.dateto != "undefined")
+            ? {
+                $match: {
+                    created_on: {
+                        $lt: new Date(req.body.datefrom),
+                        $gt: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
+                    },
+                    status: true
+                },
+            }
+            : { $project: { __v: 0 } },
+        /**  date filtering for last month */
+        req.body.last_month == true
+            ? {
+                $match: {
+                    created_on: {
+                        $lt: today,
+                        $gt: date30DaysBack
+                    },
+                    status: true
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for yesterday */
+        req.body.yesterday == true
+            ? {
+                $match: {
+                    created_on: {
+                        $lt: today,
+                        $gt: lastDate
+                    },
+                    status: true
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for today */
+        req.body.today == true
+            ? {
+                $match: {
+                    created_on: {
+                        $gt: lastDate,
+                        $lte: moment.utc().endOf('day').toDate()
+                    },
+                    status: true
+                }
+            } : { $project: { __v: 0 } }
+    ]).exec();
+
+    let comValue = 0;
+    sellerCommissions.forEach(item => {
+        comValue = comValue + item.seller_commission;
     });
-    console.log("Service revenue", completedServiceRev);
 
-    /**----------calculate service refund value----------*/
-    /**--------------------------------------------------*/
+    // product, service refunds calcution
 
-    var totalPendingService = totalServices.filter(item => item.acceptstatus == "pending");
-    // console.log(totalPendingService);
-    let expectedServiceRevenue = 0;
-    totalPendingService.forEach(element => {
-        expectedServiceRevenue = expectedServiceRevenue + Number(element.total);
-    });
-    console.log("Expected service revenue", expectedServiceRevenue);
-
-    let sellerTotalCommissions = await TOTAL_COMMISSION.find({}).exec();
-
-    let paidTotalCommissions = 0;
-    sellerTotalCommissions.forEach(element => {
-        paidTotalCommissions = paidTotalCommissions + Number(element.comission_total);
-    });
-    console.log("Total commision paid ", paidTotalCommissions);
-
-    var totalRevenue = productRevenue + completedServiceRev;
-    console.log("Total revenue ", totalRevenue);
-
-    var profit = totalRevenue - paidTotalCommissions;
-    console.log("Profit ", profit);
+    var profit = totalRev - comValue;
 
     return res.status(200).json({
         status: true,
         today_date: Date().toString(),
-        total_revenue: totalRevenue,
-        total_seller_commission: paidTotalCommissions,
-        website_profit: profit,
-        expected_service_revenue: expectedServiceRevenue
+        total_revenue: totalRev,
+        total_seller_commission: comValue,
+        website_profit: profit
+        // expected_service_revenue: expectedServiceRevenue
     });
 }
 

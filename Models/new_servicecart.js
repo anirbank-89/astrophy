@@ -1,4 +1,7 @@
-const mongoose = require('mongoose');
+var mongoose = require('mongoose');
+var moment = require('moment-timezone');
+
+var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 
 const SERVICE_CART_SCHEMA = new mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
@@ -37,6 +40,10 @@ const SERVICE_CART_SCHEMA = new mongoose.Schema({
     refund_request: {     // whether buyer has requested refund (within 3 ays of seller accept)
         type: String,
         default: ""
+    },
+    booking_date: {
+        type: Date,
+        default: dateKolkata
     }
 });
 

@@ -11,29 +11,9 @@ var ShopServices = require('../../Models/shop_service')
 var ServiceRefund = require('../../Models/service_refund')
 
 const viewAll = async (req, res) => {
-    return NewServiceCheckout.aggregate(
-        [
-            {
-                $match: {
+    var id = req.params.seller_id;
 
-                    seller_id: mongoose.Types.ObjectId(req.params.seller_id),
-                },
-            },
-            {
-                $lookup: {
-                    from: "servicecarts",
-                    localField: "order_id",
-                    foreignField: "order_id",
-                    as: "servicecart_data"
-                }
-            },
-            {
-                $project: {
-                    _v: 0
-                }
-            }
-        ]
-    )
+    return NewServiceCart.find({ seller_id: mongoose.Types.ObjectId(id) })
         .then((docs) => {
             res.status(200).json({
                 status: true,
@@ -72,7 +52,7 @@ const reportViewAll = async (req, res) => {
                 : { $project: { __v: 0 } },
             {
                 $lookup: {
-                    from: "servicecarts",
+                    from: "new_servicecarts",
                     localField: "order_id",
                     foreignField: "order_id",
                     as: "servicecart_data"
@@ -112,7 +92,7 @@ const viewSingleOrder = async (req, res) => {
             },
             {
                 $lookup: {
-                    from: "servicecarts",
+                    from: "new_servicecarts",
                     localField: "order_id",
                     foreignField: "order_id",
                     as: "servicecart_data"
