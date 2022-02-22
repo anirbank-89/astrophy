@@ -217,7 +217,7 @@ router.get('/legal-notice', LegalNotice.getNewNotices);
 router.get('/grievance', GrievanceController.getNewGrievances);
 
 /**=================================== Analytics Section =====================================*/
-router.get('/summary-stats', StatsController.summaryStats);
+router.post('/summary-stats', StatsController.summaryStats);
 router.post('/product-sales-report', StatsController.productSalesReport);
 router.post('/service-sales-report', StatsController.serviceSalesReport);
 router.get('/total-orders-and-revenues', StatsController.totalOrdersNRevenues);
