@@ -2,7 +2,7 @@ var moment = require('moment');
 
 const PRODUCT_CHECKOUTS = require('../../Models/checkout');
 const SELLER = require('../../Models/seller');
-const SERVICE_CHECKOUTS = require('../../Models/servicecheckout');
+const SERVICE_CHECKOUTS = require('../../Models/new_service_checkout');
 const SERV_CATEGORY = require('../../Models/service');
 const SHOP = require('../../Models/shop');
 const SHOP_SERVICE = require('../../Models/shop_service');
@@ -11,11 +11,213 @@ const USER = require('../../Models/user');
 const PRODUCT_REFUND = require('../../Models/product_refund');
 
 var summaryStats = async (req, res) => {
-    let users = await USER.find({ status: true }).exec();
-    let sellers = await SELLER.find({ seller_status: true }).exec(); //
+    var today = new Date();
+    var thirtyDaysAgo = today.setDate(today.getDate() - 30);
+    var date30DaysBack = new Date(thirtyDaysAgo);
+    var lastDay = today.setDate(today.getDate() - 1);
+    var lastDate = new Date(lastDay);
+
+    let users = await USER.aggregate([
+        /** date filtering for custom period selection */
+        (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
+            (req.body.dateto != "" && typeof req.body.dateto != "undefined")
+            ? {
+                $match: {
+                    start: {
+                        $lt: new Date(req.body.datefrom),
+                        $gt: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
+                    },
+                    status: true
+                },
+            }
+            : { $project: { __v: 0 } },
+        /**  date filtering for last month */
+        req.body.last_month == true
+            ? {
+                $match: {
+                    start: {
+                        $lte: moment.utc().toDate(),
+                        $gt: date30DaysBack
+                    },
+                    status: true
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for yesterday */
+        req.body.yesterday == true
+            ? {
+                $match: {
+                    start: {
+                        $lte: moment.utc().toDate(),
+                        $gt: lastDate
+                    },
+                    status: true
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for today */
+        req.body.today == true
+            ? {
+                $match: {
+                    start: {
+                        $gt: today
+                    },
+                    status: true
+                }
+            } : { $project: { __v: 0 } },
+    ]).exec();
+    
+    let sellers = await USER.aggregate([
+        /** date filtering for custom period selection */
+        (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
+            (req.body.dateto != "" && typeof req.body.dateto != "undefined")
+            ? {
+                $match: {
+                    start: {
+                        $lt: new Date(req.body.datefrom),
+                        $gt: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
+                    },
+                    status: true,
+                    type: "Seller"
+                },
+            }
+            : { $project: { __v: 0 } },
+        /**  date filtering for last month */
+        req.body.last_month == true
+            ? {
+                $match: {
+                    start: {
+                        $lte: moment.utc().toDate(),
+                        $gt: date30DaysBack
+                    },
+                    status: true,
+                    type: "Seller"
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for yesterday */
+        req.body.yesterday == true
+            ? {
+                $match: {
+                    start: {
+                        $lte: moment.utc().toDate(),
+                        $gt: lastDate
+                    },
+                    status: true,
+                    type: "Seller"
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for today */
+        req.body.today == true
+            ? {
+                $match: {
+                    start: {
+                        $gt: today
+                    },
+                    status: true,
+                    type: "Seller"
+                }
+            } : { $project: { __v: 0 } },
+    ]).exec();
+
     let serv_category = await SERV_CATEGORY.find({}).exec();
-    let shops = await SHOP.find({ status: true }).exec();
-    let shop_service = await SHOP_SERVICE.find({ status: true }).exec();
+    
+    let shops = await SHOP.aggregate([
+        /** date filtering for custom period selection */
+        (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
+            (req.body.dateto != "" && typeof req.body.dateto != "undefined")
+            ? {
+                $match: {
+                    start: {
+                        $lt: new Date(req.body.datefrom),
+                        $gt: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
+                    },
+                    status: true
+                },
+            }
+            : { $project: { __v: 0 } },
+        /**  date filtering for last month */
+        req.body.last_month == true
+            ? {
+                $match: {
+                    start: {
+                        $lte: moment.utc().toDate(),
+                        $gt: date30DaysBack
+                    },
+                    status: true
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for yesterday */
+        req.body.yesterday == true
+            ? {
+                $match: {
+                    start: {
+                        $lte: moment.utc().toDate(),
+                        $gt: lastDate
+                    },
+                    status: true
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for today */
+        req.body.today == true
+            ? {
+                $match: {
+                    start: {
+                        $gt: today
+                    },
+                    status: true
+                }
+            } : { $project: { __v: 0 } },
+    ]).exec();
+    
+    let shop_service = await SHOP_SERVICE.aggregate([
+        /** date filtering for custom period selection */
+        (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
+            (req.body.dateto != "" && typeof req.body.dateto != "undefined")
+            ? {
+                $match: {
+                    created_on: {   
+                        $lt: new Date(req.body.datefrom),
+                        $gt: moment.utc(req.body.dateto).toDate()     // endOf('day').toDate()
+                    },
+                    status: true,
+                    chataddstatus: false
+                },
+            }
+            : { $project: { __v: 0 } },
+        /**  date filtering for last month */
+        req.body.last_month == true
+            ? {
+                $match: {
+                    created_on: {
+                        $lte: moment.utc().toDate(),
+                        $gt: date30DaysBack
+                    },
+                    status: true,
+                    chataddstatus: false
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for yesterday */
+        req.body.yesterday == true
+            ? {
+                $match: {
+                    created_on: {
+                        $lte: moment.utc().toDate(),
+                        $gt: lastDate
+                    },
+                    status: true,
+                    chataddstatus: false
+                }
+            } : { $project: { __v: 0 } },
+        /** date filtering for today */
+        req.body.today == true
+            ? {
+                $match: {
+                    created_on: {
+                        $gt: today
+                    },
+                    status: true,
+                    chataddstatus: false
+                }
+            } : { $project: { __v: 0 } },
+    ]).exec();
 
     return res.status(200).json({
         status: true,
@@ -307,9 +509,10 @@ var totalRevenueNProfit = async (req, res) => {
     totalCompletedServices.forEach(element => {
         completedServiceRev = completedServiceRev + Number(element.total);
     });
+    console.log("Service revenue", completedServiceRev);
+
     /**----------calculate service refund value----------*/
     /**--------------------------------------------------*/
-    console.log("Service revenue", completedServiceRev);
 
     var totalPendingService = totalServices.filter(item => item.acceptstatus == "pending");
     // console.log(totalPendingService);
