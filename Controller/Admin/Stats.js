@@ -11,11 +11,15 @@ const USER = require('../../Models/user');
 const PRODUCT_REFUND = require('../../Models/product_refund');
 
 var summaryStats = async (req, res) => {
-    var today = new Date();
-    var thirtyDaysAgo = today.setDate(today.getDate() - 30);
+    var today =  new Date(); // moment.utc().toDate();
+    var thirtyDaysAgo = new Date().setDate(today.getDate() - 30);
     var date30DaysBack = new Date(thirtyDaysAgo);
-    var lastDay = today.setDate(today.getDate() - 1);
+    var lastDay = new Date().setDate(today.getDate() - 1);
     var lastDate = new Date(lastDay);
+
+    console.log("Today ", today);
+    console.log("Yesterday ", lastDate);
+    console.log("30 days back ", date30DaysBack);
 
     let users = await USER.aggregate([
         /** date filtering for custom period selection */
@@ -36,7 +40,7 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     start: {
-                        $lte: moment.utc().toDate(),
+                        $lt: today,
                         $gt: date30DaysBack
                     },
                     status: true
@@ -47,7 +51,7 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     start: {
-                        $lte: moment.utc().toDate(),
+                        $lt: today,
                         $gt: lastDate
                     },
                     status: true
@@ -85,7 +89,7 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     start: {
-                        $lte: moment.utc().toDate(),
+                        $lt: today,
                         $gt: date30DaysBack
                     },
                     status: true,
@@ -97,7 +101,7 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     start: {
-                        $lte: moment.utc().toDate(),
+                        $lt: today,
                         $gt: lastDate
                     },
                     status: true,
@@ -138,7 +142,7 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     start: {
-                        $lte: moment.utc().toDate(),
+                        $lt: today,
                         $gt: date30DaysBack
                     },
                     status: true
@@ -149,7 +153,7 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     start: {
-                        $lte: moment.utc().toDate(),
+                        $lt: today,
                         $gt: lastDate
                     },
                     status: true
@@ -187,7 +191,7 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     created_on: {
-                        $lte: moment.utc().toDate(),
+                        $lt: today,
                         $gt: date30DaysBack
                     },
                     status: true,
@@ -199,7 +203,7 @@ var summaryStats = async (req, res) => {
             ? {
                 $match: {
                     created_on: {
-                        $lte: moment.utc().toDate(),
+                        $lt: today,
                         $gt: lastDate
                     },
                     status: true,
@@ -368,11 +372,15 @@ var totalOrdersNRevenues = async (req, res) => {
 }
 
 var ordersNRevenuesByDate = async (req, res) => {
-    var today = new Date();
-    var thirtyDaysAgo = today.setDate(today.getDate() - 30);
+    var today =  new Date(); // moment.utc().toDate();
+    var thirtyDaysAgo = new Date().setDate(today.getDate() - 30);
     var date30DaysBack = new Date(thirtyDaysAgo);
-    var lastDay = today.setDate(today.getDate() - 1);
+    var lastDay = new Date().setDate(today.getDate() - 1);
     var lastDate = new Date(lastDay);
+
+    console.log("Today ", today);
+    console.log("Yesterday ", lastDate);
+    console.log("30 days back ", date30DaysBack);
 
     let totalProductRev = await PRODUCT_CHECKOUTS.aggregate([
         /** date filtering for custom period selection */
