@@ -4,7 +4,22 @@ const SHOP = require('../../Models/shop');
 const SHOP_SERVICES = require('../../Models/shop_service');
 
 var getAllShops = async (req, res) => {
-    return SHOP.find({})
+    return SHOP.aggregate([
+        {
+            $lookup: {
+                from: "users",
+                localField: "userid",
+                foreignField: "_id",
+                as: "user_data"
+            }
+        },
+        {
+            $unwind: {
+                path: "$user_data",
+                preserveNullAndEmptyArrays: true
+            }
+        }
+    ])
         .then(data => {
             res.status(200).json({
                 status: true,
