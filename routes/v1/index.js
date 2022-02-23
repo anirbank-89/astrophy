@@ -22,6 +22,7 @@ const ShopServiceController = require("../../Controller/User/ShopServices");
 const PaypalPaymentController = require("../../Controller/User/Paypalpayment");
 const StripesubscriptionController = require("../../Controller/User/Stripesubscription");
 const FeedbackController = require('../../Controller/User/Feedback');
+const ContactUsController = require('../../Controller/User/ContactUs');
 const CmsController = require('../../Controller/User/Cms');
 const LegalNotice = require('../../Controller/User/LegalNotice');
 const GrievanceController = require('../../Controller/User/Grievance');
@@ -91,6 +92,7 @@ router.post('/user/stripe/subs-retrive', StripesubscriptionController.subsretriv
 
 router.post('/user/stripe/subs-cancel', StripesubscriptionController.subcancel);
 
+router.post('/user/sellercontact', ContactUsController.contactUsInfo);
 router.post('/user/contactus', UserController.contactus);
 
 router.get('/user/cms/achievement', CmsController.viewAllAchievements)

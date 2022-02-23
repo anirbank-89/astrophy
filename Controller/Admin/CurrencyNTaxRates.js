@@ -70,7 +70,62 @@ var getCurrencies = async (req, res) => {
         });
 }
 
-var getTaxRateByCurrency = async (req,res) => {
+var getCurrenciesById = async (req, res) => {
+    var id = req.params.id;
+
+    return CURRENCY.findOne({ _id: mongoose.Types.ObjectId(id) })
+        .then(docs => {
+            res.status(200).json({
+                status: true,
+                message: "Data get successfully.",
+                data: docs
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err.message
+            });
+        });
+}
+
+var editCurrency = async (req, res) => {
+    var id = req.params.id;
+
+    const V = new Validator({
+        name: 'required',
+        abbreviation: 'required',
+        tax_rate: 'required'
+    });
+    let matched = await V.check().then(val => val);
+
+    if (!matched) {
+        return res.status(400).json({ status: false, errors: V.errors });
+    }
+
+    return CURRENCY.findOneAndUpdate(
+        { _id: mongoose.Types.ObjectId(id) }, 
+        req.body,
+        { new: true }
+    )
+        .then(docs => {
+            res.status(200).json({
+                status: true,
+                message: "Data successfully edited.",
+                data: docs
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err.message
+            });
+        });
+}
+
+var getTaxRateByCurrency = async (req, res) => {
     return CURRENCY.findOne({ abbreviation: req.body.currency })
         .then(docs => {
             res.status(200).json({
@@ -88,7 +143,7 @@ var getTaxRateByCurrency = async (req,res) => {
         });
 }
 
-var deleteCurrency = async (req,res) => {
+var deleteCurrency = async (req, res) => {
     var id = req.params.id;
 
     return CURRENCY.findOneAndDelete({ _id: mongoose.Types.ObjectId(id) })
@@ -111,6 +166,8 @@ var deleteCurrency = async (req,res) => {
 module.exports = {
     addCurrencyNTax,
     getCurrencies,
+    getCurrenciesById,
+    editCurrency,
     getTaxRateByCurrency,
     deleteCurrency
 }

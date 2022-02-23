@@ -4,22 +4,14 @@ var dateKolkata = moment.tz(Date.now(), "Asia/Kolkata");
 
 const ContactusSchema = new mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
-    name:{
-        type:String,
-        required:true,
-    },
-    email:{
-        type:String,
-        required:true,
-    },
+    name: String,
+    email: String,
     // cat_id:{
     //     type:String,
     //     required:true,
     // },
-    message:{
-        type:String,
-        required:true,
-    },
+    message: String,
+    reply: String,
     status:{
         type:Boolean,
         default:true

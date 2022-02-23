@@ -90,6 +90,11 @@ const viewAllShopServices = async (req, res) => {
         .aggregate(
             [
                 {
+                    $match: {
+                        status: true
+                    }
+                },
+                {
                     $lookup: {
                         from: "categories",
                         localField: "category_id",
@@ -123,7 +128,12 @@ const viewAllShopServices = async (req, res) => {
 const viewShopServicesPerSeller = async (req, res) => {
     var id = req.params.id          // shop_id of shop_services
 
-    ShopService.find({ shop_id: { $in: [mongoose.Types.ObjectId(id)] } })
+    ShopService.find(
+        {
+            shop_id: { $in: [mongoose.Types.ObjectId(id)] }, 
+            status: true
+        }
+    )
         .then((data) => {
             if (data == null || data == '') {
                 res.status(200).json({
@@ -440,7 +450,7 @@ const chatServiceregister = async (req, res) => {
     let shopServiceData = {
         _id: mongoose.Types.ObjectId(),
         shop_id: mongoose.Types.ObjectId(req.body.shop_id),
-        seller_id: mongoose.Types.ObjectId(req.body.seller_id), 
+        seller_id: mongoose.Types.ObjectId(req.body.seller_id),
         name: req.body.name,
         price: req.body.price,
         details: req.body.details,

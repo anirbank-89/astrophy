@@ -112,6 +112,7 @@ const viewShopServicesPerService = async (req,res)=>{
                     {
                         $match:{
                             subcategory_id: {$in: [mongoose.Types.ObjectId(id)]},
+                            status: true,
                             chataddstatus : false
                         }
                     },
@@ -134,7 +135,6 @@ const viewShopServicesPerService = async (req,res)=>{
                             as: "shop_details"
                         }
                     },
-
                     {
                         $lookup:{
                             from:"servicereviews",

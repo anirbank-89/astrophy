@@ -37,6 +37,44 @@ var verification = async (name, email) => {
     });
 };
 
+function replyToContact(user_name,reply,user_mail) {
+  var emailTemplate =
+    '<p>' +
+    'Hi ' + user_name + ',' +
+    '</p>' +
+    '<p>' + 
+    reply + 
+    '</p>' + 
+    '</br>' + 
+    '<p>' + 
+    'Thanking you,' + 
+    '</p>' + 
+    '<p>' + 
+    'Team Astrophy' + 
+    '</p>'
+
+  let data = {
+    to: user_mail,
+    message: emailTemplate,
+    subject: "Astrophy - Reply to contact"
+  }
+
+  superagent
+    .post('https://new.easytodb.com/astrophymail/semdmail.php')
+    .send(data) // sends a JSON post body
+    .set('Content-Type', 'application/json')
+    .end((err, info) => {
+      if (err) {
+        console.log(err);
+        // return err;
+      }
+      else {
+        console.log("Email info: ", info);
+        //   return info;
+      }
+    });
+}
+
 function queries(rciv_mail, user_email, question, addn_detail) {
   var emailTemplate =
     '<p>' +
@@ -111,6 +149,7 @@ function buyerOrderConfirmation(order_info, serv_info, user_email) {
 
 module.exports = {
   verification,
+  replyToContact,
   queries,
   buyerOrderConfirmation
 }

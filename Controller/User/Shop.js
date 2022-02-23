@@ -167,7 +167,10 @@ const viewAllShops = async (req,res)=>{
 const viewShop = async (req,res)=>{
     let id = req.params.id
     return Shop.findOne(
-        {userid: { $in : [mongoose.Types.ObjectId(id)] } }, 
+        {
+            userid: { $in : [mongoose.Types.ObjectId(id)] }, 
+            status: true
+        }, 
         async (err,docs)=>{
             if(err){
                 res.status(500).json({

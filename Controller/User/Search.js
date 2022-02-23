@@ -59,19 +59,26 @@ const serviceSearch = async (req, res) => {
   return ShopService.aggregate([
     req.body.servicename != "" && typeof req.body.servicename != "undefined"
       ? {
-        $match: { name: { $in: [req.body.servicename.toString()] } },
+        $match: {
+          name: { $in: [req.body.servicename.toString()] },
+          status: true
+        }
       }
       : { $project: { __v: 0 } },
     req.body.serv_cat_name != "" && typeof req.body.serv_cat_name != "undefined"
       ? {
         $match: {
-          subcat_name: { $regex: ".*" + req.body.serv_cat_name + ".*", $options: "i" }
+          subcat_name: { $regex: ".*" + req.body.serv_cat_name + ".*", $options: "i" },
+          status: true
         },
       }
       : { $project: { __v: 0 } },
     shopId.length > 0
       ? {
-        $match: { shop_id: { $in: shopId } },
+        $match: {
+          shop_id: { $in: shopId },
+          status: true
+        }
       }
       : { $project: { __v: 0 } },
     (req.body.min != "" && typeof req.body.min != "undefined") ||
@@ -86,9 +93,10 @@ const serviceSearch = async (req, res) => {
               {
                 $lte: ["$price", req.body.max],
               },
-            ],
-          },
-        },
+              { status: true }
+            ]
+          }
+        }
       }
       : { $project: { __v: 0 } },
     {
@@ -343,10 +351,15 @@ const autoSearch = async (req, res) => {
   let Service = await ShopService.aggregate([
     {
       $match: {
-        $or: [
-          {name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" }}, 
-          {cat_name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" }}, 
-          {subcat_name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" }}
+        $and: [
+          {
+            $or: [
+              { name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" } },
+              { cat_name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" } },
+              { subcat_name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" } }
+            ]
+          },
+          { status: true }
         ]
       },
     },
@@ -445,7 +458,8 @@ const searchAll = async (req, res) => {
     return ShopService.aggregate([
       {
         $match: {
-          name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" },
+          name: { $regex: ".*" + req.body.searchname + ".*", $options: "i" }, 
+          status: true
         },
       },
       {
@@ -458,7 +472,7 @@ const searchAll = async (req, res) => {
       },
       {
         $lookup: {
-          from: "servicecarts",
+          from: "new_servicecarts",
           localField: "_id",
           foreignField: "serv_id",
           as: "cart_items",

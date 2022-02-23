@@ -75,7 +75,7 @@ var deactivateShopServ = async (req, res) => {
         });
 }
 
-var deleteShopServ = async (req,res) => {
+var deleteShopServ = async (req, res) => {
     var id = req.params.id;
 
     return SHOP_SERVICES.findOneAndDelete({ _id: mongoose.Types.ObjectId(id) })
@@ -338,7 +338,12 @@ var shopServicesByCat = async (req, res) => {
     //         }
     //     }
     // }
-    let shopServices = await SHOP_SERVICES.find({ subcategory_id: mongoose.Types.ObjectId(req.body.subcat_id) }).exec();
+    let shopServices = await SHOP_SERVICES.find(
+        {
+            subcategory_id: mongoose.Types.ObjectId(req.body.subcat_id), 
+            status: true
+        }
+    ).exec();
 
     if (shopServices.length > 0) {
         return res.status(200).json({

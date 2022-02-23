@@ -161,10 +161,6 @@ router.post('/buy-history-of-buyer', SellerMyaccountController.buyHistFromUser);
 
 router.get('/summary-stats/:id', SellerMyaccountController.summaryStats);
 
-// contact us
-router.post('/sellercontact', ContactUsController.sellerContactUsInfo);
-router.post('/user_questions', ContactUsController.userContactUsInfo);
-// contact us
 router.get('/sellercomission/:id',UserSellerController.sellercomHistory); // same as '/claimable-commissions/:id' in line 144           
 router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingcomission);
 router.get('/withdraw-history/:id',UserSellerController.withdrawHistory);
@@ -172,6 +168,7 @@ router.post('/Kyc',UserSellerController.kyccreateNUpdate);
 router.get('/Kyc/:id',UserSellerController.getKyc);
 router.get('/getGraphcomission/:id',UserSellerController.getGraphcomission);
 
+router.post('/user_questions', ContactUsController.makeAQuery);
 router.post('/problem-report', ProblemReport.reportProblem);
 
 

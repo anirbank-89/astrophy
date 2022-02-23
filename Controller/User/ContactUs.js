@@ -6,7 +6,7 @@ var ContactUs = require("../../Models/seller_contactus");
 const USER_QUERIES = require('../../Models/user_queries');
 const EMAIL_SEND = require('../../service/emailsend');
 
-const sellerContactUsInfo = async (req, res) => {
+const contactUsInfo = async (req, res) => {
     const v = new Validator(req.body, {
         name: "required",
         email: "required|email",
@@ -14,13 +14,10 @@ const sellerContactUsInfo = async (req, res) => {
         message: "required"
 
     })
-
     let matched = await v.check().then((val) => val)
+
     if (!matched) {
-        return res.status(200).send({
-            status: false,
-            error: v.errors
-        })
+        return res.status(400).json({ status: false, error: v.errors })
     }
 
     let contactus = {
@@ -32,13 +29,12 @@ const sellerContactUsInfo = async (req, res) => {
 
     }
 
-    const contactSave = await new ContactUs(contactus)
+    const contactSave = new ContactUs(contactus)
 
     return contactSave
         .save()
         .then((data) => {
-            EMAIL_SEND.grievance(data.email);
-
+            // EMAIL_SEND.grievance(data.email);
             res.status(200).json({
                 status: true,
                 data: data,
@@ -49,12 +45,12 @@ const sellerContactUsInfo = async (req, res) => {
             res.status(500).json({
                 status: false,
                 message: "error. Please try again.",
-                error: err,
+                error: err.message,
             });
         })
 }
 
-var userContactUsInfo = async (req, res) => {
+var makeAQuery = async (req, res) => {
     const V = new Validator(req.body, {
         user_type: 'required',
         email: 'required|email',
@@ -104,6 +100,6 @@ var userContactUsInfo = async (req, res) => {
 }
 
 module.exports = {
-    sellerContactUsInfo,
-    userContactUsInfo
+    contactUsInfo,
+    makeAQuery
 }
