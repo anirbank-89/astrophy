@@ -101,7 +101,7 @@ const serviceSearch = async (req, res) => {
     },
     {
       $lookup: {
-        from: "servicecarts",
+        from: "new_servicecarts",
         localField: "_id",
         foreignField: "serv_id",
         as: "cart_items",
