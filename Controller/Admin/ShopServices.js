@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var User = require('../../Models/user');
 const SERVICE_CHECKOUTS = require('../../Models/servicecheckout');
-const SUBCATEGORIES = require('../../Models/service');
+const SHOP_SERVICES = require('../../Models/shop_service');
 
 const viewTopServiceProvider = async (req, res) => {
     User
@@ -230,44 +230,39 @@ var lastDayMostSalesPerSeller = async (req, res) => {
 }
 
 var shopServicesByCat = async (req, res) => {
-    return SUBCATEGORIES.aggregate([
-        {
-            $lookup: {
-                from: "shop_services",
-                localField: "_id",
-                foreignField: "subcategory_id",
-                as: "service_data"
-            }
-        },
-        {
-            $addFields: {
-                no_of_services: {
-                    $cond:
-                    { if: { $isArray: "$service_data" }, then: { $size: "$service_data" }, else: 0 }
-                }
-            }
-        }
+    // return SUBCATEGORIES.aggregate([
         // {
-        //     $group: {
-        //         _id: "$name",
-        //         numberOfServices: {}
+        //     $lookup: {
+        //         from: "shop_services",
+        //         localField: "_id",
+        //         foreignField: "subcategory_id",
+        //         as: "service_data"
+        //     }
+        // },
+        // {
+        //     $addFields: {
+        //         no_of_services: {
+        //             $cond:
+        //             { if: { $isArray: "$service_data" }, then: { $size: "$service_data" }, else: 0 }
+        //         }
         //     }
         // }
-    ])
-        .then(docs => {
-            res.status(200).json({
-                status: true,
-                message: "Data successfully get.",
-                data: docs
-            });
-        })
-        .catch(err => {
-            res.status(500).json({
-                status: false,
-                message: "Failed to get data. Server error.",
-                error: err.message
-            });
+    let shopServices = await SHOP_SERVICES.find({ subcategory_id: mongoose.Types.ObjectId(req.body.subcat_id) }).exec();
+
+    if (shopServices.length > 0) {
+        return res.status(200).json({
+            status: true,
+            message: "Data successfully get.",
+            data: shopServices
         });
+    }
+    else {
+        return res.status(200).json({
+            status: true,
+            message: "No service available for this category.",
+            data: []
+        });
+    }
 }
 
 module.exports = {

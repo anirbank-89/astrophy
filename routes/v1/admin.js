@@ -121,7 +121,7 @@ router.put('/adminAccept/:id',ServiceController.updateAdminaccept)
 
 router.get('/topProviders', ShopServiceController.viewTopServiceProvider); // added by anirbank-93
 router.post('/most-sales-last-day-per-seller', ShopServiceController.lastDayMostSalesPerSeller);// added by anirbank-93
-router.get('/services-by-category', ShopServiceController.shopServicesByCat); // added by anirbank-93
+router.post('/services-by-category', ShopServiceController.shopServicesByCat); // added by anirbank-93
 
 router.post('/service/subcategory',ServiceSubCategoryController.create)    // added by anirbank-93
 router.get('/service/subcategory', ServiceSubCategoryController.viewAll)   // added by anirbank-93
