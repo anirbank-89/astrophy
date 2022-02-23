@@ -99,9 +99,9 @@ const serviceSearch = async (req, res) => {
         as: "shop_details",
       },
     },
-    {
-      $unwind: "$shop_details"
-    },
+    // {
+    //   $unwind: "$shop_details"
+    // },
     {
       $lookup: {
         from: "new_servicecarts",
