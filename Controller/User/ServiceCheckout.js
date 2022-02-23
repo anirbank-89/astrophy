@@ -244,147 +244,156 @@ const setStatus = async (req, res) => {
 
   console.log("Cart data", current_status);
 
-  if (current_status.acceptstatus === "pending") {
-    console.log(true);
-    if (acceptstatus == 'accept') {
-      return NEW_SERVICECART.findByIdAndUpdate(
-        { _id: id },
-        {
-          $set: {
-            acceptstatus: acceptstatus
-            // completestatus: true
-          }
-        },
-        // { new: true },
-        async (err, docs) => {
-          docs = { ...docs._doc, ...req.body };
-          if (!err) {
-
-            let userData = await User.findOne({ _id: docs.user_id }).exec();
-            let checkoutData = await NEW_SERVICE_CHECKOUT.findOne({ order_id: docs.order_id }).exec();
-
-            let sendMail = emailSend.buyerOrderConfirmation(checkoutData, docs, userData.email);
-
-            // enter data in service commission earned and total commission throughout history
-            let servTotalVal = 0;
-
-            if (docs.discount_percent == 0) {
-              servTotalVal = docs.price;
-            }
-            else {
-              servTotalVal = docs.price - ((docs.price * docs.discount_percent) / 100);
-            }
-
-            let subDataf = await SubscribedBy.findOne(
-              {
-                userid: docs.seller_id,
-                status: true
-              }
-            ).exec();
-
-            let sellerCom = 0;
-
-            let comType = subDataf.comission_type;
-
-            let comValue = subDataf.seller_comission;
-
-            if (comType == "Flat comission") {
-              sellerCom = comValue;
-            }
-            else {
-              sellerCom = (servTotalVal * comValue) / 100;
-            }
-
-            let dataComision = {
-              _id: mongoose.Types.ObjectId(),
-              seller_id: mongoose.Types.ObjectId(docs.seller_id),
-              order_id: docs.order_id,
-              commision_type: comType,
-              commision_value: comValue,
-              price: servTotalVal,
-              seller_commission: sellerCom
-            };
-
-            //     console.log(dataComision);
-            // return false;
-            const saveCom = new Servicecommission(dataComision);
-            saveCom.save()
-
-            let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(docs.seller_id) }).exec();
-            console.log(totalcomission)
-
-            if (totalcomission != null) {
-              console.log('a')
-
-              let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
-              Totalcomission.findOneAndUpdate(
-                { seller_id: mongoose.Types.ObjectId(docs.seller_id) },
-                { $set: { comission_total: totalComcal, comission_all: totalComcal } },
-                (err, writeResult) => {
-                  // console.log(err);
-                }
-              );
-            }
-            else {
-              console.log('b')
-              let dataComisionTotalval = {
-                _id: mongoose.Types.ObjectId(),
-                seller_id: mongoose.Types.ObjectId(docs.seller_id),
-                comission_total: sellerCom,
-                comission_all: sellerCom
-              };
-              console.log(dataComisionTotalval)
-              const saveComTotal = new Totalcomission(dataComisionTotalval);
-              saveComTotal.save()
-            }
-
-            res.status(200).json({
-              status: true,
-              message: "Service request has been accepted.",
-              data: docs
-            });
-          }
-          else {
-            res.status(500).json({
-              status: false,
-              message: "Invalid id. Server error.",
-              error: err
-            });
-          }
-        }
-      );
-    }
-    else {
-      return NEW_SERVICECART.findByIdAndUpdate(
-        { _id: id },
-        { $set: { acceptstatus: acceptstatus } },
-        // { new: true },
-        async (err, docs) => {
-          docs = { ...docs._doc, ...req.body };
-          if (!err) {
-            res.status(200).json({
-              status: true,
-              message: "Service request has been rejected.",
-              data: docs
-            });
-          }
-          else {
-            res.status(500).json({
-              status: false,
-              message: "Invalid id. Server error.",
-              error: err
-            });
-          }
-        }
-      );
-    }
-  }
-  else {
+  if (current_status.order_id == "" || current_status.order_id == null || typeof current_status.order_id == "undefined") {
     return res.status(500).json({
       status: false,
-      error: "Seller action for this service is set.",
+      error: "Payment not yet made. Cannot accept this order.",
       data: null
     });
+  }
+  else {
+    if (current_status.acceptstatus === "pending") {
+      console.log(true);
+      if (acceptstatus == 'accept') {
+        return NEW_SERVICECART.findByIdAndUpdate(
+          { _id: id },
+          {
+            $set: {
+              acceptstatus: acceptstatus
+              // completestatus: true
+            }
+          },
+          // { new: true },
+          async (err, docs) => {
+            docs = { ...docs._doc, ...req.body };
+            if (!err) {
+
+              let userData = await User.findOne({ _id: docs.user_id }).exec();
+              let checkoutData = await NEW_SERVICE_CHECKOUT.findOne({ order_id: docs.order_id }).exec();
+
+              let sendMail = emailSend.buyerOrderConfirmation(checkoutData, docs, userData.email);
+
+              // enter data in service commission earned and total commission throughout history
+              let servTotalVal = 0;
+
+              if (docs.discount_percent == 0) {
+                servTotalVal = docs.price;
+              }
+              else {
+                servTotalVal = docs.price - ((docs.price * docs.discount_percent) / 100);
+              }
+
+              let subDataf = await SubscribedBy.findOne(
+                {
+                  userid: docs.seller_id,
+                  status: true
+                }
+              ).exec();
+
+              let sellerCom = 0;
+
+              let comType = subDataf.comission_type;
+
+              let comValue = subDataf.seller_comission;
+
+              if (comType == "Flat comission") {
+                sellerCom = comValue;
+              }
+              else {
+                sellerCom = (servTotalVal * comValue) / 100;
+              }
+
+              let dataComision = {
+                _id: mongoose.Types.ObjectId(),
+                seller_id: mongoose.Types.ObjectId(docs.seller_id),
+                order_id: docs.order_id,
+                commision_type: comType,
+                commision_value: comValue,
+                price: servTotalVal,
+                seller_commission: sellerCom
+              };
+
+              //     console.log(dataComision);
+              // return false;
+              const saveCom = new Servicecommission(dataComision);
+              saveCom.save()
+
+              let totalcomission = await Totalcomission.findOne({ seller_id: mongoose.Types.ObjectId(docs.seller_id) }).exec();
+              console.log(totalcomission)
+
+              if (totalcomission != null) {
+                console.log('a')
+
+                let totalComcal = parseFloat(totalcomission.comission_total) + parseFloat(sellerCom)
+                Totalcomission.findOneAndUpdate(
+                  { seller_id: mongoose.Types.ObjectId(docs.seller_id) },
+                  { $set: { comission_total: totalComcal, comission_all: totalComcal } },
+                  (err, writeResult) => {
+                    // console.log(err);
+                  }
+                );
+              }
+              else {
+                console.log('b')
+                let dataComisionTotalval = {
+                  _id: mongoose.Types.ObjectId(),
+                  seller_id: mongoose.Types.ObjectId(docs.seller_id),
+                  comission_total: sellerCom,
+                  comission_all: sellerCom
+                };
+                console.log(dataComisionTotalval)
+                const saveComTotal = new Totalcomission(dataComisionTotalval);
+                saveComTotal.save()
+              }
+
+              res.status(200).json({
+                status: true,
+                message: "Service request has been accepted.",
+                data: docs
+              });
+            }
+            else {
+              res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err
+              });
+            }
+          }
+        );
+      }
+      else {
+        return NEW_SERVICECART.findByIdAndUpdate(
+          { _id: id },
+          { $set: { acceptstatus: acceptstatus } },
+          // { new: true },
+          async (err, docs) => {
+            docs = { ...docs._doc, ...req.body };
+            if (!err) {
+              res.status(200).json({
+                status: true,
+                message: "Service request has been rejected.",
+                data: docs
+              });
+            }
+            else {
+              res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err
+              });
+            }
+          }
+        );
+      }
+    }
+    else {
+      return res.status(500).json({
+        status: false,
+        error: "Seller action for this service is set.",
+        data: null
+      });
+    }
   }
 }
 
