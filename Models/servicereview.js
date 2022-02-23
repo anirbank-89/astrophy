@@ -8,7 +8,8 @@ const ServiceReviewSchema = new mongoose.Schema({
     user_id:mongoose.Schema.Types.ObjectId,
     seller_id:mongoose.Schema.Types.ObjectId,
     rating:{
-        type:Number
+        type:Number,
+        required: true
     }, 
     comment:{
         type:String,

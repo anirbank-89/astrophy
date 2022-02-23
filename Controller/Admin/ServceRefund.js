@@ -4,6 +4,7 @@ const SERVICE_REFUND = require('../../Models/service_refund');
 const SERVICE_COMMISSION = require('../../Models/servicecommission');
 const SUBSCRIBED_BY = require('../../Models/subscr_purchase');
 const TOTAL_SERVICE_COMMISSION_REFUND = require('../../Models/total_servicecomission_refund');
+const SERVICE_CART = require('../../Models/new_servicecart');
 
 var getAllRefundRequests = async (req, res) => {
     var refundRequests = await SERVICE_REFUND.aggregate([
@@ -14,7 +15,7 @@ var getAllRefundRequests = async (req, res) => {
         },
         {
             $lookup: {
-                from: "servicecarts",
+                from: "new_servicecarts",
                 localField: "order_id",
                 foreignField: "order_id",
                 as: "cart_items"
@@ -22,6 +23,17 @@ var getAllRefundRequests = async (req, res) => {
         },
         {
             $unwind: "$cart_items"
+        },
+        {
+            $lookup: {
+                from: "shop_services",
+                localField: "serv_id",
+                foreignField: "_id",
+                as: "service_data"
+            }
+        },
+        {
+            $unwind: "$service_data"
         },
         {
             $lookup: {
@@ -70,7 +82,7 @@ var approveRefund = async (req, res) => {
             console.log("Service refund", docs);
 
             SERVICE_COMMISSION.findOneAndUpdate(
-                { order_id: docs.order_id },
+                { cart_id: docs.cart_id },
                 { $set: { refund: true } }
             ).exec();
             
@@ -218,6 +230,11 @@ var adminInitiateRefund = async (req, res) => {
         { new: true }
     )
         .then(docs => {
+            SERVICE_CART.findOneAndUpdate(
+                { _id: docs.cart_id }, 
+                { $set: { refund_request: "refund_initiated" } }
+            ).exec();
+            
             res.status(200).json({
                 status: true,
                 message: "Data successfully edited.",

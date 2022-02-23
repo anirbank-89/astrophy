@@ -305,7 +305,9 @@ const setStatus = async (req, res) => {
 
               let dataComision = {
                 _id: mongoose.Types.ObjectId(),
-                seller_id: mongoose.Types.ObjectId(docs.seller_id),
+                serv_id: docs.serv_id,
+                seller_id: docs.seller_id,
+                cart_id: docs._id,
                 order_id: docs.order_id,
                 commision_type: comType,
                 commision_value: comValue,

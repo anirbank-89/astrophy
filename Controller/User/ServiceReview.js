@@ -1,5 +1,7 @@
 var mongoose = require("mongoose");
+
 var Servicereview = require("../../Models/servicereview");
+var Servicecart = require("../../Models/new_servicecart");
 
 const create = async (req, res) => {
   let shopServiceData = {
@@ -7,9 +9,7 @@ const create = async (req, res) => {
     service_id: mongoose.Types.ObjectId(req.body.service_id),
     user_id: mongoose.Types.ObjectId(req.body.user_id),
     order_id: req.body.order_id,
-  };
-  if (typeof req.body.rating != "undefined" || req.body.rating != "") {
-    shopServiceData.rating = req.body.rating;
+    rating: req.body.rating
   }
   if (typeof req.body.comment != "undefined" || req.body.comment != "") {
     shopServiceData.comment = req.body.comment;
@@ -23,6 +23,21 @@ const create = async (req, res) => {
     review
       .save()
       .then((docs) => {
+        Servicecart.updateMany(
+          {
+            serv_id: docs.service_id,
+            user_id: docs.user_id,
+            order_id: docs.order_id
+          },
+          { $set: { rating: docs.rating } }, 
+          { multi: true },
+          (fault,result) => {
+            if (fault) {
+              console.log(fault.message);
+            }
+          }
+        );
+
         res.status(200).json({
           status: true,
           message: "Review Saved sucessfully!",
