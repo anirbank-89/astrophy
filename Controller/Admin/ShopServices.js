@@ -4,6 +4,97 @@ var User = require('../../Models/user');
 const SERVICE_CHECKOUTS = require('../../Models/servicecheckout');
 const SHOP_SERVICES = require('../../Models/shop_service');
 
+var getAllServices = async (req, res) => {
+    return SHOP_SERVICES.aggregate([
+        {
+            $lookup: {
+                from: "shops",
+                localField: "shop_id",
+                foreignField: "_id",
+                as: "shop_data"
+            }
+        },
+        {
+            $unwind: {
+                path: "$shop_data",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "seller_id",
+                foreignField: "_id",
+                as: "user_data"
+            }
+        },
+        {
+            $unwind: {
+                path: "$user_data",
+                preserveNullAndEmptyArrays: true
+            }
+        }
+    ])
+        .then(data => {
+            res.status(200).json({
+                status: true,
+                message: "Shop services get successfully.",
+                data: data
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Failed to get data. Server error.",
+                error: err
+            });
+        });
+}
+
+var deactivateShopServ = async (req, res) => {
+    var id = req.params.id;
+
+    return SHOP_SERVICES.findOneAndUpdate(
+        { _id: mongoose.Types.ObjectId(id) },
+        { $set: { status: false } },
+        { new: true }
+    )
+        .then(data => {
+            res.status(200).json({
+                status: true,
+                message: "Shop service have been deactivated.",
+                data: data
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err
+            });
+        });
+}
+
+var deleteShopServ = async (req,res) => {
+    var id = req.params.id;
+
+    return SHOP_SERVICES.findOneAndDelete({ _id: mongoose.Types.ObjectId(id) })
+        .then(data => {
+            res.status(200).json({
+                status: true,
+                message: "Shop service has been deleted.",
+                data: data
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err
+            });
+        });
+}
+
 const viewTopServiceProvider = async (req, res) => {
     User
         .aggregate(
@@ -231,22 +322,22 @@ var lastDayMostSalesPerSeller = async (req, res) => {
 
 var shopServicesByCat = async (req, res) => {
     // return SUBCATEGORIES.aggregate([
-        // {
-        //     $lookup: {
-        //         from: "shop_services",
-        //         localField: "_id",
-        //         foreignField: "subcategory_id",
-        //         as: "service_data"
-        //     }
-        // },
-        // {
-        //     $addFields: {
-        //         no_of_services: {
-        //             $cond:
-        //             { if: { $isArray: "$service_data" }, then: { $size: "$service_data" }, else: 0 }
-        //         }
-        //     }
-        // }
+    // {
+    //     $lookup: {
+    //         from: "shop_services",
+    //         localField: "_id",
+    //         foreignField: "subcategory_id",
+    //         as: "service_data"
+    //     }
+    // },
+    // {
+    //     $addFields: {
+    //         no_of_services: {
+    //             $cond:
+    //             { if: { $isArray: "$service_data" }, then: { $size: "$service_data" }, else: 0 }
+    //         }
+    //     }
+    // }
     let shopServices = await SHOP_SERVICES.find({ subcategory_id: mongoose.Types.ObjectId(req.body.subcat_id) }).exec();
 
     if (shopServices.length > 0) {
@@ -266,6 +357,9 @@ var shopServicesByCat = async (req, res) => {
 }
 
 module.exports = {
+    getAllServices,
+    deactivateShopServ,
+    deleteShopServ,
     viewTopServiceProvider,
     lastDayMostSalesPerSeller,
     shopServicesByCat

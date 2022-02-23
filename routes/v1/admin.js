@@ -90,6 +90,10 @@ router.get('/shop', ShopController.getAllShops)
 router.put('/shop-deactivate/:id', ShopController.deactivateShop)
 router.delete('/shop/:id', ShopController.deleteShop)
 
+router.get('/shop-service', ShopServiceController.getAllServices)
+router.put('/shop-service-deactivate/:id', ShopServiceController.deactivateShopServ);
+router.delete('/shop-service/:id', ShopServiceController.deleteShopServ);
+
 router.post('/faq/Category',FaqcatController.create)
 router.get('/faq/Category',FaqcatController.viewAll)
 router.put('/faq/Category/:id',FaqcatController.update)

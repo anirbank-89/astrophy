@@ -100,6 +100,9 @@ const serviceSearch = async (req, res) => {
       },
     },
     {
+      $unwind: "$shop_details"
+    },
+    {
       $lookup: {
         from: "new_servicecarts",
         localField: "_id",
