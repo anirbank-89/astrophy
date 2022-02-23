@@ -247,8 +247,8 @@ const setStatus = async (req, res) => {
   if (current_status.order_id == "" || current_status.order_id == null || typeof current_status.order_id == "undefined") {
     return res.status(500).json({
       status: false,
-      error: "Payment not yet made. Cannot accept this order.",
-      data: null
+      data: null,
+      error: "Payment not yet made. Cannot accept this order."
     });
   }
   else {

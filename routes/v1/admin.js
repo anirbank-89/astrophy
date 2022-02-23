@@ -8,6 +8,7 @@ const CurrencyNTaxRates = require('../../Controller/Admin/CurrencyNTaxRates');
 const SubscriptionController = require('../../Controller/Admin/Subscription');
 const UserSellersController = require('../../Controller/Admin/UserSellers'); // added by anirbank-93
 const ServiceController = require('../../Controller/Admin/Service');         // added by anirbank-93
+const ShopController = require('../../Controller/Admin/Shop');               // added by anirbank-93
 const ShopServiceController = require('../../Controller/Admin/ShopServices');// added by anirbank-93
 const ServiceSubCategoryController = require('../../Controller/Admin/SubCategory');// added by anirbank-93
 const CouponController = require('../../Controller/Admin/Coupon');
@@ -84,6 +85,10 @@ router.get('/category/Category',CategoryController.viewAll)
 router.put('/category/Category/:id',CategoryController.update)
 router.delete('/category/Category/:id',CategoryController.Delete)
 router.put('/category/set-status/:id', CategoryController.setStatus)
+
+router.get('/shop', ShopController.getAllShops)
+router.put('/shop-deactivate/:id', ShopController.deactivateShop)
+router.delete('/shop/:id', ShopController.deleteShop)
 
 router.post('/faq/Category',FaqcatController.create)
 router.get('/faq/Category',FaqcatController.viewAll)
