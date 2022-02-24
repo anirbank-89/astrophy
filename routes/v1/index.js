@@ -94,6 +94,7 @@ router.post('/user/stripe/subs-cancel', StripesubscriptionController.subcancel);
 
 router.post('/user/sellercontact', ContactUsController.contactUsInfo);
 router.post('/user/contactus', UserController.contactus);
+router.post('/user/user_questions', ContactUsController.contactUsInfo2);
 
 router.get('/user/cms/achievement', CmsController.viewAllAchievements)
 router.get('/user/cms/achievement/:id', CmsController.viewAchievementById)

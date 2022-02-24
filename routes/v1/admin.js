@@ -26,7 +26,6 @@ const FaqController = require('../../Controller/Admin/Faq');
 const FeedbackController= require('../../Controller/Admin/Feedback');
 const ContactUsController=require('../../Controller/Admin/ContactUs');
 const StatsController = require('../../Controller/Admin/Stats');
-const UserQueries = require('../../Controller/Admin/UserQueries');
 const ProblemReport = require('../../Controller/Admin/ReportProblem');
 const LegalNotice = require('../../Controller/Admin/LegalNotice');
 const GrievanceController = require('../../Controller/Admin/Grievance');
