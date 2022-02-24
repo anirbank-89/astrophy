@@ -62,7 +62,7 @@ var deactivateShopServ = async (req, res) => {
         .then(data => {
             res.status(200).json({
                 status: true,
-                message: "Shop service have been deactivated.",
+                message: "Shop service has been deactivated.",
                 data: data
             });
         })
@@ -75,14 +75,18 @@ var deactivateShopServ = async (req, res) => {
         });
 }
 
-var deleteShopServ = async (req, res) => {
+var activateShopServ = async (req, res) => {
     var id = req.params.id;
 
-    return SHOP_SERVICES.findOneAndDelete({ _id: mongoose.Types.ObjectId(id) })
+    return SHOP_SERVICES.findOneAndUpdate(
+        { _id: mongoose.Types.ObjectId(id) },
+        { $set: { status: true } },
+        { new: true }
+    )
         .then(data => {
             res.status(200).json({
                 status: true,
-                message: "Shop service has been deleted.",
+                message: "Shop service has been activated.",
                 data: data
             });
         })
@@ -340,8 +344,8 @@ var shopServicesByCat = async (req, res) => {
     // }
     let shopServices = await SHOP_SERVICES.find(
         {
-            subcategory_id: mongoose.Types.ObjectId(req.body.subcat_id), 
-            status: true
+            subcategory_id: mongoose.Types.ObjectId(req.body.subcat_id)
+            // chataddstatus: false
         }
     ).exec();
 
@@ -364,7 +368,7 @@ var shopServicesByCat = async (req, res) => {
 module.exports = {
     getAllServices,
     deactivateShopServ,
-    deleteShopServ,
+    activateShopServ,
     viewTopServiceProvider,
     lastDayMostSalesPerSeller,
     shopServicesByCat
