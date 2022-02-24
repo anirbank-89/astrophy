@@ -145,34 +145,6 @@ const reportViewAll = async (req, res) => {
                 : { $project: { __v: 0 } },
             {
                 $lookup: {
-                    from: "new_servicecarts",
-                    localField: "order_id",
-                    foreignField: "order_id",
-                    as: "servicecart_data"
-                }
-            },
-            {
-                $unwind: {
-                    path: "$servicecart_data",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $lookup: {
-                    from: "service_refunds",
-                    let: { order_id: "$order_id" },
-                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$order_id", "$$order_id"] }] } } }],
-                    as: "service_refund"
-                }
-            },
-            {
-                $unwind: {
-                    path: "$service_refund",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $lookup: {
                     from: "users",//
                     localField: "user_id",//
                     foreignField: "_id",
@@ -187,15 +159,67 @@ const reportViewAll = async (req, res) => {
             },
             {
                 $lookup: {
-                    from: "users",//
-                    localField: "servicecart_data.seller_id",//
-                    foreignField: "_id",
-                    as: "seller_data"//
+                    from: "useraddresses",
+                    localField: "user_id",
+                    foreignField: "userid",
+                    as: "user_data.user_address"
                 }
             },
             {
                 $unwind: {
-                    path: "$seller_data",
+                    path: "$user_data.user_address",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: "new_servicecarts",
+                    localField: "order_id",
+                    foreignField: "order_id",
+                    as: "servicecart_data"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$servicecart_data",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    let: { seller_id: "$servicecart_data.seller_id" },
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$_id", "$$seller_id"] }] } } }],
+                    as: "servicecart_data.seller_data"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$servicecart_data.seller_data",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            // should've done in reverse order - servicecart_data.service_data (only 1), 
+            // servicecart_data.service_data.seller_data (only 1)
+            {
+                $lookup: {
+                    from: "shop_services",
+                    let: { seller_id: "$servicecart_data.seller_data._id" },
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$seller_id", "$$seller_id"] }] } } }],
+                    as: "servicecart_data.seller_data.service_data"
+                }
+            },
+            {
+                $lookup: {
+                    from: "service_refunds",
+                    let: { order_id: "$order_id" },
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$order_id", "$$order_id"] }] } } }],
+                    as: "service_refund"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$service_refund",
                     preserveNullAndEmptyArrays: true
                 }
             },

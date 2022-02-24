@@ -52,4 +52,4 @@ subs_id:{
 }
 });
 
-module.exports = mongoose.model("UserSubscription", UserSubsriptionSchema);
+module.exports = mongoose.model("usersubscription", UserSubsriptionSchema);

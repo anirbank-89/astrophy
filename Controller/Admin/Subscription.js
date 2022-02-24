@@ -159,40 +159,41 @@ const subscriptionHistory = async (req, res) => {
         from: "subscriptions",
         localField: "subscr_id",
         foreignField: "_id",
-        as: "subscription_data",
-      },
+        as: "subscription_data"
+      }
     },
+    // {
+    //   $unwind: {
+    //     path: "$subscription_data",
+    //     preserveNullAndEmptyArrays: true
+    //   }
+    // },
     {
       $lookup: {
         from: "users",
         localField: "userid",
         foreignField: "_id",
-        as: "user_data",
-      },
+        as: "user_data"
+      }
     },
     { $sort: { _id: -1 } },
-    {
-      $project: {
-        _v: 0
-      },
-    }
+    { $project: { __v: 0 } }
   ])
-    .then((data) => {
+    .then(docs => {
+      console.log(docs);
       res.status(200).json({
         status: true,
-        data: data,
-        error: null,
-        message: "Data successfully get."
+        message: "Data successfully get.",
+        data: docs
       });
     })
-    .catch((err) => {
-      res.status(500).send({
+    .catch(err => {
+      res.status(500).json({
         status: false,
-        data: null,
-        error: err,
-        message: "Server Error",
+        message: "Failed to get data. Server error.",
+        error: err.message
       });
-    });
+    })
 }
 
 const subscriptionHistoryRepo = async (req, res) => {
@@ -204,7 +205,7 @@ const subscriptionHistoryRepo = async (req, res) => {
       ? {
         $match: {
           subscribed_on: {
-            $gte: new Date(req.body.datefrom),
+            $gt: new Date(req.body.datefrom),
             $lte: moment.utc(req.body.dateto).endOf("day").toDate(),
           },
         },
