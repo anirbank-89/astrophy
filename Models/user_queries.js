@@ -11,10 +11,10 @@ const QUERY = new Schema({
         default: ""
     },
     reply: String,
-    // receive_mail: {
-    //     type: String,
-    //     default: 'tesdata.stack@gmail.com'
-    // },
+    receive_mail: {
+        type: String,
+        default: 'tesdata.stack@gmail.com'
+    },
     resolution_status: {
         type: Boolean,
         default: false
