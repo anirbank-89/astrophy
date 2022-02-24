@@ -16,6 +16,8 @@ const OrderhistoryController = require('../../Controller/Admin/Orderhistory');
 const ServicehistoryController = require('../../Controller/Admin/Servicehistory');
 const UserController = require('../../Controller/Auth/User');
 const MyaccountController = require('../../Controller/Admin/Myaccount');
+const ProductReview = require('../../Controller/Admin/Review');
+const ServiceReview = require('../../Controller/Admin/ServiceReview');
 const RefundPersonnel = require('../../Controller/Admin/RefundPersonnel');
 const ProductRefund = require('../../Controller/Admin/ProductRefund');
 const ServiceRefund = require('../../Controller/Admin/ServceRefund');
@@ -96,6 +98,12 @@ router.delete('/shop/:id', ShopController.deleteShop)
 router.get('/shop-service', ShopServiceController.getAllServices)
 router.put('/shop-service-deactivate/:id', ShopServiceController.deactivateShopServ);
 router.put('/shop-service-activate/:id', ShopServiceController.activateShopServ);
+
+router.get('/product-reviews', ProductReview.getReviews);
+router.delete('/product-reviews/:id', ProductReview.deleteRev);
+
+router.get('/service-reviews', ServiceReview.getReviews);
+router.delete('/service-reviews/:id', ServiceReview.deleteRev);
 
 router.post('/faq/Category',FaqcatController.create)
 router.get('/faq/Category',FaqcatController.viewAll)
