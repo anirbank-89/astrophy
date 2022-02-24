@@ -3,11 +3,11 @@ var Schema = mongoose.Schema;
 
 const CURRENCY_SCHEMA = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    name: {
-        type: String,
-        required: true,
-        unique: true
-    },
+    // name: {
+    //     type: String,
+    //     required: true,
+    //     unique: true
+    // },
     abbreviation: {
         type: String,
         required: true,

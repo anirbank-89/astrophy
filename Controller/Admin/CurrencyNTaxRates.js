@@ -7,7 +7,7 @@ const CURRENCY = require('../../Models/currency');
 // Add currency and tax rate in single information doc
 var addCurrencyNTax = async (req, res) => {
     const V = new Validator({
-        name: 'required',
+        // name: 'required',
         abbreviation: 'required',
         tax_rate: 'required'
     });
@@ -19,7 +19,7 @@ var addCurrencyNTax = async (req, res) => {
 
     let saveData = {
         _id: mongoose.Types.ObjectId(),
-        name: req.body.name,
+        // name: req.body.name,
         abbreviation: req.body.abbreviation,
         tax_rate: req.body.tax_rate
     }
@@ -94,7 +94,7 @@ var editCurrency = async (req, res) => {
     var id = req.params.id;
 
     const V = new Validator({
-        name: 'required',
+        // name: 'required',
         abbreviation: 'required',
         tax_rate: 'required'
     });
