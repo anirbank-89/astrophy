@@ -168,7 +168,6 @@ router.post('/Kyc',UserSellerController.kyccreateNUpdate);
 router.get('/Kyc/:id',UserSellerController.getKyc);
 router.get('/getGraphcomission/:id',UserSellerController.getGraphcomission);
 
-router.post('/user_questions', ContactUsController.contactUsInfo2);
 router.post('/problem-report', ProblemReport.reportProblem);
 
 

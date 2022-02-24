@@ -55,8 +55,8 @@ const viewAll = async (req, res) => {
             {
                 $lookup: {
                     from: "users",
-                    let: { seller_id: "$servicecart_data.seller_id" }, 
-                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$_id", "$$seller_id"] }] } } }], 
+                    let: { seller_id: "$servicecart_data.seller_id" },
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$_id", "$$seller_id"] }] } } }],
                     as: "servicecart_data.seller_data"
                 }
             },
@@ -71,16 +71,16 @@ const viewAll = async (req, res) => {
             {
                 $lookup: {
                     from: "shop_services",
-                    let: { seller_id: "$servicecart_data.seller_data._id" }, 
-                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$seller_id", "$$seller_id"] }] } } }], 
+                    let: { seller_id: "$servicecart_data.seller_data._id" },
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$seller_id", "$$seller_id"] }] } } }],
                     as: "servicecart_data.seller_data.service_data"
                 }
             },
             {
                 $lookup: {
                     from: "service_refunds",
-                    let: { order_id: "$order_id" }, 
-                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$order_id", "$$order_id"] }] } } }], 
+                    let: { order_id: "$order_id" },
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$order_id", "$$order_id"] }] } } }],
                     as: "service_refund"
                 }
             },
@@ -97,8 +97,8 @@ const viewAll = async (req, res) => {
                 $group: {
                     _id: "$order_id",
                     order_subtotal: { $sum: "$servicecart_data.price" },
-                    discount: {$avg: "$servicecart_data.discount_percent"},
-                    user_data: { $push: "$user_data" }, 
+                    discount: { $avg: "$servicecart_data.discount_percent" },
+                    user_data: { $push: "$user_data" },
                     servicecart_data: { $push: "$servicecart_data" },
                     service_refund: { $push: "$service_refund" }
                 }
@@ -128,22 +128,24 @@ const viewAll = async (req, res) => {
 }
 
 const reportViewAll = async (req, res) => {
+    console.log(new Date(req.body.datefrom));
+    console.log(moment.utc(req.body.dateto).endOf('day').toDate());
     return NewServiceCheckout.aggregate(
         [
             (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
                 (req.body.dateto != "" && typeof req.body.dateto != "undefined")
                 ? {
                     $match: {
-                        "booking_date": {
-                            "$gte": new Date(req.body.datefrom),
-                            "$lte": moment.utc(req.body.dateto).endOf('day').toDate()
+                        booking_date: {
+                            $gt: new Date(req.body.datefrom),
+                            $lte: moment.utc(req.body.dateto).endOf('day').toDate()
                         }
                     },
                 }
                 : { $project: { __v: 0 } },
             {
                 $lookup: {
-                    from: "servicecarts",
+                    from: "new_servicecarts",
                     localField: "order_id",
                     foreignField: "order_id",
                     as: "servicecart_data"
@@ -158,9 +160,15 @@ const reportViewAll = async (req, res) => {
             {
                 $lookup: {
                     from: "service_refunds",
-                    let: { seller_id: "$servicecart_data.seller_id" }, 
-                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$seller_id", "$$seller_id"] }] } } }], 
-                    as: "servicecart_data.service_refund"
+                    let: { order_id: "$order_id" },
+                    pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$order_id", "$$order_id"] }] } } }],
+                    as: "service_refund"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$service_refund",
+                    preserveNullAndEmptyArrays: true
                 }
             },
             {
@@ -171,16 +179,39 @@ const reportViewAll = async (req, res) => {
                     as: "user_data"//
                 }
             },
-            { $unwind: "$user_data" },
+            {
+                $unwind: {
+                    path: "$user_data",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
             {
                 $lookup: {
                     from: "users",//
-                    localField: "seller_id",//
+                    localField: "servicecart_data.seller_id",//
                     foreignField: "_id",
                     as: "seller_data"//
                 }
             },
-            { $unwind: "$seller_data" },
+            {
+                $unwind: {
+                    path: "$seller_data",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: { _id: 0 }
+            },
+            {
+                $group: {
+                    _id: "$order_id",
+                    order_subtotal: { $sum: "$servicecart_data.price" },
+                    discount: { $avg: "$servicecart_data.discount_percent" },
+                    user_data: { $push: "$user_data" },
+                    servicecart_data: { $push: "$servicecart_data" },
+                    service_refund: { $push: "$service_refund" }
+                }
+            },
             { $sort: { _id: -1 } },
             {
                 $project: {
@@ -200,7 +231,7 @@ const reportViewAll = async (req, res) => {
             res.status(500).json({
                 status: false,
                 message: "Server error. Please try again.",
-                error: err
+                error: err.message
             })
         })
 }
