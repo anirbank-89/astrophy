@@ -71,6 +71,41 @@ var deactivateShop = async (req, res) => {
         });
 }
 
+var activateShop = async (req, res) => {
+    var id = req.params.id;
+
+    return SHOP.findOneAndUpdate(
+        { _id: mongoose.Types.ObjectId(id) },
+        { $set: { status: true } },
+        { new: true }
+    )
+        .then(data => {
+            SHOP_SERVICES.updateMany(
+                { shop_id: data._id },
+                { $set: { status: true } },
+                { multi: true },
+                (fault, result) => {
+                    if (fault) {
+                        console.log(fault.message);
+                    }
+                }
+            );
+
+            res.status(200).json({
+                status: true,
+                message: "Shop and its services have been activated.",
+                data: data
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err
+            });
+        });
+}
+
 var deleteShop = async (req,res) => {
     var id = req.params.id;
 
@@ -104,5 +139,6 @@ var deleteShop = async (req,res) => {
 module.exports = {
     getAllShops,
     deactivateShop,
+    activateShop,
     deleteShop
 }

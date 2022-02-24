@@ -90,6 +90,7 @@ router.put('/category/set-status/:id', CategoryController.setStatus)
 
 router.get('/shop', ShopController.getAllShops)
 router.put('/shop-deactivate/:id', ShopController.deactivateShop)
+router.put('/shop-activate/:id', ShopController.activateShop)
 router.delete('/shop/:id', ShopController.deleteShop)
 
 router.get('/shop-service', ShopServiceController.getAllServices)
