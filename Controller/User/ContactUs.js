@@ -50,7 +50,7 @@ const contactUsInfo = async (req, res) => {
         })
 }
 
-var makeAQuery = async (req, res) => {
+var contactUsInfo2 = async (req, res) => {
     const V = new Validator(req.body, {
         user_type: 'required',
         email: 'required|email',
@@ -64,7 +64,6 @@ var makeAQuery = async (req, res) => {
 
     let saveData = {
         _id: mongoose.Types.ObjectId(),
-        user_id: mongoose.Types.ObjectId(req.body.user_id),
         user_type: req.body.user_type,
         email: req.body.email,
         question: req.body.question
@@ -101,5 +100,5 @@ var makeAQuery = async (req, res) => {
 
 module.exports = {
     contactUsInfo,
-    makeAQuery
+    contactUsInfo2
 }

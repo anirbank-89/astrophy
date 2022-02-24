@@ -224,10 +224,10 @@ router.put('/approve-seller-requests/:id', UserSellersController.approveSellerRe
 router.put('/reject-seller-requests/:id', UserSellersController.rejectSellerRequest);
 
 router.get('/cms/ContactusInfo', ContactUsController.getContactusInfo);
+router.get('/user_queries', ContactUsController.getContactusInfo2);
 router.get('/ContactusInfo/:id', ContactUsController.getContactusInfoById);
 router.put('/ContactusInfo/:id', ContactUsController.replyToMessage);
 
-router.get('/user_queries', UserQueries.getUserQueries);
 router.get('/problem-report', ProblemReport.getNewReports);
 router.get('/legal-notice', LegalNotice.getNewNotices);
 router.get('/grievance', GrievanceController.getNewGrievances);

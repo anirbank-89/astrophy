@@ -37,10 +37,10 @@ var verification = async (name, email) => {
     });
 };
 
-function replyToContact(user_name,reply,user_mail) {
+function replyToContact(reply,user_mail) {
   var emailTemplate =
     '<p>' +
-    'Hi ' + user_name + ',' +
+    'Hi ' + 
     '</p>' +
     '<p>' + 
     reply + 
