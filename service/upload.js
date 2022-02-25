@@ -24,5 +24,6 @@ const uploadDocFile = async (req, folder) => {
 
 module.exports = {
     uploadFile,
-    uploadDocFile
+    uploadDocFile,
+    // uploadPdfFile
 };

@@ -9,9 +9,8 @@ var ServiceRefund = require('../../Models/service_refund')
 var NewServiceCart = require('../../Models/new_servicecart')
 var userAddress = require('../../Models/user_address')
 
-// var Upload = require('../../service/upload')
-
 // var ig = require('../../service/invoiceGenerator')
+// var Upload = require('../../service/upload')
 
 const viewAll = async (req, res) => {
   return NewServiceCheckout.aggregate(
@@ -278,6 +277,8 @@ var downloadReceipt = async (req, res) => {
 
   const DOC = new PDFDocument()
 
+  DOC.pipe(res)
+
   // Generate the document header
   DOC
     // .image('', 0, 0, { width: 250 })
@@ -356,9 +357,10 @@ var downloadReceipt = async (req, res) => {
     })
 
   /** GENERATE THE DOCUMENT */
-  const file_name = "uploads/orderInvoices/" + `Invoice ${invoiceData.invoiceNumber}.pdf`;
+  const file_name = `uploads/orderInvoices/Invoice ${invoiceData.invoiceNumber}.pdf`;
+  
   DOC.pipe(fs.createWriteStream(file_name));
-  DOC.pipe(res)
+  
   DOC.moveDown()
   // write out file
   DOC.end()
