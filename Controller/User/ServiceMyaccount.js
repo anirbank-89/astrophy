@@ -5,6 +5,9 @@ var NewServiceCheckout = require('../../Models/new_service_checkout')
 var ServiceRefund = require('../../Models/service_refund')
 // var ServiceCart = require('../../Models/servicecart')
 var NewServiceCart = require('../../Models/new_servicecart')
+var userAddress = require('../../Models/user_address')
+
+var invoiceGenerator = require('../../service/invoiceGenerator')
 
 const viewAll = async (req, res) => {
   return NewServiceCheckout.aggregate(
@@ -70,7 +73,7 @@ const refundService = async (req, res) => {
   if (checkStatus.order_id == null || checkStatus.order_id == "" || typeof checkStatus.order_id == "undefined") {
     return res.status(500).json({
       status: false,
-      message: "Invalid id. Payment not made for this order.",  
+      message: "Invalid id. Payment not made for this order.",
       data: null
     });
   }
@@ -88,12 +91,12 @@ const refundService = async (req, res) => {
             refAmt = parseInt(docs.price);
           }
           else {
-            refAmt = parseInt(docs.price) - ((parseInt(docs.price)*parseInt(docs.discount_percent))/100);
+            refAmt = parseInt(docs.price) - ((parseInt(docs.price) * parseInt(docs.discount_percent)) / 100);
           }
 
           let checkoutData = await NewServiceCheckout.findOne({ order_id: docs.order_id }).exec();
           console.log("Checkout data ", checkoutData);
-  
+
           let refundData = {
             user_id: docs.user_id,
             seller_id: docs.seller_id,
@@ -124,11 +127,11 @@ const refundService = async (req, res) => {
           if (checkoutData.cvv != null || checkoutData.cvv != "" || typeof checkoutData.cvv != "undefined") {
             refundData.cvv = checkoutData.cvv;
           }
-  
+
           const NEW_REFUND_REQUEST = new ServiceRefund(refundData);
-  
+
           let saveRequest = await NEW_REFUND_REQUEST.save();
-  
+
           res.status(200).json({
             status: true,
             message: "Order cancel successful. Refund process will be initiated.",
@@ -197,8 +200,91 @@ var buyHistFromSeller = async (req, res) => {
   }
 }
 
+var downloadReceipt = async (req, res) => {
+  var id = req.params.id;
+
+  let servCheckout = await NewServiceCheckout.findOne({ _id: mongoose.Types.ObjectId(id) }).exec()
+  let savedAddr = await userAddress.findOne(
+    {
+      userid: servCheckout.user_id,
+      shipping: true
+    }
+  ).exec()
+  let servCart = await NewServiceCart.aggregate([
+    {
+      $match: {
+        order_id: servCheckout.order_id
+      }
+    },
+    {
+      $lookup: {
+        from: "shop_services",
+        localField: "serv_id",
+        foreignField: "_id",
+        as: "service_data"
+      }
+    },
+    {
+      $unwind: "$service_data"
+    }
+  ]).exec()
+
+  var itemArr = []
+  servCart.forEach(element => {
+    itemArr.push(
+      {
+        name: element.servicename,
+        price: element.price + " " + element.service_data.currency,
+        quantity: 1,
+      }
+    )
+  })
+  console.log("Cart items ", itemArr);
+
+  // Create invoice structure
+  const invoiceData = {
+    addresses: {
+      shipping: {
+        name: savedAddr.firstname + savedAddr.lastname,
+        address: savedAddr.address1,
+        // city: savedAddr.city,
+        state: savedAddr.state,
+        country: savedAddr.country,
+        postalCode: savedAddr.zip
+      },
+      billing: {
+        name: servCheckout.firstname + servCheckout.lastname,
+        address: servCheckout.address1,
+        // city: servCheckout.city,
+        state: servCheckout.state,
+        country: servCheckout.country,
+        postalCode: servCheckout.zip
+      }
+    },
+    memo: 'As discussed',
+    order_id: servCheckout.order_id,
+    items: itemArr,
+    subtotal: servCheckout.subtotal,
+    paid: servCheckout.total,
+    currency: servCart[0].service_data.currency,
+    invoiceNumber: `${new Date().getDate()}${new Date().getMonth()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`,
+    // dueDate: servCheckout.due_date
+  }
+
+  // Generate the invoice
+  const IG = new invoiceGenerator(invoiceData);
+  IG.generate()
+
+  res.send({
+    status: true,
+    message: "Receipt downloaded successfully.",
+    data: null
+  })
+}
+
 module.exports = {
   viewAll,
   refundService,
-  buyHistFromSeller
+  buyHistFromSeller,
+  downloadReceipt
 }
