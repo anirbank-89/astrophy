@@ -1,14 +1,15 @@
 var PDFGenerator = require('pdfkit');
 var fs = require('fs');
 
-class InvoiceGenerator {
+class invoiceGenerator {
     constructor(invoice) {
         this.invoice = invoice
+        // this.res = res
     }
-
+    
     generateHeaders(doc) {
         const billingAddress = this.invoice.addresses.billing
-
+    
         doc
             // .image('', 0, 0, { width: 250 })
             .fillColor('#000')
@@ -17,32 +18,34 @@ class InvoiceGenerator {
             .fontSize(10)
             .text(`Invoice Number: ${this.invoice.invoiceNumber}`, { align: 'right' })
             // .text(`Due: ${this.invoice.dueDate}`, { align: 'right' })
-            .text(`Discount amt: ${this.invoice.currency} ${this.invoice.subtotal - this.invoice.paid}`, { align: 'right' })
             .moveDown()
             .text(`Billing Address:\n ${billingAddress.name}\n${billingAddress.address}\n${billingAddress.state},${billingAddress.country}, ${billingAddress.postalCode}`, { align: 'right' })
-
+    
         const beginningOfPage = 50
         const endOfPage = 550
-
+    
         doc.moveTo(beginningOfPage, 200)
             .lineTo(endOfPage, 200)
             .stroke()
-
+    
         doc.text(`Memo: ${this.invoice.memo || 'N/A'}`, 50, 210)
-
+    
         doc.moveTo(beginningOfPage, 250)
             .lineTo(endOfPage, 250)
             .stroke()
-
+    
     }
 
     generateTable(doc) {
         const tableTop = 270
+        const tableBottom = 400
         // const itemCodeX = 50
         const nameX = 100
         const quantityX = 250
         const priceX = 300
         // const amountX = 350
+        const totalX = 250
+        const discountX = 300
 
         doc
             .fontSize(10)
@@ -50,24 +53,33 @@ class InvoiceGenerator {
             .text('Name', nameX, tableTop)
             .text('Quantity', quantityX, tableTop)
             .text('Price', priceX, tableTop)
+            .text('Total', totalX, tableBottom)
             // .text('Amount', amountX, tableTop)
+            .text('Discount amt', discountX, tableBottom)
 
         const items = this.invoice.items
         let i = 0
-
+        // let totalPrice = 0
+        const y = tableBottom + 25
 
         for (i = 0; i < items.length; i++) {
             const item = items[i]
-            const y = tableTop + 25 + (i * 25)
+            // totalPrice += items[i].price_num
+            const x = tableTop + 25 + (i * 25)
 
             doc
                 .fontSize(10)
-                // .text(item.itemCode, itemCodeX, y)
-                .text(item.name, nameX, y)
-                .text(item.quantity, quantityX, y)
-                .text(`${item.price}`, priceX, y)
-                // .text(`$ ${item.amount}`, amountX, y)
+                // .text(item.itemCode, itemCodeX, x)
+                .text(item.name, nameX, x)
+                .text(item.quantity, quantityX, x)
+                .text(`${item.price}`, priceX, x)
+            // .text(`$ ${item.amount}`, amountX, y)
         }
+        // console.log(totalPrice);
+
+        doc
+            .text(`${this.invoice.currency} ${this.invoice.subtotal}`, totalX, y)
+            .text(`${this.invoice.currency} ${this.invoice.subtotal - this.invoice.paid}`, discountX, y)
     }
 
     generateFooter(doc) {
@@ -79,7 +91,10 @@ class InvoiceGenerator {
     }
 
     generate() {
-        let theOutput = new PDFGenerator
+        // create a document the same way
+        const theOutput = new PDFGenerator()
+        // pipe the document to a blob
+        const stream = theOutput.pipe(blobStream())
 
         console.log(this.invoice)
 
@@ -87,6 +102,7 @@ class InvoiceGenerator {
 
         // pipe to a writable stream which would save the result into the same directory
         theOutput.pipe(fs.createWriteStream(fileName))
+        // theOutput.pipe(this.res)
 
         this.generateHeaders(theOutput)
 
@@ -99,8 +115,16 @@ class InvoiceGenerator {
 
         // write out file
         theOutput.end()
+        stream.on('finish', function () {
+            // get a blob you can do whatever you like with
+            const blob = stream.toBlob('application/pdf')
 
+            // or get a blob URL for display in the browser
+            const url = stream.toBlobURL('application/pdf')
+            iframe.src = url
+        })
+        return iframe.src
     }
 }
 
-module.exports = InvoiceGenerator
+module.exports = invoiceGenerator

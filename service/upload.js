@@ -1,4 +1,5 @@
 var fs = require("fs");
+var PDFDocument = require('pdfkit')
 
 const uploadFile = async (req, folder) => {
     let file_name = "uploads/"+folder+"/"+req.file.originalname;
@@ -13,6 +14,13 @@ const uploadDocFile = async (req, folder) => {
     fs.writeFileSync(file_name, req.file.buffer);
     return file_name;
 }
+
+// const uploadPdfFile = async (folder, invoice) => {
+//     const DOC = new PDFDocument();
+//     let file_name = "uploads/" + folder + "/" + `Invoice ${invoice.invoiceNumber}.pdf`;
+//     DOC.pipe(fs.createWriteStream(file_name));
+//     return file_name;
+// }
 
 module.exports = {
     uploadFile,
