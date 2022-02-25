@@ -280,7 +280,7 @@ var downloadReceipt = async (req, res) => {
 
   return res.writeHead(200, {
     'Content-Type': 'application/pdf',
-  });
+  })
 
   // if (savedAddr == null) {
   //   return res.status(500).json({
