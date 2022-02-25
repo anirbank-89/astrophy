@@ -2,14 +2,14 @@ var PDFGenerator = require('pdfkit');
 var fs = require('fs');
 
 class invoiceGenerator {
-    constructor(invoice) {
+    constructor(invoice, res) {
         this.invoice = invoice
-        // this.res = res
+        this.res = res
     }
-    
+
     generateHeaders(doc) {
         const billingAddress = this.invoice.addresses.billing
-    
+
         doc
             // .image('', 0, 0, { width: 250 })
             .fillColor('#000')
@@ -20,20 +20,20 @@ class invoiceGenerator {
             // .text(`Due: ${this.invoice.dueDate}`, { align: 'right' })
             .moveDown()
             .text(`Billing Address:\n ${billingAddress.name}\n${billingAddress.address}\n${billingAddress.state},${billingAddress.country}, ${billingAddress.postalCode}`, { align: 'right' })
-    
+
         const beginningOfPage = 50
         const endOfPage = 550
-    
+
         doc.moveTo(beginningOfPage, 200)
             .lineTo(endOfPage, 200)
             .stroke()
-    
+
         doc.text(`Memo: ${this.invoice.memo || 'N/A'}`, 50, 210)
-    
+
         doc.moveTo(beginningOfPage, 250)
             .lineTo(endOfPage, 250)
             .stroke()
-    
+
     }
 
     generateTable(doc) {
@@ -93,16 +93,14 @@ class invoiceGenerator {
     generate() {
         // create a document the same way
         const theOutput = new PDFGenerator()
-        // pipe the document to a blob
-        const stream = theOutput.pipe(blobStream())
 
         console.log(this.invoice)
 
-        const fileName = `Invoice ${this.invoice.invoiceNumber}.pdf`
+        const fileName = `uploads/orderInvoices/Invoice_${this.invoice.invoiceNumber}.pdf`
 
         // pipe to a writable stream which would save the result into the same directory
         theOutput.pipe(fs.createWriteStream(fileName))
-        // theOutput.pipe(this.res)
+        theOutput.pipe(this.res)
 
         this.generateHeaders(theOutput)
 
@@ -112,18 +110,10 @@ class invoiceGenerator {
 
         this.generateFooter(theOutput)
 
-
         // write out file
         theOutput.end()
-        stream.on('finish', function () {
-            // get a blob you can do whatever you like with
-            const blob = stream.toBlob('application/pdf')
 
-            // or get a blob URL for display in the browser
-            const url = stream.toBlobURL('application/pdf')
-            iframe.src = url
-        })
-        return iframe.src
+        // return fileName
     }
 }
 

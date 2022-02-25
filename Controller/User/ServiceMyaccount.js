@@ -9,7 +9,7 @@ var ServiceRefund = require('../../Models/service_refund')
 var NewServiceCart = require('../../Models/new_servicecart')
 var userAddress = require('../../Models/user_address')
 
-// var ig = require('../../service/invoiceGenerator')
+var invoiceGenerator = require('../../service/invoiceGenerator')
 // var Upload = require('../../service/upload')
 
 const viewAll = async (req, res) => {
@@ -275,106 +275,118 @@ var downloadReceipt = async (req, res) => {
     // dueDate: servCheckout.due_date
   }
 
-  const DOC = new PDFDocument()
+  const IG = new invoiceGenerator(invoiceData, res)
+  var fileName = IG.generate()
 
-  DOC.pipe(res)
+  return res.writeHead(200, {
+    'Content-Type': 'application/pdf',
+  });
 
-  // Generate the document header
-  DOC
-    // .image('', 0, 0, { width: 250 })
-    .fillColor('#000')
-    .fontSize(20)
-    .text('INVOICE', 275, 50, { align: 'right' })
-    .fontSize(10)
-    .text(`Invoice Number: ${invoiceData.invoiceNumber}`, { align: 'right' })
-    // .text(`Due: ${this.invoice.dueDate}`, { align: 'right' })
-    .moveDown()
-    .text(`Billing Address:\n ${invoiceData.addresses.billing.name}\n${invoiceData.addresses.billing.address}\n${invoiceData.addresses.billing.state},${invoiceData.addresses.billing.country}, ${invoiceData.addresses.billing.postalCode}`, { align: 'right' })
-
-  const beginningOfPage = 50
-  const endOfPage = 550
-
-  DOC.moveTo(beginningOfPage, 200)
-    .lineTo(endOfPage, 200)
-    .stroke()
-
-  DOC.text(`Memo: ${invoiceData.memo || 'N/A'}`, 50, 210)
-
-  DOC.moveTo(beginningOfPage, 250)
-    .lineTo(endOfPage, 250)
-    .stroke()
-
-  // Generate the document table
-  const tableTop = 270
-  const tableBottom = 400
-  // const itemCodeX = 50
-  const nameX = 100
-  const quantityX = 250
-  const priceX = 300
-  // const amountX = 350
-  const totalX = 250
-  const discountX = 300
-
-  DOC
-    .fontSize(10)
-    // .text('Item Code', itemCodeX, tableTop, { bold: true })
-    .text('Name', nameX, tableTop)
-    .text('Quantity', quantityX, tableTop)
-    .text('Price', priceX, tableTop)
-    .text('Total', totalX, tableBottom)
-    // .text('Amount', amountX, tableTop)
-    .text('Discount amt', discountX, tableBottom)
-
-  const cart_items = invoiceData.items
-  let i = 0
-  // let totalPrice = 0
-  const y = tableBottom + 25
-
-  for (i = 0; i < cart_items.length; i++) {
-    const arrEle = cart_items[i]
-    // totalPrice += items[i].price_num
-    const x = tableTop + 25 + (i * 25)
-
-    DOC
-      .fontSize(10)
-      // .text(item.itemCode, itemCodeX, x)
-      .text(arrEle.name, nameX, x)
-      .text(arrEle.quantity, quantityX, x)
-      .text(`${arrEle.price}`, priceX, x)
-    // .text(`$ ${item.amount}`, amountX, y)
-  }
-  // console.log(totalPrice);
-
-  DOC
-    .text(`${invoiceData.currency} ${invoiceData.subtotal}`, totalX, y)
-    .text(`${invoiceData.currency} ${invoiceData.subtotal - invoiceData.paid}`, discountX, y)
-
-  // Generate the document table footer
-  DOC
-    .fontSize(10)
-    .text(`Payment received online. `, 50, 700, {
-      align: 'center'
-    })
-
-  /** GENERATE THE DOCUMENT */
-  const file_name = `uploads/orderInvoices/Invoice ${invoiceData.invoiceNumber}.pdf`;
-  
-  DOC.pipe(fs.createWriteStream(file_name));
-  
-  DOC.moveDown()
-  // write out file
-  DOC.end()
-
-  // return res.writeHead(200, {
-  //   'Content-Type': 'application/pdf',
-  // });
-
-  return res.status(200).json({
-    status: true,
-    message: "Downloaded receipt",
-    file: file_name
-  })
+  // if (savedAddr == null) {
+  //   return res.status(500).json({
+  //     status: false,
+  //     error: "No shipping address. Could not generate invoice.",
+  //     file: null
+  //   });
+  // }
+  // else {
+  //   return res.status(200).json({
+  //     status: true,
+  //     message: "Generated invoice.",
+  //     file: fileName
+  //   })
+  // }
 }
+
+// const DOC = new PDFDocument()
+
+// DOC.pipe(res)
+
+// // Generate the document header
+// DOC
+//   // .image('', 0, 0, { width: 250 })
+//   .fillColor('#000')
+//   .fontSize(20)
+//   .text('INVOICE', 275, 50, { align: 'right' })
+//   .fontSize(10)
+//   .text(`Invoice Number: ${invoiceData.invoiceNumber}`, { align: 'right' })
+//   // .text(`Due: ${this.invoice.dueDate}`, { align: 'right' })
+//   .moveDown()
+//   .text(`Billing Address:\n ${invoiceData.addresses.billing.name}\n${invoiceData.addresses.billing.address}\n${invoiceData.addresses.billing.state},${invoiceData.addresses.billing.country}, ${invoiceData.addresses.billing.postalCode}`, { align: 'right' })
+
+// const beginningOfPage = 50
+// const endOfPage = 550
+
+// DOC.moveTo(beginningOfPage, 200)
+//   .lineTo(endOfPage, 200)
+//   .stroke()
+
+// DOC.text(`Memo: ${invoiceData.memo || 'N/A'}`, 50, 210)
+
+// DOC.moveTo(beginningOfPage, 250)
+//   .lineTo(endOfPage, 250)
+//   .stroke()
+
+// // Generate the document table
+// const tableTop = 270
+// const tableBottom = 400
+// // const itemCodeX = 50
+// const nameX = 100
+// const quantityX = 250
+// const priceX = 300
+// // const amountX = 350
+// const totalX = 250
+// const discountX = 300
+
+// DOC
+//   .fontSize(10)
+//   // .text('Item Code', itemCodeX, tableTop, { bold: true })
+//   .text('Name', nameX, tableTop)
+//   .text('Quantity', quantityX, tableTop)
+//   .text('Price', priceX, tableTop)
+//   .text('Total', totalX, tableBottom)
+//   // .text('Amount', amountX, tableTop)
+//   .text('Discount amt', discountX, tableBottom)
+
+// const cart_items = invoiceData.items
+// let i = 0
+// // let totalPrice = 0
+// const y = tableBottom + 25
+
+// for (i = 0; i < cart_items.length; i++) {
+//   const arrEle = cart_items[i]
+//   // totalPrice += items[i].price_num
+//   const x = tableTop + 25 + (i * 25)
+
+//   DOC
+//     .fontSize(10)
+//     // .text(item.itemCode, itemCodeX, x)
+//     .text(arrEle.name, nameX, x)
+//     .text(arrEle.quantity, quantityX, x)
+//     .text(`${arrEle.price}`, priceX, x)
+//   // .text(`$ ${item.amount}`, amountX, y)
+// }
+// // console.log(totalPrice);
+
+// DOC
+//   .text(`${invoiceData.currency} ${invoiceData.subtotal}`, totalX, y)
+//   .text(`${invoiceData.currency} ${invoiceData.subtotal - invoiceData.paid}`, discountX, y)
+
+// // Generate the document table footer
+// DOC
+//   .fontSize(10)
+//   .text(`Payment received online. `, 50, 700, {
+//     align: 'center'
+//   })
+
+// /** GENERATE THE DOCUMENT */
+// const file_name = `uploads/orderInvoices/Invoice ${invoiceData.invoiceNumber}.pdf`;
+
+// DOC.pipe(fs.createWriteStream(file_name));
+
+// DOC.moveDown()
+// // write out file
+// DOC.end()
 
 module.exports = {
   viewAll,
