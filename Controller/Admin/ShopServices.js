@@ -1,7 +1,9 @@
 var mongoose = require('mongoose');
+var moment = require('moment');
 
 var User = require('../../Models/user');
 const SERVICE_CHECKOUTS = require('../../Models/new_service_checkout');
+const SERVICE_CARTS = require('../../Models/new_servicecart');
 const SHOP_SERVICES = require('../../Models/shop_service');
 
 var getAllServices = async (req, res) => {
@@ -197,100 +199,120 @@ const viewTopServiceProvider = async (req, res) => {
 }
 
 var lastDayMostSalesPerSeller = async (req, res) => {
-    return SERVICE_CHECKOUTS.aggregate([
+    console.log(moment.utc(req.body.last_date).startOf('day').toDate());
+    console.log(moment.utc(req.body.last_date).endOf('day').toDate());
+
+    return SERVICE_CARTS.aggregate([
         {
             $match: {
-                $and: [
-                    { booking_date: { $gt: new Date(req.body.last_date) } },
-                    { booking_date: { $lt: new Date(req.body.this_date) } }
-                ]
-            }
-        },
-        {
-            $group: {
-                _id: "$seller_id"
-            }
-        },
-        {
-            $lookup: {
-                from: 'new_servicecarts',
-                let: {
-                    'seller_id': '$_id'
+                // $and: [
+                //     { booking_date: { $gt: new Date(req.body.last_date) } },
+                //     { booking_date: { $lt: new Date(req.body.this_date) } }
+                // ]
+                booking_date: {
+                    $gt: moment.utc(req.body.last_date).startOf('day').toDate(),
+                    $lte: moment.utc(req.body.last_date).endOf('day').toDate()
                 },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: {
-                                $and: [
-                                    { $eq: ["$seller_id", "$$seller_id"] },
-                                ],
-                            },
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: "$serv_id", totalCount: { $sum: 1 }
-                        }
-                    },
-                    {
-                        $sort: { totalCount: -1 }
-                    },
-                    { $limit: 1 }
-                ],
-                as: 'cart_data'
+                status: false
             }
         },
+        // {
+        //     $lookup: {
+                // from: 'new_servicecarts',
+                // let: {
+                //     'seller_id': '$_id'
+                // },
+                // pipeline: [
+                //     {
+                //         $match: {
+                //             $expr: {
+                //                 $and: [
+                //                     { $eq: ["$seller_id", "$$seller_id"] },
+                //                 ],
+                //             },
+                //         },
+                //     },
+                //     {
+                //         $group: {
+                //             _id: "$serv_id", totalCount: { $sum: 1 }
+                //         }
+                //     },
+                //     {
+                //         $sort: { totalCount: -1 }
+                //     },
+                //     { $limit: 1 }
+                // ],
+        //         as: 'commission_data'
+        //     }
+        // },
         // {
         //     $unwind:"$cart_data"
         // },
         {
             $lookup: {
                 from: "shop_services",
-                localField: "cart_data._id",
+                localField: "serv_id",
                 foreignField: "_id",
                 as: "service_data"
             }
         },
-        // {
-        //     $unwind:"$service_data"
-        // },
+        {
+            $unwind: {
+                path: "$service_data",
+                preserveNullAndEmptyArrays: true
+            }
+        },
         {
             $lookup: {
                 from: "services",
-                localField: "service_data.category_id",
+                localField: "service_data.subcategory_id",
                 foreignField: "_id",
-                as: "category_data"
+                as: "service_data.category_data"
             }
         },
-        // {
-        //     $unwind:"$category_data"
-        // },
+        {
+            $unwind: {
+                path: "$service_data.category_data",
+                preserveNullAndEmptyArrays: true
+            }
+        },
         {
             $lookup: {
                 from: "shops",
                 localField: "service_data.shop_id",
                 foreignField: "_id",
-                as: "shop_data"
+                as: "service_data.shop_data"
             }
         },
-        // {
-        //     $unwind:"$shop_data"
-        // },
+        {
+            $unwind: {
+                path: "$service_data.shop_data",
+                preserveNullAndEmptyArrays: true
+            }
+        },
         {
             $lookup: {
                 from: "users",
-                localField: "shop_data.userid",
+                localField: "service_data.seller_id",
                 foreignField: "_id",
-                as: "provider_data"
+                as: "service_data.seller_data"
             }
         },
-        // {
-        //     $unwind:"$provider_data"
-        // },
         {
-            $project: {
-                _v: 0
+            $unwind: {
+                path: "$service_data.seller_data",
+                preserveNullAndEmptyArrays: true
             }
+        },
+        {
+            $group: {
+                _id: "$serv_id",
+                totalSalesValue: { $sum: "$price" },  // calculating discount amount and subtracting from 'price'
+                providerData: { $push: "$service_data" }
+            }
+        },
+        {
+            $sort: { totalSalesValue: -1 }
         },
         // {
         //     $lookup:{
@@ -347,12 +369,54 @@ var shopServicesByCat = async (req, res) => {
     //         }
     //     }
     // }
-    let shopServices = await SHOP_SERVICES.find(
+    let shopServices = await SHOP_SERVICES.aggregate([
         {
-            subcategory_id: mongoose.Types.ObjectId(req.body.subcat_id)
-            // chataddstatus: false
+            $match: {
+                subcategory_id: mongoose.Types.ObjectId(req.body.subcat_id),
+                // chataddstatus: false
+            }
+        },
+        {
+            $lookup: {
+                from: "new_servicecarts",
+                let: { serv_id: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$serv_id", "$$serv_id"]},
+                                    { status: false }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                as: "cart_data"
+            }
+        },
+        {
+            $addFields: {
+                totalSalesValue: {
+                    $sum: {
+                        $map: {
+                            input: "$cart_data",
+                            in: "$$this.price"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $sort: {
+                pageViews: -1,
+                totalSalesValue: -1
+            }
+        },
+        {
+            $project: { __v: 0 }
         }
-    ).exec();
+    ]).exec();
 
     if (shopServices.length > 0) {
         return res.status(200).json({
