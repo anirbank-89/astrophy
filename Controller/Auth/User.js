@@ -31,7 +31,8 @@ const register = async(req,res)=>{
         firstName:'required',
         lastName: 'required',
         country: 'required',
-        currency: 'required'
+        currency: 'required',
+        device_type: 'required'
     })
     let matched = await v.check().then((val)=>val)
     if(!matched)
@@ -46,7 +47,8 @@ const register = async(req,res)=>{
         password:passwordHash.generate(req.body.password),
         token:createToken(req.body),
         country: req.body.country,
-        currency: req.body.currency
+        currency: req.body.currency,
+        device_type: req.body.device_type
     }
     // if (typeof (req.body.phone) !='undefined')
     // {

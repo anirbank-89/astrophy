@@ -41,7 +41,7 @@ const create = async (req, res) => {
         .catch((error) => {
             res.status(500).json({
                 status: false,
-                message: "Server error. Please try again.",
+                message: "Category name already exists.",
                 error: error,
             });
         })
@@ -82,7 +82,7 @@ const update = async (req, res) => {
             if (err) {
                 res.status(500).json({
                     status: false,
-                    message: "Server error. Please try again.",
+                    message: "This category name already exists.",
                     error: err,
                 });
             } else if (data != null) {

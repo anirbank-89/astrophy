@@ -41,6 +41,7 @@ let UserSchema = new mongoose.Schema({
         required:false,
         default:'User'
     },
+    device_type: String,
     start: {
 		type: Date,
 		default: Date.now,

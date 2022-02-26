@@ -205,10 +205,6 @@ var lastDayMostSalesPerSeller = async (req, res) => {
     return SERVICE_CARTS.aggregate([
         {
             $match: {
-                // $and: [
-                //     { booking_date: { $gt: new Date(req.body.last_date) } },
-                //     { booking_date: { $lt: new Date(req.body.this_date) } }
-                // ]
                 booking_date: {
                     $gt: moment.utc(req.body.last_date).startOf('day').toDate(),
                     $lte: moment.utc(req.body.last_date).endOf('day').toDate()

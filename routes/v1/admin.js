@@ -124,9 +124,9 @@ router.delete('/faq/subcategory/:id', FaqsubcatController.Delete)// added by ani
 router.put('/faq/subcategory/set-status/:id', FaqsubcatController.setStatus)// added by anirbank-93
 router.get('/faq/catsubcategory/:id', FaqsubcatController.viewsubcatOncat)
 
-router.get('/userlist', UserSellersController.viewUserList)     // added by anirbank-93
+router.post('/userlist', UserSellersController.viewUserList)     // added by anirbank-93
 router.get('/viewuser/:id', UserSellersController.viewUser)     // added by anirbank-93
-router.get('/sellerlist', UserSellersController.viewSellerList) // added by anirbank-93
+router.post('/sellerlist', UserSellersController.viewSellerList) // added by anirbank-93
 router.get('/viewseller/:id', UserSellersController.viewSeller)  // added by anirbank-93
 router.put('/user/set-status/:id', UserSellersController.setStatus)// added by anirbank-93
 router.put('/user/set-block/:id', UserSellersController.setBlock)// added by anirbank-93

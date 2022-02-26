@@ -14,24 +14,66 @@ const { Validator } = require('node-input-validator');
 var uuidv1 = require('uuid').v1;
 
 const viewUserList = async (req, res) => {
-  return User.find(
-    { type: { $in: "User" } },
-    (err, docs) => {
-      if (err) {
-        res.status(400).json({
-          status: false,
-          message: "Server error. Data not available",
-          error: err
-        });
-      }
-      else {
-        res.status(200).json({
-          status: true,
-          message: "Users get successfully",
-          data: docs
-        });
-      }
-    }).sort({ _id: 'desc' });
+  if (req.body.device_type == "") {
+    return User.find(
+      { type: { $in: "User" } },
+      (err, docs) => {
+        if (err) {
+          res.status(400).json({
+            status: false,
+            message: "Server error. Data not available",
+            error: err
+          });
+        }
+        else {
+          res.status(200).json({
+            status: true,
+            message: "Users get successfully",
+            data: docs
+          });
+        }
+      }).sort({ _id: 'desc' });
+  }
+  else if (req.body.device_type == "Web") {
+    return User.find(
+      { type: "User", device_type: "Web" },
+      (err, docs) => {
+        if (err) {
+          res.status(400).json({
+            status: false,
+            message: "Server error. Data not available",
+            error: err
+          });
+        }
+        else {
+          res.status(200).json({
+            status: true,
+            message: "Users get successfully",
+            data: docs
+          });
+        }
+      }).sort({ _id: 'desc' });
+  }
+  else if (req.body.device_type == "App") {
+    return User.find(
+      { type: "User", device_type: "App" },
+      (err, docs) => {
+        if (err) {
+          res.status(400).json({
+            status: false,
+            message: "Server error. Data not available",
+            error: err
+          });
+        }
+        else {
+          res.status(200).json({
+            status: true,
+            message: "Users get successfully",
+            data: docs
+          });
+        }
+      }).sort({ _id: 'desc' });
+  }
 }
 
 const viewUser = async (req, res) => {
@@ -57,209 +99,386 @@ const viewUser = async (req, res) => {
 }
 
 const viewSellerList = async (req, res) => {
-  return User.aggregate([
-    {
-      $match: {
-        type: "Seller"
+  if (req.body.device_type == "") {
+    return User.aggregate([
+      {
+        $match: {
+          type: "Seller",
+        },
       },
-    },
-    {
-      $lookup: {
-        from: "shops",
-        localField: "_id",
-        foreignField: "userid",
-        as: "shop_data"
-      }
-    },
-    {
-      $lookup: {
-        from: "shop_services",
-        // let: {
-        //   seller_id: "$_id", 
-        //   cat_id: "$category_id", 
-        //   subcat_id: "$subcategory_id"
-        // },
-        // pipeline: [
-        //   {
-        //     $match: {
-        //       $expr: {
-        //         $and: [
-        //           { $eq: ["$seller_id", "$$seller_id"] }
-        //         ]
-        //       }
-        //     }
-        //   },
-        //   {
-        //     $lookup: {
-        //       from: "categories",
-        //       localField: "cat_id",
-        //       foreignField: "categories._id",
-        //       as: "category_data"
-        //     }
-        //   },
-        //   {
-        //     $unwind: {
-        //       path: "$category_data",
-        //       preserveNullAndEmptyArrays: true
-        //     }
-        //   },
-        //   {
-        //     $lookup: {
-        //       from: "services",
-        //       localField: "subcat_id",
-        //       foreignField: "services._id",
-        //       as: "subcategory_data"
-        //     }
-        //   },
-        //   {
-        //     $unwind: {
-        //       path: "$subcategory_data",
-        //       preserveNullAndEmptyArrays: true
-        //     }
-        //   }
-        // ],
-        localField: "_id",
-        foreignField: "seller_id",
-        as: "service_data"
+      {
+        $lookup: {
+          from: "shops",
+          localField: "_id",
+          foreignField: "userid",
+          as: "shop_data"
+        }
       },
-    },
-    // {
-    //   $lookup: {
-    //     from: "categories",
-    //     localField: "service_data.category_id",
-    //     foreignField: "_id",
-    //     as: "service_data.category_data"
-    //   }
-    // },
-    // {
-    //   $unwind: {
-    //     path: "$service_data.category_data",
-    //     preserveNullAndEmptyArrays: true
-    //   }
-    // },
-    // {
-    //   $lookup: {
-    //     from: "services",
-    //     localField: "service_data.subcategory_id",
-    //     foreignField: "_id",
-    //     as: "service_data.subcategory_data"
-    //   }
-    // },
-    // {
-    //   $unwind: {
-    //     path: "$service_data.subcategory_data",
-    //     preserveNullAndEmptyArrays: true
-    //   }
-    // },
-    {
-      $lookup: {
-        from: "totalcomissions",
-        localField: "_id",
-        foreignField: "seller_id",
-        as: "totalcommission_data"
-      }
-    },
-    {
-      $lookup: {
-        from: "sellercomissions",
-        let: { seller_id: '$_id' },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ["$seller_id", "$$seller_id"] },
-                  { $eq: ["$status", true] }
-                ]
+      {
+        $lookup: {
+          from: "shop_services",
+          localField: "_id",
+          foreignField: "seller_id",
+          as: "service_data"
+        },
+      },
+      {
+        $lookup: {
+          from: "totalcomissions",
+          localField: "_id",
+          foreignField: "seller_id",
+          as: "totalcommission_data"
+        }
+      },
+      {
+        $lookup: {
+          from: "sellercomissions",
+          let: { seller_id: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$seller_id", "$$seller_id"] },
+                    { $eq: ["$status", true] }
+                  ]
+                }
+              },
+            }
+          ],
+          as: "commission_data"
+        }
+      },
+      {
+        $lookup: {
+          from: "total_service_commission_refunds",
+          localField: "_id",
+          foreignField: "seller_id",
+          as: "totalservicecom_refund_data"
+        }
+      },
+      {
+        $addFields: {
+          total_commission_earned: {
+            $sum: {
+              $map: {
+                input: "$totalcommission_data",
+                in: "$$this.comission_total"
               }
-            },
-          }
-        ],
-        as: "commission_data"
-      }
-    },
-    {
-      $lookup: {
-        from: "total_service_commission_refunds",
-        localField: "_id",
-        foreignField: "seller_id",
-        as: "totalservicecom_refund_data"
-      }
-    },
-    {
-      $addFields: {
-        total_commission_earned: {
-          $sum: {
-            $map: {
-              input: "$totalcommission_data",
-              in: "$$this.comission_total"
             }
           }
         }
-      }
-    },
-    {
-      $addFields: {
-        settled_and_claimable_commission: {
-          $sum: {
-            $map: {
-              input: "$commission_data",
-              in: "$$this.seller_commission"
-            }
-          }
-        }
-      }
-    },
-    {
-      $addFields: {
-        commission_refunded: {
-          $sum: {
-            $map: {
-              input: "$totalservicecom_refund_data",
-              in: "$$this.total_refunded"
-            }
-          }
-        }
-      }
-    },
-    // {
-    //   $addFields: {
-    //     pending_settlement: {
-    //       $subtract: [ "$total_commission_earned", "$settled_and_claimable_commission"]
-    //     }
-    //   }
-    // },
-    { $sort: { _id: -1 } },
-    {
-      $project: {
-        _v: 0,
       },
-    },
-  ])
-    .then((data) => {
-      if (data != null && data != "") {
-        res.status(200).send({
-          status: true,
-          data: data,
-          error: null,
-          message: "Sellers get successfully",
-        });
-      } else {
-        res.status(400).send({
+      {
+        $addFields: {
+          settled_and_claimable_commission: {
+            $sum: {
+              $map: {
+                input: "$commission_data",
+                in: "$$this.seller_commission"
+              }
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          commission_refunded: {
+            $sum: {
+              $map: {
+                input: "$totalservicecom_refund_data",
+                in: "$$this.total_refunded"
+              }
+            }
+          }
+        }
+      },
+      { $sort: { _id: -1 } },
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+    ])
+      .then((data) => {
+        if (data != null && data != "") {
+          res.status(200).send({
+            status: true,
+            data: data,
+            error: null,
+            message: "Sellers get successfully",
+          });
+        } else {
+          res.status(400).send({
+            status: false,
+            data: null,
+            error: "No Data",
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
           status: false,
           data: null,
-          error: "No Data",
+          error: err,
+          message: "Server Error",
         });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        status: false,
-        data: null,
-        error: err,
-        message: "Server Error",
       });
-    });
+  }
+  else if (req.body.device_type == "Web") {
+    return User.aggregate([
+      {
+        $match: {
+          type: "Seller",
+          device_type: "Web"
+        },
+      },
+      {
+        $lookup: {
+          from: "shops",
+          localField: "_id",
+          foreignField: "userid",
+          as: "shop_data"
+        }
+      },
+      {
+        $lookup: {
+          from: "shop_services",
+          localField: "_id",
+          foreignField: "seller_id",
+          as: "service_data"
+        },
+      },
+      {
+        $lookup: {
+          from: "totalcomissions",
+          localField: "_id",
+          foreignField: "seller_id",
+          as: "totalcommission_data"
+        }
+      },
+      {
+        $lookup: {
+          from: "sellercomissions",
+          let: { seller_id: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$seller_id", "$$seller_id"] },
+                    { $eq: ["$status", true] }
+                  ]
+                }
+              },
+            }
+          ],
+          as: "commission_data"
+        }
+      },
+      {
+        $lookup: {
+          from: "total_service_commission_refunds",
+          localField: "_id",
+          foreignField: "seller_id",
+          as: "totalservicecom_refund_data"
+        }
+      },
+      {
+        $addFields: {
+          total_commission_earned: {
+            $sum: {
+              $map: {
+                input: "$totalcommission_data",
+                in: "$$this.comission_total"
+              }
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          settled_and_claimable_commission: {
+            $sum: {
+              $map: {
+                input: "$commission_data",
+                in: "$$this.seller_commission"
+              }
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          commission_refunded: {
+            $sum: {
+              $map: {
+                input: "$totalservicecom_refund_data",
+                in: "$$this.total_refunded"
+              }
+            }
+          }
+        }
+      },
+      { $sort: { _id: -1 } },
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+    ])
+      .then((data) => {
+        if (data != null && data != "") {
+          res.status(200).send({
+            status: true,
+            data: data,
+            error: null,
+            message: "Sellers get successfully",
+          });
+        } else {
+          res.status(400).send({
+            status: false,
+            data: null,
+            error: "No Data",
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          status: false,
+          data: null,
+          error: err,
+          message: "Server Error",
+        });
+      });
+  }
+  else if (req.body.device_type == "App") {
+    return User.aggregate([
+      {
+        $match: {
+          type: "Seller",
+          device_type: "App"
+        },
+      },
+      {
+        $lookup: {
+          from: "shops",
+          localField: "_id",
+          foreignField: "userid",
+          as: "shop_data"
+        }
+      },
+      {
+        $lookup: {
+          from: "shop_services",
+          localField: "_id",
+          foreignField: "seller_id",
+          as: "service_data"
+        },
+      },
+      {
+        $lookup: {
+          from: "totalcomissions",
+          localField: "_id",
+          foreignField: "seller_id",
+          as: "totalcommission_data"
+        }
+      },
+      {
+        $lookup: {
+          from: "sellercomissions",
+          let: { seller_id: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$seller_id", "$$seller_id"] },
+                    { $eq: ["$status", true] }
+                  ]
+                }
+              },
+            }
+          ],
+          as: "commission_data"
+        }
+      },
+      {
+        $lookup: {
+          from: "total_service_commission_refunds",
+          localField: "_id",
+          foreignField: "seller_id",
+          as: "totalservicecom_refund_data"
+        }
+      },
+      {
+        $addFields: {
+          total_commission_earned: {
+            $sum: {
+              $map: {
+                input: "$totalcommission_data",
+                in: "$$this.comission_total"
+              }
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          settled_and_claimable_commission: {
+            $sum: {
+              $map: {
+                input: "$commission_data",
+                in: "$$this.seller_commission"
+              }
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          commission_refunded: {
+            $sum: {
+              $map: {
+                input: "$totalservicecom_refund_data",
+                in: "$$this.total_refunded"
+              }
+            }
+          }
+        }
+      },
+      { $sort: { _id: -1 } },
+      {
+        $project: {
+          _v: 0,
+        },
+      },
+    ])
+      .then((data) => {
+        if (data != null && data != "") {
+          res.status(200).send({
+            status: true,
+            data: data,
+            error: null,
+            message: "Sellers get successfully",
+          });
+        } else {
+          res.status(400).send({
+            status: false,
+            data: null,
+            error: "No Data",
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          status: false,
+          data: null,
+          error: err,
+          message: "Server Error",
+        });
+      });
+  }
 }
 
 const viewSeller = async (req, res) => {
