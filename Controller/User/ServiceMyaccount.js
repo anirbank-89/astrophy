@@ -276,7 +276,7 @@ var downloadReceipt = async (req, res) => {
   }
 
   const IG = new invoiceGenerator(invoiceData, res)
-  IG.generate()
+  var fileName = IG.generate()
 
   return res.writeHead(200, {
     'Content-Type': 'application/pdf',

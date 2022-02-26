@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var User = require('../../Models/user');
-const SERVICE_CHECKOUTS = require('../../Models/servicecheckout');
+const SERVICE_CHECKOUTS = require('../../Models/new_service_checkout');
 const SHOP_SERVICES = require('../../Models/shop_service');
 
 var getAllServices = async (req, res) => {
@@ -165,7 +165,12 @@ const viewTopServiceProvider = async (req, res) => {
                     }
                 },
 
-                { $sort: { priority: 1 } },
+                {
+                    $sort: {
+                        _id: -1,
+                        priority: 1
+                    }
+                },
                 {
                     $project: {
                         _v: 0
@@ -208,7 +213,7 @@ var lastDayMostSalesPerSeller = async (req, res) => {
         },
         {
             $lookup: {
-                from: 'servicecarts',
+                from: 'new_servicecarts',
                 let: {
                     'seller_id': '$_id'
                 },
