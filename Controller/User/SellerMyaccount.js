@@ -30,32 +30,38 @@ const viewAll = async (req, res) => {
         })
 }
 
-const reportViewAll = async (req, res) => {
-    return NewServiceCheckout.aggregate(
+const viewSingleOrder = async (req, res) => {
+    var id = req.params.id;
+
+    return NewServiceCart.aggregate(
         [
             {
                 $match: {
-
-                    seller_id: mongoose.Types.ObjectId(req.body.seller_id),
-                },
-            },
-            (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
-                (req.body.dateto != "" && typeof req.body.dateto != "undefined")
-                ? {
-                    $match: {
-                        "booking_date": {
-                            "$gte": new Date(req.body.datefrom),
-                            "$lte": moment.utc(req.body.dateto).endOf('day').toDate()
-                        }
-                    },
+                    _id: mongoose.Types.ObjectId(id)
                 }
-                : { $project: { __v: 0 } },
+            },
             {
                 $lookup: {
-                    from: "new_servicecarts",
-                    localField: "order_id",
-                    foreignField: "order_id",
-                    as: "servicecart_data"
+                    from: "shop_services",
+                    localField: "serv_id",
+                    foreignField: "_id",
+                    as: "service_data"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "user_id",
+                    foreignField: "_id",
+                    as: "user_data"
+                }
+            },
+            {
+                $lookup: {
+                    from: "service_refunds",
+                    localField: "_id",
+                    foreignField: "cart_id",
+                    as: "refund_data"
                 }
             },
             {
@@ -81,28 +87,26 @@ const reportViewAll = async (req, res) => {
         })
 }
 
-const viewSingleOrder = async (req, res) => {
-    return NewServiceCheckout.aggregate(
+const reportViewAll = async (req, res) => {
+    return NewServiceCart.aggregate(
         [
             {
                 $match: {
 
-                    _id: mongoose.Types.ObjectId(req.params.id),
+                    seller_id: mongoose.Types.ObjectId(req.body.seller_id),
                 },
             },
-            {
-                $lookup: {
-                    from: "new_servicecarts",
-                    localField: "order_id",
-                    foreignField: "order_id",
-                    as: "servicecart_data"
+            (req.body.datefrom != "" && typeof req.body.datefrom != "undefined") &&
+                (req.body.dateto != "" && typeof req.body.dateto != "undefined")
+                ? {
+                    $match: {
+                        booking_date: {
+                            $gte: moment.utc(req.body.datefrom).startOf('day').toDate(),
+                            $lte: moment.utc(req.body.dateto).endOf('day').toDate()
+                        }
+                    },
                 }
-            },
-            {
-                $project: {
-                    _v: 0
-                }
-            }
+                : { $project: { __v: 0 } }
         ]
     )
         .then((docs) => {
@@ -333,8 +337,8 @@ var summaryStats = async (req, res) => {
 
 module.exports = {
     viewAll,
-    reportViewAll,
     viewSingleOrder,
+    reportViewAll,
     buyHistFromUser,
     getClaimableCommissions,
     claimCommission,

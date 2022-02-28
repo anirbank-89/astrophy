@@ -17,7 +17,6 @@ const ServiceMyaccountController = require('../../Controller/User/ServiceMyaccou
 const ServiceCartController = require('../../Controller/User/ServiceCart');//krittika
 const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout');//krittika
 const SellerMyaccountController = require('../../Controller/User/SellerMyaccount');//krittika
-const ContactUsController = require('../../Controller/User/ContactUs');
 
 const ProblemReport = require('../../Controller/User/ReportProblem');
 
@@ -148,20 +147,19 @@ router.post('/filter-reviews', ServicereviewController.filterReviews);
 
 //krittika
 router.get('/sellerbookhistory/:seller_id', SellerMyaccountController.viewAll);
+router.get('/sellersingleBookinghis/:id', SellerMyaccountController.viewSingleOrder);
+router.post('/sellerbookhistoryrepo', SellerMyaccountController.reportViewAll);
+router.get('/summary-stats/:id', SellerMyaccountController.summaryStats);
+router.post('/buy-history-of-buyer', SellerMyaccountController.buyHistFromUser);
 router.get('/claimable-commissions/:id', SellerMyaccountController.getClaimableCommissions);
 router.put('/claimable-commissions/:id', SellerMyaccountController.claimCommission);
-router.post('/withdraw-request',UserSellerController.applyWithdraw);                        // same as above route
+
+router.post('/withdraw-request',UserSellerController.applyWithdraw); // same as above route
 
 router.post('/accept_status', ServiceCheckoutController.setStatus);
 router.put('/complete-service-request/:id', ServiceCheckoutController.completeServiceRequest);
 router.post('/tips', ServiceCheckoutController.setTips);
 router.get('/getSellersettlement/:id', ServiceCheckoutController.getSellerSettlement);
-
-router.post('/sellerbookhistoryrepo', SellerMyaccountController.reportViewAll);
-router.get('/sellersingleBookinghis/:id', SellerMyaccountController.viewSingleOrder);
-router.post('/buy-history-of-buyer', SellerMyaccountController.buyHistFromUser);
-
-router.get('/summary-stats/:id', SellerMyaccountController.summaryStats);
 
 router.get('/sellercomission/:id',UserSellerController.sellercomHistory); // same as '/claimable-commissions/:id' in line 144           
 router.get('/totalandpendingcomission/:id',UserSellerController.totalandpendingcomission);
