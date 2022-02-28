@@ -131,6 +131,7 @@ router.get('/orderdetails/:user_id', MyaccountController.viewAll);
 router.put('/refundProduct/:id', MyaccountController.refundProduct);  // from product cart in future
 router.put('/update-profile/:id', upload1.single("image"), MyaccountController.updateProfile);
 router.put('/update-password/:id', MyaccountController.updatePassword);
+router.get('/prod-order-receipt/:id', MyaccountController.downloadReceipt);
 
 router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
 router.put('/refundService/:id', ServiceMyaccountController.refundService);

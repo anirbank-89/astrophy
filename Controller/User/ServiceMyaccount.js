@@ -1,16 +1,11 @@
 var mongoose = require('mongoose')
-var PDFDocument = require('pdfkit')
-var fs = require('fs')
 
-// var ServiceCheckout = require('../../Models/servicecheckout')
 var NewServiceCheckout = require('../../Models/new_service_checkout')
 var ServiceRefund = require('../../Models/service_refund')
-// var ServiceCart = require('../../Models/servicecart')
 var NewServiceCart = require('../../Models/new_servicecart')
 var userAddress = require('../../Models/user_address')
 
 var invoiceGenerator = require('../../service/invoiceGenerator')
-// var Upload = require('../../service/upload')
 
 const viewAll = async (req, res) => {
   return NewServiceCheckout.aggregate(
@@ -278,24 +273,24 @@ var downloadReceipt = async (req, res) => {
   const IG = new invoiceGenerator(invoiceData, res)
   var fileName = IG.generate()
 
-  return res.writeHead(200, {
-    'Content-Type': 'application/pdf',
-  })
+  // return res.writeHead(200, {
+  //   'Content-Type': 'application/pdf',
+  // })
 
-  // if (savedAddr == null) {
-  //   return res.status(500).json({
-  //     status: false,
-  //     error: "No shipping address. Could not generate invoice.",
-  //     file: null
-  //   });
-  // }
-  // else {
-  //   return res.status(200).json({
-  //     status: true,
-  //     message: "Generated invoice.",
-  //     file: fileName
-  //   })
-  // }
+  if (savedAddr == null) {
+    return res.status(500).json({
+      status: false,
+      error: "No shipping address. Could not generate invoice.",
+      file: null
+    });
+  }
+  else {
+    return res.status(200).json({
+      status: true,
+      message: "Generated invoice.",
+      file: fileName
+    })
+  }
 }
 
 // const DOC = new PDFDocument()

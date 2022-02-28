@@ -5,8 +5,11 @@ const { Validator } = require('node-input-validator')
 var Checkout = require('../../Models/checkout')
 var User = require('../../Models/user')
 var ProductRefund = require('../../Models/product_refund')
-var Upload = require('../../service/upload')
+var userAddress = require('../../Models/user_address')
+var Cart = require('../../Models/cart')
 
+var Upload = require('../../service/upload')
+var invoiceGenerator = require('../../service/invoiceGenerator')
 
 const viewAll = async (req, res) => {
   return Checkout.aggregate(
@@ -283,9 +286,105 @@ const updatePassword = async (req, res) => {
   }
 }
 
+var downloadReceipt = async (req, res) => {
+  var id = req.params.id;
+
+  let prodCheckout = await Checkout.findOne({ _id: mongoose.Types.ObjectId(id) }).exec()
+  let savedAddr = await userAddress.findOne(
+    {
+      userid: prodCheckout.user_id,
+      shipping: true
+    }
+  ).exec()
+  let prodCart = await Cart.aggregate([
+    {
+      $match: {
+        order_id: prodCheckout.order_id
+      }
+    },
+    {
+      $lookup: {
+        from: "products",
+        localField: "prod_id",
+        foreignField: "_id",
+        as: "product_data"
+      }
+    },
+    {
+      $unwind: "$product_data"
+    }
+  ]).exec()
+
+  var itemArr = []
+  prodCart.forEach(element => {
+    itemArr.push(
+      {
+        name: element.productname,
+        price_num: element.price,
+        price: element.product_data.currency + " " + element.price,
+        quantity: element.qty,
+      }
+    )
+  })
+  console.log("Cart items ", itemArr);
+
+  // Create invoice structure
+  const invoiceData = {
+    addresses: {
+      shipping: {
+        name: savedAddr.firstname + " " + savedAddr.lastname,
+        address: savedAddr.address1,
+        // city: savedAddr.city,
+        state: savedAddr.state,
+        country: savedAddr.country,
+        postalCode: savedAddr.zip
+      },
+      billing: {
+        name: prodCheckout.firstname + " " + prodCheckout.lastname,
+        address: prodCheckout.address1,
+        // city: prodCheckout.city,
+        state: prodCheckout.state,
+        country: prodCheckout.country,
+        postalCode: prodCheckout.zip
+      }
+    },
+    memo: 'As discussed',
+    order_id: prodCheckout.order_id,
+    items: itemArr,
+    subtotal: prodCheckout.subtotal,
+    paid: prodCheckout.total,
+    currency: prodCart[0].product_data.currency,
+    invoiceNumber: `${new Date().getDate()}${new Date().getMonth()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`,
+    // dueDate: servCheckout.due_date
+  }
+
+  const IG = new invoiceGenerator(invoiceData, res)
+  var fileName = IG.generate()
+
+  // return res.writeHead(200, {
+  //   'Content-Type': 'application/pdf',
+  // })
+
+  if (savedAddr == null) {
+    return res.status(500).json({
+      status: false,
+      error: "No shipping address. Could not generate invoice.",
+      file: null
+    });
+  }
+  else {
+    return res.status(200).json({
+      status: true,
+      message: "Generated invoice.",
+      file: fileName
+    })
+  }
+}
+
 module.exports = {
   viewAll,
   refundProduct,
   updateProfile,
-  updatePassword
+  updatePassword,
+  downloadReceipt
 }

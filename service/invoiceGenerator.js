@@ -100,7 +100,7 @@ class invoiceGenerator {
 
         // pipe to a writable stream which would save the result into the same directory
         theOutput.pipe(fs.createWriteStream(fileName))
-        theOutput.pipe(this.res)
+        // theOutput.pipe(this.res)
 
         this.generateHeaders(theOutput)
 
@@ -113,7 +113,7 @@ class invoiceGenerator {
         // write out file
         theOutput.end()
 
-        // return fileName
+        return fileName
     }
 }
 
