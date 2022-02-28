@@ -14,7 +14,7 @@ const viewAll = async (req, res) => {
 
     return NewServiceCart.aggregate([
         {
-            match: {
+            $match: {
                 seller_id: mongoose.Types.ObjectId(id)
             }
         },
