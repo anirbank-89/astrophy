@@ -5,6 +5,7 @@ const QUERY = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
     user_type: Object,
     user_category: String,
+    name: String,
     email: String,
     question: String,
     additional_details: {

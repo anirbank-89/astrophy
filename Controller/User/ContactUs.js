@@ -53,6 +53,7 @@ const contactUsInfo = async (req, res) => {
 var contactUsInfo2 = async (req, res) => {
     const V = new Validator(req.body, {
         user_type: 'required',
+        name: 'required',
         email: 'required|email',
         question: 'required'
     });
@@ -66,6 +67,7 @@ var contactUsInfo2 = async (req, res) => {
         _id: mongoose.Types.ObjectId(),
         user_type: req.body.user_type,
         user_category: req.body.user_category,
+        name: req.body.name,
         email: req.body.email,
         question: req.body.question
     }
