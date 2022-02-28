@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 const QUERY = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
     user_type: Object,
+    user_category: String,
     email: String,
     question: String,
     additional_details: {

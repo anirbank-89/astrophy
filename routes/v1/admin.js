@@ -253,10 +253,10 @@ router.post('/website-revenue-and-profit', StatsController.totalRevenueNProfit);
 /**===================================== Automated tasks =====================================*/
 
 /**--------------- Clear all due payments on 14,28 of each month ---------------*/
-const clearDueCommision = nodeCron.schedule("* * 14,28 * *", AutomatedApi.payForServiceOrNot);
-const payClaimedCommission = nodeCron.schedule("* * 14,28 * *", AutomatedApi.payForService);
-const clearProductRefund = nodeCron.schedule("* * 14,28 * *", AutomatedApi.clearProductRefunds);
-const clearServiceRefund = nodeCron.schedule("* * 14,28 * *", AutomatedApi.clearServiceRefunds);
+const clearDueCommision = nodeCron.schedule("59 59 23 14,28 * *", AutomatedApi.payForServiceOrNot);
+const payClaimedCommission = nodeCron.schedule("59 59 23 14,28 * *", AutomatedApi.payForService);
+const clearProductRefund = nodeCron.schedule("59 59 23 14,28 * *", AutomatedApi.clearProductRefunds);
+const clearServiceRefund = nodeCron.schedule("59 59 23 14,28 * *", AutomatedApi.clearServiceRefunds);
 /**-----------------------------------------------------------------------------*/
 /**===========================================================================================*/
 

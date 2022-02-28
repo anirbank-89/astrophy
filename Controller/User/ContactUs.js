@@ -65,6 +65,7 @@ var contactUsInfo2 = async (req, res) => {
     let saveData = {
         _id: mongoose.Types.ObjectId(),
         user_type: req.body.user_type,
+        user_category: req.body.user_category,
         email: req.body.email,
         question: req.body.question
     }
