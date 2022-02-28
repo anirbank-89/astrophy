@@ -119,7 +119,15 @@ const reportViewAll = async (req, res) => {
                         }
                     },
                 }
-                : { $project: { __v: 0 } }
+                : { $project: { __v: 0 } },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "user_id",
+                    foreignField: "_id",
+                    as: "user_data"
+                }
+            }
         ]
     )
         .then((docs) => {
@@ -138,48 +146,48 @@ const reportViewAll = async (req, res) => {
         })
 }
 
-var buyHistFromUser = async (req,res) => {
+var buyHistFromUser = async (req, res) => {
     let boughtServices = await NewServiceCart.aggregate([
         {
-          $match: {
-            seller_id: mongoose.Types.ObjectId(req.body.self_id),
-            user_id: mongoose.Types.ObjectId(req.body.buyer_id),
-          }
+            $match: {
+                seller_id: mongoose.Types.ObjectId(req.body.self_id),
+                user_id: mongoose.Types.ObjectId(req.body.buyer_id),
+            }
         },
         {
-          $lookup: {
-            from: "shop_services",
-            localField: "serv_id",
-            foreignField: "_id",
-            as: "service_data"
-          }
+            $lookup: {
+                from: "shop_services",
+                localField: "serv_id",
+                foreignField: "_id",
+                as: "service_data"
+            }
         },
         {
-          $unwind: "$service_data"
+            $unwind: "$service_data"
         },
         {
-          $project: {
-            __v: 0
-          }
+            $project: {
+                __v: 0
+            }
         }
-      ]).exec();
-    
-      if (boughtServices.length > 0) {
+    ]).exec();
+
+    if (boughtServices.length > 0) {
         return res.status(200).json({
-          status: true,
-          message: "Data successfully get.",
-          no_of_buys: boughtServices.length,
-          purchase_data: boughtServices
+            status: true,
+            message: "Data successfully get.",
+            no_of_buys: boughtServices.length,
+            purchase_data: boughtServices
         });
-      }
-      else {
+    }
+    else {
         return res.status(200).json({
-          status: true,
-          message: "No previous buys from this seller.",
-          no_of_buys: 0,
-          purchase_data: []
+            status: true,
+            message: "No previous buys from this seller.",
+            no_of_buys: 0,
+            purchase_data: []
         });
-      }
+    }
 }
 
 var getClaimableCommissions = async (req, res) => {
