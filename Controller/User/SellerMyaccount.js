@@ -2,7 +2,6 @@ var mongoose = require('mongoose')
 var moment = require("moment")
 
 // var ServiceCheckout = require('../../Models/servicecheckout')
-var NewServiceCheckout = require('../../Models/new_service_checkout')
 // var ServiceCart = require('../../Models/servicecart')
 var NewServiceCart = require('../../Models/new_servicecart')
 var ServiceCommission = require('../../Models/servicecommission')
@@ -13,7 +12,21 @@ var ServiceRefund = require('../../Models/service_refund')
 const viewAll = async (req, res) => {
     var id = req.params.seller_id;
 
-    return NewServiceCart.find({ seller_id: mongoose.Types.ObjectId(id) })
+    return NewServiceCart.aggregate([
+        {
+            match: {
+                seller_id: mongoose.Types.ObjectId(id)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "user_id",
+                foreignField: "_id",
+                as: "user_data"
+            }
+        }
+    ])
         .then((docs) => {
             res.status(200).json({
                 status: true,
