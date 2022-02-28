@@ -100,6 +100,7 @@ const viewSingleOrder = async (req, res) => {
         })
 }
 
+// This is datewise seller booking history
 const reportViewAll = async (req, res) => {
     return NewServiceCart.aggregate(
         [
