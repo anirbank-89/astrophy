@@ -169,7 +169,7 @@ router.get('/Kyc/:id',UserSellerController.getKyc);
 router.get('/getGraphcomission/:id',UserSellerController.getGraphcomission);
 
 router.post('/problem-report', ProblemReport.reportProblem);
-router.post('/user/sellercontact', ContactUsController.contactUsInfo);
+router.post('/sellercontact', ContactUsController.contactUsInfo);
 
 
 
