@@ -5,6 +5,7 @@ var moment = require("moment")
 // var ServiceCart = require('../../Models/servicecart')
 var NewServiceCart = require('../../Models/new_servicecart')
 var ServiceCommission = require('../../Models/servicecommission')
+var ServiceWishlist = require('../../Models/servicewishlist')
 var Withdraw = require('../../Models/withdraw')
 var ShopServices = require('../../Models/shop_service')
 var ServiceRefund = require('../../Models/service_refund')
@@ -281,6 +282,14 @@ var summaryStats = async (req, res) => {
     ).exec();
     var totalInactiveServices = inactiveShopServices.length;
 
+    var cartData = await NewServiceCart.find({ seller_id: mongoose.Types.ObjectId(id) }).exec();
+
+    var orderNotRefunded = cartData.filter(item => item.refund_request == "" || item.refund_request == "yes");
+
+    console.log("Total orders = ", orderNotRefunded.length);
+
+    var wishlist = await ServiceWishlist.find({ seller_id: mongoose.Types.ObjectId(id) }).exec();
+
     let shopServices = await ShopServices.find({ seller_id: mongoose.Types.ObjectId(id) }).exec();
 
     var totalViews = 0;
@@ -311,7 +320,7 @@ var summaryStats = async (req, res) => {
             }
         }
     ).exec();
-    console.log(commissionsReceived);
+    // console.log(commissionsReceived);
 
     var serviceCommissions = 0;
 
@@ -352,6 +361,8 @@ var summaryStats = async (req, res) => {
         message: "Data successfully get.",
         total_active_services: totalActiveServices,
         total_inactive_Services: totalInactiveServices,
+        total_orders: orderNotRefunded.length,
+        in_wishlist: wishlist.length,
         total_views: totalViews,
         revenue_this_year: currentYearRev
     });
