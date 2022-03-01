@@ -6,6 +6,7 @@ const SubscriptionController = require("../../Controller/User/Subscription");// 
 const ServiceController = require('../../Controller/User/Service');          // added by anirbank-93
 const ShopController = require("../../Controller/User/Shop");      // added by anirbank-93
 const ShopServiceController = require("../../Controller/User/ShopServices"); // added by anirbank-93
+const ChatServiceController = require('../../Controller/User/ChatServices');
 const CartController = require('../../Controller/User/Cart');
 const WishlistController = require('../../Controller/User/Wishlist');
 const Servicewishlist = require('../../Controller/User/Servicewishlist');
@@ -84,19 +85,20 @@ router.get('/shop/:id', ShopController.viewShop);              // added by anirb
 
 router.post('/shop/services', upload1.single("image"), ShopServiceController.register);// added by anirbank-93
 router.post('/shop-service-images', upload1.single("image"), ShopServiceController.shopserviceImageUrl);// anirbank-93
-router.get('/shop/all-services', ShopServiceController.viewAllShopServices); // added by anirbank-93
-// route to fetch all services of a shop
+router.get('/shop/all-services', ShopServiceController.viewAllShopServices);           // added by anirbank-93
 router.get('/shop/all-services/:id', ShopServiceController.viewShopServicesPerSeller); // added by anirbank-93
-// route to fetch one service of a shop
 router.get('/shop/view-shopservice/:id', ShopServiceController.viewOneService);        // added by anirbank-93
 router.put('/shop/services/:id', upload1.single("image"), ShopServiceController.update);// added by anirbank-93
 router.put('/deactivate-service/:id', ShopServiceController.deactivateService);        // added by anirbank-93
 router.delete('/shop/services/:id', ShopServiceController.deleteService);              // added by anirbank-93
-router.post('/shop/chatservices', upload1.single("image"), ShopServiceController.chatServiceregister);// added by anirbank-93
-router.post('/image-uploadurl', upload1.single("image"), ShopServiceController.chatImageUrl);
-// no. of times shop service sales
-router.get('/sales-count/:id', ShopServiceController.salesCount);                 // added by anirbank-93
+router.get('/sales-count/:id', ShopServiceController.salesCount);                      // added by anirbank-93
 
+/**---------------------------- Custom services on chat ----------------------------*/
+router.post('/shop/chatservices', upload1.single("image"), ChatServiceController.chatServiceregister);
+router.post('/image-uploadurl', upload1.single("image"), ChatServiceController.chatImageUrl);
+router.get('/shop/chatservices/:id', ChatServiceController.getChatServById);
+router.put('/chatservices/user-accept/:id', ChatServiceController.userAccept);
+/**---------------------------------------------------------------------------------*/
 
 
 router.post('/add-to-cart', CartController.addToCart);

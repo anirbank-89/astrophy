@@ -58,6 +58,10 @@ const ShopServiceSchema = new Schema({
         type: Boolean,
         default: false
     },
+    chataddaccept: {
+        type: Boolean,
+        default: false
+    },
     created_on: {
         type: Date,
         default: dateKolkata,
