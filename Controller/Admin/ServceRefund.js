@@ -16,8 +16,8 @@ var getAllRefundRequests = async (req, res) => {
         {
             $lookup: {
                 from: "new_servicecarts",
-                localField: "order_id",
-                foreignField: "order_id",
+                localField: "cart_id",   // order_id for all items in the cart
+                foreignField: "_id",     // order_id for all items in the cart
                 as: "cart_items"
             }
         },
@@ -37,9 +37,9 @@ var getAllRefundRequests = async (req, res) => {
         },
         {
             $lookup: {
-                from: "sellers",
+                from: "sellers", // users
                 localField: "seller_id",
-                foreignField: "seller_id",
+                foreignField: "seller_id",// _id
                 as: "seller_details"
             }
         },
@@ -139,6 +139,35 @@ var approveRefund = async (req, res) => {
         });
 }
 
+var rejectRefund = async (req, res) => {
+    var id = req.params.id;
+
+    return SERVICE_REFUND.findOneAndUpdate(
+        { _id: mongoose.Types.ObjectId(id) },
+        {
+            $set: {
+                request_status: "rejected",
+                admin_status: "refund_rejected"
+            }
+        },
+        { new: true }
+    )
+        .then(docs => {
+            res.status(200).json({
+                status: true,
+                message: "Data successfully edited.",
+                data: docs
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err.message
+            });
+        });
+}
+
 var getApprovedRefundList = async (req, res) => {
     var approvedRefunds = await SERVICE_REFUND.aggregate([
         {
@@ -149,8 +178,8 @@ var getApprovedRefundList = async (req, res) => {
         {
             $lookup: {
                 from: "new_servicecarts",
-                localField: "order_id",
-                foreignField: "order_id",
+                localField: "cart_id",   // order_id for all items in the cart
+                foreignField: "_id",     // order_id for all items in the cart
                 as: "cart_items"
             }
         },
@@ -159,9 +188,20 @@ var getApprovedRefundList = async (req, res) => {
         },
         {
             $lookup: {
-                from: "sellers",
+                from: "shop_services",
+                localField: "serv_id",
+                foreignField: "_id",
+                as: "service_data"
+            }
+        },
+        {
+            $unwind: "$service_data"
+        },
+        {
+            $lookup: {
+                from: "sellers", // users
                 localField: "seller_id",
-                foreignField: "seller_id",
+                foreignField: "seller_id",// _id
                 as: "seller_details"
             }
         },
@@ -190,35 +230,6 @@ var getApprovedRefundList = async (req, res) => {
             data: []
         });
     }
-}
-
-var rejectRefund = async (req, res) => {
-    var id = req.params.id;
-
-    return SERVICE_REFUND.findOneAndUpdate(
-        { _id: mongoose.Types.ObjectId(id) },
-        {
-            $set: {
-                request_status: "rejected",
-                admin_status: "refund_rejected"
-            }
-        },
-        { new: true }
-    )
-        .then(docs => {
-            res.status(200).json({
-                status: true,
-                message: "Data successfully edited.",
-                data: docs
-            });
-        })
-        .catch(err => {
-            res.status(500).json({
-                status: false,
-                message: "Invalid id. Server error.",
-                error: err.message
-            });
-        });
 }
 
 var adminInitiateRefund = async (req, res) => {
@@ -253,7 +264,7 @@ var adminInitiateRefund = async (req, res) => {
 module.exports = {
     getAllRefundRequests,
     approveRefund,
-    getApprovedRefundList,
     rejectRefund,
+    getApprovedRefundList,
     adminInitiateRefund
 }

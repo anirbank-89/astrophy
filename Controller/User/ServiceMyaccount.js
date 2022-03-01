@@ -147,7 +147,7 @@ const refundService = async (req, res) => {
     else {
       return res.status(500).json({
         status: false,
-        error: "Service request has been rejected. Money already refunded for online payments.",
+        error: "Can't make refund. Service request not accepted.",
         data: null
       });
     }

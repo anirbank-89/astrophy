@@ -184,8 +184,8 @@ router.put('/reject-product-refund/:id', ProductRefund.rejectRefund);
 /**---------------------------------- Service refund ----------------------------------*/
 router.get('/service-refund-requests', ServiceRefund.getAllRefundRequests);
 router.put('/approve-service-refund/:id', ServiceRefund.approveRefund);
-router.get('/approved-service-refunds', ServiceRefund.getApprovedRefundList);
 router.put('/reject-service-refund/:id', ServiceRefund.rejectRefund);
+router.get('/approved-service-refunds', ServiceRefund.getApprovedRefundList);
 router.put('/initate-service-refund/:id', ServiceRefund.adminInitiateRefund);
 /**------------------------------------------------------------------------------------*/
 
