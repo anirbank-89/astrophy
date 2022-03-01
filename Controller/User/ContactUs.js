@@ -37,8 +37,8 @@ const contactUsInfo = async (req, res) => {
 
             res.status(200).json({
                 status: true,
-                data: data,
-                message: "Info saved successfully"
+                message: "Info saved successfully",
+                data: data
             })
         })
         .catch((err) => {
