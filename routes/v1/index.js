@@ -93,7 +93,6 @@ router.post('/user/stripe/subs-retrive', StripesubscriptionController.subsretriv
 router.post('/user/stripe/subs-cancel', StripesubscriptionController.subcancel);
 
 // contact us
-router.post('/user/sellercontact', ContactUsController.contactUsInfo);
 router.post('/user/contactus', UserController.contactus);
 router.post('/user/user_questions', ContactUsController.contactUsInfo2); // currently in use
 // contact us

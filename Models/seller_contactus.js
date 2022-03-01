@@ -6,15 +6,16 @@ const ContactusSchema = new mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
     name: String,
     email: String,
-    // cat_id:{
-    //     type:String,
-    //     required:true,
-    // },
+    subcat_id: mongoose.Schema.Types.ObjectId,
     message: String,
+    rciv_mail: {
+        type: String,
+        default: 'tesdata.stack@gmail.com'
+    },
     reply: String,
     status:{
         type:Boolean,
-        default:true
+        default: true
     },
     created_on: {
         type: Date,

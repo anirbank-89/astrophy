@@ -10,7 +10,7 @@ const contactUsInfo = async (req, res) => {
     const v = new Validator(req.body, {
         name: "required",
         email: "required|email",
-        // cat_id : "required",
+        subcat_id : "required",
         message: "required"
 
     })
@@ -24,9 +24,8 @@ const contactUsInfo = async (req, res) => {
         _id: mongoose.Types.ObjectId(),
         name: req.body.name,
         email: req.body.email,
-        // cat_id : req.body.cat_id,
+        subcat_id : req.body.cat_id,
         message: req.body.message
-
     }
 
     const contactSave = new ContactUs(contactus)
@@ -34,7 +33,8 @@ const contactUsInfo = async (req, res) => {
     return contactSave
         .save()
         .then((data) => {
-            // EMAIL_SEND.grievance(data.email);
+            EMAIL_SEND.queries(data.rciv_mail, data.email, data.message)
+
             res.status(200).json({
                 status: true,
                 data: data,
@@ -44,7 +44,7 @@ const contactUsInfo = async (req, res) => {
         .catch((err) => {
             res.status(500).json({
                 status: false,
-                message: "error. Please try again.",
+                message: "Server error. Please try again.",
                 error: err.message,
             });
         })

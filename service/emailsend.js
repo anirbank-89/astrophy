@@ -37,14 +37,14 @@ var verification = async (name, email) => {
     });
 };
 
-function queries(rciv_mail, user_email, question, addn_detail) {
+function queries(rciv_mail, user_email, issue, addn_detail="") {
   var emailTemplate =
     '<p>' +
     'Received from: ' + user_email +
     '</p>' +
     '<br />' +
     '<p>' +
-    'Question: ' + question +
+    'Issue: ' + issue +
     '</p>' +
     '<br />' +
     '<p>' +
