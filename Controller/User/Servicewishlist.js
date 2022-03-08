@@ -95,6 +95,14 @@ const getWish = async (req,res)=>{
         },
     },
     {
+        $lookup: {
+            from: "shop_services",
+            localField: "serv_id",
+            foreignField: "_id",
+            as: "service_data"
+        }
+    },
+    {
         $project: {
             // _id: 0,
             
