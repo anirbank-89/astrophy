@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
 const AdminController = require('../../Controller/Auth/Admin');
 const CurrencyNTaxRates = require('../../Controller/User/CurrencyNTaxRates');
 const UserController = require('../../Controller/Auth/User');
-const UserProductController = require('../../Controller/User/Product');// added by anirbank-93
+const ProductController = require('../../Controller/User/Product');// added by anirbank-93
 const ServiceController = require('../../Controller/User/Service');    // added by anirbank-93
 const SeaarchController = require('../../Controller/User/Search')
 const ShopServiceController = require("../../Controller/User/ShopServices");
@@ -47,15 +47,16 @@ router.post('/user/login', UserController.login);
 router.get('/user/currency', CurrencyNTaxRates.getCurrencies);
 router.post('/user/currency/tax-rates', CurrencyNTaxRates.getTaxRateByCurrency);
 
-router.get('/user/listProducts/:page/:userid', UserController.viewProductList);
+router.get('/user/listProducts/:page', ProductController.viewProductList); // /:userid
+router.get('/user/viewproduct/:id', ProductController.viewSingleProduct);
+
+router.get('/user/service', ServiceController.viewAllServices);
+router.get('/user/service/:id', ServiceController.viewService);
+
 router.get('/user/spellCasting', UserController.viewAllServices);
 router.get('/user/singlespellCasting/:id', UserController.viewSingleSpell);
-router.get('/user/viewproduct/:id', UserProductController.viewSingleProduct);   // added by anirbank-93
 
-router.get('/user/service', ServiceController.viewAllServices);// added by anirbank-93
-router.get('/user/service/:id', ServiceController.viewService);// added by anirbank-93
-
-router.get('/user/service/shop-services/:id/:page', ServiceController.viewShopServicesPerService);// added by anirbank-93
+router.get('/user/service/shop-services/:id/:page', ServiceController.viewShopServicesPerService);
 
 router.post('/user/searchauto', SeaarchController.autoSearch);
 
