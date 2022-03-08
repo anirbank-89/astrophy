@@ -571,6 +571,42 @@ const viewTopServiceProvider = async (req, res) => {
                 },
                 {
                     $lookup: {
+                        from: "new_servicecarts",
+                        let: {seller_id: "$_id"},
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            {$eq: ["$seller_id", "$$seller_id"]},
+                                            {$eq: ["$acceptstatus", "accept"]}, 
+                                            {
+                                                $or: [
+                                                    {$eq: ["$refund_request", ""]},
+                                                    {$eq: ["$refund_request", "yes"]}
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ],
+                        as: "cart_data"
+                    }
+                },
+                {
+                    $addFields: {
+                        salesCount: {
+                            $cond: {
+                                if: { $isArray: "$cart_data" }, 
+                                then: { $size: "$cart_data" }, 
+                                else: "NA"
+                            }
+                        }
+                    }
+                },
+                {
+                    $lookup: {
                         from: "servicereviews",
                         localField: "service_data._id",
                         foreignField: "service_id",

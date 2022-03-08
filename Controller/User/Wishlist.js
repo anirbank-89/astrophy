@@ -159,7 +159,7 @@ const addToWishlist = async (req,res)=>{
    }
    else
    {
-     return res.status(400).json({
+     return res.status(500).json({
          status:false,
          data:null,
          message:"Item Already Added"

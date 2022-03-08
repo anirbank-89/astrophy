@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 const CATEGORY = require('../../Models/category');
 var Service = require('../../Models/service');
-var Subcategory = require('../../Models/subcategory');
+// var Subcategory = require('../../Models/subcategory');
 var ShopService = require('../../Models/shop_service');
 
 
