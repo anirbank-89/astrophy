@@ -77,8 +77,6 @@ router.post('/user/allrelatedServiceList',ShopServiceController.viewAllrelatedSe
 
 router.post('/user/searchSevice', SeaarchController.serviceSearch);
 
-router.post('/user/searchProduct', SeaarchController.productSearch);
-
 router.get('/user/paypalpay/:amt', PaypalPaymentController.pay);
 
 router.get('/user/paypalsuccess', PaypalPaymentController.success);
