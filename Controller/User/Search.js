@@ -131,6 +131,25 @@ const serviceSearch = async (req, res) => {
     },
     {
       $lookup: {
+        from: "servicewishes",
+        localField: "_id",
+        foreignField: "serv_id",
+        as: "wishlist_data"
+      }
+    },
+    {
+      $addFields: {
+        totalWishlistAdded: {
+          $cond: {
+            if: { $isArray: "$wishlist_data" },
+            then: { $size: "$wishlist_data" }, 
+            else: null
+          }
+        }
+      }
+    },
+    {
+      $lookup: {
         from: "servicereviews",
         localField: "_id",
         foreignField: "service_id",
@@ -257,6 +276,25 @@ const productSearch = async (req, res) => {
           },
         },
       },
+    },
+    {
+      $lookup: {
+        from: "wishlists",
+        localField: "_id",
+        foreignField: "prod_id",
+        as: "wishlist_data"
+      }
+    },
+    {
+      $addFields: {
+        totalWishlistAdded: {
+          $cond: {
+            if: { $isArray: "$wishlist_data" },
+            then: { $size: "$wishlist_data" }, 
+            else: null
+          }
+        }
+      }
     },
     {
       $lookup: {
