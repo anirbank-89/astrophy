@@ -130,7 +130,7 @@ const viewShopServicesPerSeller = async (req, res) => {
 
     ShopService.find(
         {
-            shop_id: { $in: [mongoose.Types.ObjectId(id)] }, 
+            shop_id: { $in: [mongoose.Types.ObjectId(id)] },
             status: true
         }
     )
@@ -160,7 +160,42 @@ const viewShopServicesPerSeller = async (req, res) => {
                                 as: "shop_details"
                             }
                         },
-
+                        {
+                            $lookup: {
+                                from: "new_servicecarts",
+                                let: { seller_id: "$seller_id" },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $and: [
+                                                    { $eq: ["$seller_id", "$$seller_id"] },
+                                                    { $eq: ["$acceptstatus", "accept"] },
+                                                    {
+                                                        $or: [
+                                                            { $eq: ["$refund_request", ""] },
+                                                            { $eq: ["$refund_request", "yes"] }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                ],
+                                as: "cart_data"
+                            }
+                        },
+                        {
+                            $addFields: {
+                                salesCount: {
+                                    $cond: {
+                                        if: { $isArray: "$cart_data" },
+                                        then: { $size: "$cart_data" },
+                                        else: "NA"
+                                    }
+                                }
+                            }
+                        },
                         {
                             $lookup: {
                                 from: "servicereviews",
@@ -284,10 +319,38 @@ const viewOneService = async (req, res) => {
                 // },
                 {
                     $lookup: {
-                        from: 'servicecarts',
-                        localField: "_id",
-                        foreignField: "serv_id",
-                        as: 'cart_data'
+                        from: "new_servicecarts",
+                        let: { seller_id: "$seller_id" },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            { $eq: ["$seller_id", "$$seller_id"] },
+                                            { $eq: ["$acceptstatus", "accept"] },
+                                            {
+                                                $or: [
+                                                    { $eq: ["$refund_request", ""] },
+                                                    { $eq: ["$refund_request", "yes"] }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ],
+                        as: "cart_data"
+                    }
+                },
+                {
+                    $addFields: {
+                        salesCount: {
+                            $cond: {
+                                if: { $isArray: "$cart_data" },
+                                then: { $size: "$cart_data" },
+                                else: "NA"
+                            }
+                        }
                     }
                 },
                 {
@@ -572,18 +635,18 @@ const viewTopServiceProvider = async (req, res) => {
                 {
                     $lookup: {
                         from: "new_servicecarts",
-                        let: {seller_id: "$_id"},
+                        let: { seller_id: "$_id" },
                         pipeline: [
                             {
                                 $match: {
                                     $expr: {
                                         $and: [
-                                            {$eq: ["$seller_id", "$$seller_id"]},
-                                            {$eq: ["$acceptstatus", "accept"]}, 
+                                            { $eq: ["$seller_id", "$$seller_id"] },
+                                            { $eq: ["$acceptstatus", "accept"] },
                                             {
                                                 $or: [
-                                                    {$eq: ["$refund_request", ""]},
-                                                    {$eq: ["$refund_request", "yes"]}
+                                                    { $eq: ["$refund_request", ""] },
+                                                    { $eq: ["$refund_request", "yes"] }
                                                 ]
                                             }
                                         ]
@@ -598,8 +661,8 @@ const viewTopServiceProvider = async (req, res) => {
                     $addFields: {
                         salesCount: {
                             $cond: {
-                                if: { $isArray: "$cart_data" }, 
-                                then: { $size: "$cart_data" }, 
+                                if: { $isArray: "$cart_data" },
+                                then: { $size: "$cart_data" },
                                 else: "NA"
                             }
                         }
@@ -674,8 +737,39 @@ const viewSingleServiceProvider = async (req, res) => {
                     }
                 },
                 {
-                    $project: {
-                        _v: 0
+                    $lookup: {
+                        from: "new_servicecarts",
+                        let: { seller_id: "$_id" },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            { $eq: ["$seller_id", "$$seller_id"] },
+                                            { $eq: ["$acceptstatus", "accept"] },
+                                            {
+                                                $or: [
+                                                    { $eq: ["$refund_request", ""] },
+                                                    { $eq: ["$refund_request", "yes"] }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ],
+                        as: "cart_data"
+                    }
+                },
+                {
+                    $addFields: {
+                        salesCount: {
+                            $cond: {
+                                if: { $isArray: "$cart_data" },
+                                then: { $size: "$cart_data" },
+                                else: "NA"
+                            }
+                        }
                     }
                 },
                 {
@@ -699,8 +793,11 @@ const viewSingleServiceProvider = async (req, res) => {
                     }
                 },
                 { $sort: { priority: 1 } },
-
-
+                {
+                    $project: {
+                        _v: 0
+                    }
+                }
             ]
         )
         .then((data) => {
@@ -796,10 +893,38 @@ const viewAllrelatedService = async (req, res) => {
             },
             {
                 $lookup: {
-                    from: 'servicecarts',
-                    localField: "_id",
-                    foreignField: "serv_id",
-                    as: 'cart_data'
+                    from: "new_servicecarts",
+                    let: { seller_id: "$seller_id" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$seller_id", "$$seller_id"] },
+                                        { $eq: ["$acceptstatus", "accept"] },
+                                        {
+                                            $or: [
+                                                { $eq: ["$refund_request", ""] },
+                                                { $eq: ["$refund_request", "yes"] }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    as: "cart_data"
+                }
+            },
+            {
+                $addFields: {
+                    salesCount: {
+                        $cond: {
+                            if: { $isArray: "$cart_data" },
+                            then: { $size: "$cart_data" },
+                            else: "NA"
+                        }
+                    }
                 }
             },
             {
