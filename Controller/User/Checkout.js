@@ -10,7 +10,6 @@ const create = async (req, res) => {
   const v = new Validator(req.body, {
     user_id: "required",
     subtotal: "required",
-    total: "required",
     firstname: "required",
     lastname: "required",
     address1: "required",
@@ -36,7 +35,6 @@ const create = async (req, res) => {
       `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`
     ),
     subtotal: req.body.subtotal,
-    total: req.body.total,
     firstname: req.body.firstname,
     lastname: req.body.lastname,
     address1: req.body.address1,
@@ -47,18 +45,21 @@ const create = async (req, res) => {
   };
 
   if (
-    req.body.coupon_id != "" &&
-    req.body.coupon_id != null &&
-    typeof req.body.coupon_id != undefined
-  ) {
-    dataSubmit.coupon_id = mongoose.Types.ObjectId(req.body.coupon_id);
-  }
-  if (
     req.body.discount_percent != "" &&
     req.body.discount_percent != null &&
     typeof req.body.discount_percent != undefined
   ) {
     dataSubmit.discount_percent = req.body.discount_percent;
+    dataSubmit.total = dataSubmit.subtotal - ((dataSubmit.subtotal * req.body.discount_percent)/100);
+  } else {
+    dataSubmit.total = req.body.subtotal;
+  }
+  if (
+    req.body.coupon_id != "" &&
+    req.body.coupon_id != null &&
+    typeof req.body.coupon_id != undefined
+  ) {
+    dataSubmit.coupon_id = mongoose.Types.ObjectId(req.body.coupon_id);
   }
   if (
     req.body.coupon_type != "" &&

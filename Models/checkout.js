@@ -24,12 +24,9 @@ const CheckoutSchema = new mongoose.Schema({
     },
     discount_percent:{
         type:Number,
-        required:false
+        default: 0
     },
-    total:{
-        type:Number,
-        required:true
-    },
+    total: Number,
     coupon_id:{
         type:mongoose.Schema.Types.ObjectId,
         required:false

@@ -19,6 +19,10 @@ const CartSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
+    discount_percent: {
+        type: Number,
+        default: 0
+    },
     image:{
         type:Array,
         required:true
