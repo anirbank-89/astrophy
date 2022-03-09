@@ -710,7 +710,6 @@ const viewTopServiceProvider = async (req, res) => {
 }
 
 const viewSingleServiceProvider = async (req, res) => {
-
     User
         .aggregate(
             [

@@ -143,7 +143,7 @@ const viewShopServicesPerService = async (req, res) => {
             (req.query.servicename != "" && typeof req.query.servicename != "undefined") ?
                 {
                     $match: {
-                        name: { $in: [req.query.servicename.toString()] },
+                        name: { $regex: ".*" + req.query.servicename + ".*", $options: "i" },
                         status: true
                     }
                 }
