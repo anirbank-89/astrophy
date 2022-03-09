@@ -261,35 +261,35 @@ const viewShopServicesPerService = async (req, res) => {
                     }
                 }
             },
-            typeof req.body.shortby != "undefined" && req.body.shortby == "newarrivals"
+            typeof req.query.shortby != "undefined" && req.query.shortby == "newarrivals"
                 ? { $sort: { _id: -1 } }
                 : { $project: { __v: 0 } },
 
-            typeof req.body.shortby != "undefined" && req.body.shortby == "highlow"
+            typeof req.query.shortby != "undefined" && req.query.shortby == "highlow"
                 ? { $sort: { price: -1 } }
                 : { $project: { __v: 0 } },
 
-            typeof req.body.shortby != "undefined" && req.body.shortby == "lowhigh"
+            typeof req.query.shortby != "undefined" && req.query.shortby == "lowhigh"
                 ? { $sort: { price: 1 } }
                 : { $project: { __v: 0 } },
 
-            typeof req.body.shortby != "undefined" && req.body.shortby == "lowhighrev"
+            typeof req.query.shortby != "undefined" && req.query.shortby == "lowhighrev"
                 ? { $sort: { avgRating: 1 } }
                 : { $project: { __v: 0 } },
 
-            typeof req.body.shortby != "undefined" && req.body.shortby == "highlowrev"
+            typeof req.query.shortby != "undefined" && req.query.shortby == "highlowrev"
                 ? { $sort: { avgRating: -1 } }
                 : { $project: { __v: 0 } },
 
-            typeof req.body.shortby != "undefined" && req.body.shortby == "bestselling"
+            typeof req.query.shortby != "undefined" && req.query.shortby == "bestselling"
                 ? { $sort: { totalAdded: -1 } }
                 : { $project: { __v: 0 } },
 
-            typeof req.body.shortby != "undefined" && req.body.shortby == "lowhighsell"
+            typeof req.query.shortby != "undefined" && req.query.shortby == "lowhighsell"
                 ? { $sort: { totalAdded: 1 } }
                 : { $project: { __v: 0 } },
 
-            typeof req.body.shortby != "undefined" && req.body.shortby == "highlowsell"
+            typeof req.query.shortby != "undefined" && req.query.shortby == "highlowsell"
                 ? { $sort: { totalAdded: -1 } }
                 : { $project: { __v: 0 } },
             {
