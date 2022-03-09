@@ -129,7 +129,8 @@ const viewShopServicesPerService = async (req, res) => {
         limit: 8,
         customLabels: myCustomLabels
     };
-    let cat_data = await Service.find({ _id: { $in: [mongoose.Types.ObjectId(id)] } }).exec();
+    let cat_data = await Service.findOne({ _id: mongoose.Types.ObjectId(id) }).exec();
+    console.log("Category: ", cat_data);
 
     ShopService.aggregatePaginate(ShopService.aggregate(
         [
@@ -300,30 +301,20 @@ const viewShopServicesPerService = async (req, res) => {
         ]
     ), options, function (err, result) {
         console.log(result);
-        if (result.length > 0) {
-            if (!err) {
-                return res.status(200).json({
-                    status: true,
-                    message: "All services for this category get successfully.",
-                    data: result,
-                    category_data: cat_data[0]
-
-                })
-            }
-            else {
-                return res.status(500).json({
-                    status: false,
-                    message: "Invalid id. Server error.",
-                    error: err,
-                })
-            }
-        }
-        else {
+        if (!err) {
             return res.status(200).json({
                 status: true,
-                message: "No Data",
+                message: "All services for this category get successfully.",
                 data: result,
-                category_data: null
+                category_data: cat_data
+
+            })
+        }
+        else {
+            return res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err.message
             })
         }
     })

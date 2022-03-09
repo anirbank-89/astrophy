@@ -53,29 +53,20 @@ router.get('/user/viewproduct/:id', ProductController.viewSingleProduct);
 router.get('/user/service', ServiceController.viewAllServices);
 router.get('/user/service/:id', ServiceController.viewService);
 
-router.get('/user/spellCasting', UserController.viewAllServices);
-router.get('/user/singlespellCasting/:id', UserController.viewSingleSpell);
-
 router.get('/user/service/shop-services/:id/:page', ServiceController.viewShopServicesPerService);
-
-router.post('/user/searchauto', SeaarchController.autoSearch);
-
-router.post('/user/searchAll', SeaarchController.searchAll);
-
-router.post('/user/serachProviders', SeaarchController.serachProviders);
-
 router.get('/user/shop/view-shopservice/:id', ShopServiceController.viewOneService);
 
 router.get('/user/topProviders',ShopServiceController.viewTopServiceProvider);
-
 router.get('/user/singleProviders/:id',ShopServiceController.viewSingleServiceProvider);
-
-
 router.get('/user/shop/allprovidedServiceList/:id',ShopServiceController.viewAllshopservicelist);
-
 router.post('/user/allrelatedServiceList',ShopServiceController.viewAllrelatedService);
 
-router.post('/user/searchSevice', SeaarchController.serviceSearch);
+router.get('/user/spellCasting', UserController.viewAllServices);
+router.get('/user/singlespellCasting/:id', UserController.viewSingleSpell);
+
+router.post('/user/searchauto', SeaarchController.autoSearch);
+router.post('/user/searchAll', SeaarchController.searchAll);
+router.post('/user/serachProviders', SeaarchController.serachProviders);
 
 router.get('/user/paypalpay/:amt', PaypalPaymentController.pay);
 
