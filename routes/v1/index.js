@@ -47,13 +47,13 @@ router.post('/user/login', UserController.login);
 router.get('/user/currency', CurrencyNTaxRates.getCurrencies);
 router.post('/user/currency/tax-rates', CurrencyNTaxRates.getTaxRateByCurrency);
 
-router.get('/user/listProducts/:page', ProductController.viewProductList); // /:userid
+router.get('/user/listProducts/:userid/:page', ProductController.viewProductList);
 router.get('/user/viewproduct/:id', ProductController.viewSingleProduct);
 
 router.get('/user/service', ServiceController.viewAllServices);
 router.get('/user/service/:id', ServiceController.viewService);
 
-router.get('/user/service/shop-services/:id/:page', ServiceController.viewShopServicesPerService);
+router.get('/user/service/shop-services/:userid/:id/:page', ServiceController.viewShopServicesPerService);
 router.get('/user/shop/view-shopservice/:id', ShopServiceController.viewOneService);
 
 router.get('/user/topProviders',ShopServiceController.viewTopServiceProvider);

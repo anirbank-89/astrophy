@@ -3,6 +3,8 @@ var mongoose = require('mongoose');
 var Product = require('../../Models/product');
 
 const viewProductList = async (req, res) => {
+    var userid = req.params.userid;
+
     const myCustomLabels = {
         totalDocs: 'itemCount',
         docs: 'itemsList',
@@ -57,32 +59,31 @@ const viewProductList = async (req, res) => {
                     as: "category_data"
                 }
             },
-            // // (req.params.userid != '' && typeof req.params.userid != 'undefined') ?
-                {
-                    $lookup: {
-                        from: "carts",
-                        let: {
-                            product_id: "$_id",
-                            // user_id: mongoose.Types.ObjectId(req.params.userid),
-                            status: true
-                        },
-                        pipeline: [
-                            {
-                                $match: {
-                                    $expr: {
-                                        $and: [
-                                            { $eq: ["$prod_id", "$$product_id"] }, 
-                                            // { $eq: ["$user_id", "$$user_id"] }, 
-                                            { $eq: ["$status", "$$status"] }
-                                        ],
-                                    },
+            // (req.params.userid != '' && typeof req.params.userid != 'undefined') ?
+            {
+                $lookup: {
+                    from: "carts",
+                    let: {
+                        product_id: "$_id",
+                        user_id: mongoose.Types.ObjectId(userid),
+                        status: true
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$prod_id", "$$product_id"] },
+                                        { $eq: ["$user_id", "$$user_id"] }, 
+                                        { $eq: ["$status", "$$status"] }
+                                    ],
                                 },
                             },
-                        ],
-                        as: "cart_details",
-                    },
+                        },
+                    ],
+                    as: "cart_details",
                 },
-            //     // : { $project: { __v: 0 } },
+            },
             {
                 $addFields: {
                     totalAdded: {
@@ -97,8 +98,24 @@ const viewProductList = async (req, res) => {
             {
                 $lookup: {
                     from: "wishlists",
-                    localField: "_id",
-                    foreignField: "prod_id",
+                    let: {
+                        prod_id: "$_id", 
+                        user_id: mongoose.Types.ObjectId(userid), 
+                        status: true
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$prod_id", "$$prod_id"] }, 
+                                        { $eq: ["$user_id", "$$user_id"] }, 
+                                        { $eq: ["$status", "$$status"]}
+                                    ]
+                                }
+                            }
+                        }
+                    ],
                     as: "wishlist_data",
                 }
             },
@@ -133,12 +150,6 @@ const viewProductList = async (req, res) => {
                     }
                 }
             },
-            {
-                $project: {
-                    _v: 0,
-                    //    avg : { $avg : '$review_data.rating' } 
-                }
-            },
             typeof req.query.shortby != "undefined" && req.query.shortby == "newarrivals"
                 ? { $sort: { _id: -1 } }
                 : { $project: { __v: 0 } },
@@ -169,7 +180,12 @@ const viewProductList = async (req, res) => {
             typeof req.query.shortby != "undefined" && req.query.shortby == "highlowsell"
                 ? { $sort: { totalAdded: -1 } }
                 : { $project: { __v: 0 } },
-
+            {
+                $project: {
+                    _v: 0,
+                    //    avg : { $avg : '$review_data.rating' } 
+                }
+            }
         ]
     ), options, function (err, result) {
         if (!err) {
@@ -190,8 +206,8 @@ const viewProductList = async (req, res) => {
 
 }
 
-const viewSingleProduct = async (req,res)=>{
-    let id=req.params.id;
+const viewSingleProduct = async (req, res) => {
+    let id = req.params.id;
     // return Product.findOne(
     //     {_id: { $in : [mongoose.Types.ObjectId(id)] } },
     //     (err,docs)=>{
@@ -213,32 +229,32 @@ const viewSingleProduct = async (req,res)=>{
     return Product.aggregate(
         [
             {
-                $match:{
-                    _id:mongoose.Types.ObjectId(id)
+                $match: {
+                    _id: mongoose.Types.ObjectId(id)
                 }
             },
             {
-                $lookup:{
-                    from:"categories",
-                    localField:"catID",
+                $lookup: {
+                    from: "categories",
+                    localField: "catID",
                     foreignField: "_id",
-                    as:"category_data"
+                    as: "category_data"
                 }
             },
             {
-                $lookup:{
-                    from:"reviews",
-                    localField:"_id",
+                $lookup: {
+                    from: "reviews",
+                    localField: "_id",
                     foreignField: "product_id",
-                    as:"review_data",
+                    as: "review_data",
                 }
             },
             {
-                $lookup:{
-                    from:"wishlists",
-                    localField:"_id",
+                $lookup: {
+                    from: "wishlists",
+                    localField: "_id",
                     foreignField: "prod_id",
-                    as:"wishlist_data",
+                    as: "wishlist_data",
                 }
             },
             {
@@ -252,28 +268,28 @@ const viewSingleProduct = async (req,res)=>{
                         }
                     }
                 }
-            },    
+            },
             {
-                $project:{
-                    _v:0,
-                //    avg : { $avg : '$review_data.rating' } 
+                $project: {
+                    _v: 0,
+                    //    avg : { $avg : '$review_data.rating' } 
                 }
             }
         ]
-    ).then((data)=>{
+    ).then((data) => {
         res.status(200).json({
-            status:true,
-            message:'Product Data Get Successfully',
-            data:data
+            status: true,
+            message: 'Product Data Get Successfully',
+            data: data
         })
     })
-    .catch((err)=>{
-        res.status(500).json({
-            status: false,
-            message: "Server error. Please try again.",
-            error: err,
-          });
-    })
+        .catch((err) => {
+            res.status(500).json({
+                status: false,
+                message: "Server error. Please try again.",
+                error: err,
+            });
+        })
 }
 
 module.exports = {

@@ -374,6 +374,20 @@ var shopServicesByCat = async (req, res) => {
         },
         {
             $lookup: {
+                from: "shops",
+                localField: "shop_id",
+                foreignField: "_id",
+                as: "shop_data"
+            }
+        },
+        {
+            $unwind: {
+                path: "$shop_data",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $lookup: {
                 from: "new_servicecarts",
                 let: { serv_id: "$_id" },
                 pipeline: [

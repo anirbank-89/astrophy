@@ -81,6 +81,7 @@ const viewServicePerCategory = async (req, res) => {
 
 const viewShopServicesPerService = async (req, res) => {
     let id = req.params.id       // _id of 'services' table in params
+    let userid = req.params.userid
 
     let shopId = [];
     if (req.body.providername != "" && typeof req.body.providername != "undefined") {
@@ -207,8 +208,24 @@ const viewShopServicesPerService = async (req, res) => {
             {
                 $lookup: {
                     from: "new_servicecarts",
-                    localField: "_id",
-                    foreignField: "serv_id",
+                    let: {
+                        serv_id: "$_id",
+                        user_id: mongoose.Types.ObjectId(userid),
+                        status: true
+                    }, 
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$serv_id","$$serv_id"] }, 
+                                        { $eq: ["$user_id","$$user_id"] }, 
+                                        { $eq: ["$status","$$status"] }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
                     as: "cart_items",
                 },
             },
@@ -226,8 +243,24 @@ const viewShopServicesPerService = async (req, res) => {
             {
                 $lookup: {
                     from: "servicewishes",
-                    localField: "_id",
-                    foreignField: "serv_id",
+                    let: {
+                        serv_id: "$_id", 
+                        user_id: mongoose.Types.ObjectId(userid), 
+                        status: true
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$serv_id", "$$serv_id"] }, 
+                                        { $eq: ["$user_id", "$$user_id"] }, 
+                                        { $eq: ["$status", "$$status"]}
+                                    ]
+                                }
+                            }
+                        }
+                    ],
                     as: "wishlist_data"
                 }
             },
