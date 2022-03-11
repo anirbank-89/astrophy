@@ -121,6 +121,7 @@ router.post('/future_use_address', UserAddresses.getAddressForFutureUse);
 router.post('/servicewishlist', Servicewishlist.create);
 router.get('/servicegetWishlist/:user_id', Servicewishlist.getWish);
 router.delete('/servicedeleteWishlist/:id', Servicewishlist.Delete);
+router.post('/save-for-later', Servicewishlist.saveForLater);
 
 router.post('/servicecart', ServiceCartController.addToServiceCart);
 router.get('/servicecart/:user_id', ServiceCartController.getServiceCart);

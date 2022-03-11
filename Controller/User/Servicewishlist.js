@@ -152,10 +152,92 @@ const Delete = async (req ,res)=>{
                 error: error,
             });
         })
-} 
+}
+
+const saveForLater = async (req,res)=>{
+    const v = new Validator(req.body,{
+     user_id:"required",
+     serv_id:"required",
+     seller_id:"required",
+     servicenamename:"required",
+     price:"required",
+     image:"required"
+    })
+ 
+    let matched = await v.check().then((val)=>val)
+    if(!matched)
+    {
+        return res.status(400).json({
+            status:false,
+            data:null,
+            message:v.errors
+        })
+    }
+ 
+    let subData = await Servicewish.findOne({
+     user_id: mongoose.Types.ObjectId(req.body.user_id),
+     serv_id: mongoose.Types.ObjectId(req.body.serv_id)
+   }).exec();
+   if (subData == null || subData == "") {
+     
+         let dataSubmit = {
+             _id:mongoose.Types.ObjectId(),
+             user_id:mongoose.Types.ObjectId(req.body.user_id),
+             serv_id:mongoose.Types.ObjectId(req.body.serv_id),
+             seller_id:mongoose.Types.ObjectId(req.body.seller_id),
+             servicenamename:req.body.servicenamename,
+             price:req.body.price,
+             image:req.body.image
+         }
+ 
+         const saveData = new Servicewish(dataSubmit);
+         return saveData
+         .save()
+         .then((data)=>{
+             ServiceCart.remove({
+                 user_id: mongoose.Types.ObjectId(req.body.user_id),
+                 serv_id: mongoose.Types.ObjectId(req.body.serv_id)
+               }, function (err, result){
+                 if (err) 
+                 {
+                     res.status(500).json({
+                         status: false,
+                         message: "Server error. Please try again.",
+                         error: err,
+                       });
+                 }
+                 else
+                 {
+                     res.status(200).json({
+                         status:true,
+                         message:'Item Added to Successfully',
+                         data:data
+                     })
+                 }
+               })
+             
+         })
+         .catch((err)=>{
+             res.status(500).json({
+                 status: false,
+                 message: "Server error. Please try again.",
+                 error: err,
+               });
+         })
+   }
+   else
+   {
+     return res.status(400).json({
+         status:false,
+         data:null,
+         message:"Item Already Added"
+     })
+   }
+ }
 
 module.exports = {
     create,
     getWish,
-    Delete
+    Delete,
+    saveForLater
 }
