@@ -10,6 +10,7 @@ const create = async (req, res) => {
   const v = new Validator(req.body, {
     user_id: "required",
     total: "required",
+    subtotal: "required",
     firstname: "required",
     lastname: "required",
     address1: "required",
@@ -35,6 +36,7 @@ const create = async (req, res) => {
       `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`
     ),
     total: req.body.total,
+    subtotal: req.body.subtotal,
     firstname: req.body.firstname,
     lastname: req.body.lastname,
     address1: req.body.address1,
@@ -50,9 +52,6 @@ const create = async (req, res) => {
     typeof req.body.discount_percent != undefined
   ) {
     dataSubmit.discount_percent = req.body.discount_percent;
-    dataSubmit.subtotal = dataSubmit.total - ((dataSubmit.total * req.body.discount_percent)/100);
-  } else {
-    dataSubmit.subtotal = req.body.total;
   }
   if (
     req.body.coupon_id != "" &&
@@ -60,6 +59,21 @@ const create = async (req, res) => {
     typeof req.body.coupon_id != undefined
   ) {
     dataSubmit.coupon_id = mongoose.Types.ObjectId(req.body.coupon_id);
+
+    let coupData = await Coupon.findOne({
+      _id: mongoose.Types.ObjectId(req.body.coupon_id),
+      status: true,
+    }).exec();
+    coupData.times -= 1;
+    // let coupLimit = parseInt(coupData.times) - parseInt(1);
+    // Coupon.updateMany(
+    //   { _id: mongoose.Types.ObjectId(req.body.coupon_id) },
+    //   { $set: { times: coupLimit } },
+    //   { multi: true },
+    //   (err, writeResult) => {
+    //     // console.log(err);
+    //   }
+    // );
   }
   if (
     req.body.coupon_type != "" &&
@@ -93,26 +107,6 @@ const create = async (req, res) => {
     dataSubmit.address_future_use = req.body.address_future_use;
   }
   console.log(dataSubmit);
-  //   return false;
-  if (
-    req.body.coupon_id != "" &&
-    req.body.coupon_id != null &&
-    typeof req.body.coupon_id != undefined
-  ) {
-    let coupData = await Coupon.findOne({
-      _id: mongoose.Types.ObjectId(req.body.coupon_id),
-      status: true,
-    }).exec();
-    let coupLimit = parseInt(coupData.times) - parseInt(1);
-    Coupon.updateMany(
-      { _id: mongoose.Types.ObjectId(req.body.coupon_id) },
-      { $set: { times: coupLimit } },
-      { multi: true },
-      (err, writeResult) => {
-        // console.log(err);
-      }
-    );
-  }
 
   const saveData = new Checkout(dataSubmit);
   return saveData

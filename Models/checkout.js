@@ -18,15 +18,14 @@ const CheckoutSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    coupon_type:{
-        type:String,
-        required:false
-    },
     discount_percent:{
         type:Number,
         default: 0
     },
-    total: Number,
+    coupon_type:{
+        type:String,
+        required:false
+    },
     coupon_id:{
         type:mongoose.Schema.Types.ObjectId,
         required:false
@@ -34,6 +33,10 @@ const CheckoutSchema = new mongoose.Schema({
     coupon:{
         type:String,
         required:false,
+    },
+    subtotal: {
+        type: Number,
+        required: true
     },
     firstname:{
         type:String,

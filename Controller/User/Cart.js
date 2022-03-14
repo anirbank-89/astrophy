@@ -1,12 +1,9 @@
 const mongoose = require("mongoose");
-const Cart = require("../../Models/cart");
-const Product = require("../../Models/product");
-var User = require("../../Models/user");
+const { Validator } = require("node-input-validator");
+
+var Cart = require("../../Models/cart");
 var Wishlist = require("../../Models/wishlist");
 var Coupon = require("../../Models/coupon");
-
-
-const { Validator } = require("node-input-validator");
 
 const addToCart = async (req, res) => {
   const v = new Validator(req.body, {
