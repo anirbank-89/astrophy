@@ -4,148 +4,129 @@ var Servicewish = require('../../Models/servicewishlist')
 
 const { Validator } = require('node-input-validator');
 
-const create = async (req,res)=>{
-   const v = new Validator(req.body,{
-    user_id:"required",
-    serv_id:"required",
-    seller_id:"required",
-    servicename:"required",
-    price:"required",
-    image:"required"
-   })
+const create = async (req, res) => {
+    const v = new Validator(req.body, {
+        user_id: "required",
+        serv_id: "required",
+        seller_id: "required",
+        servicename: "required",
+        price: "required",
+        image: "required"
+    })
 
-   let matched = await v.check().then((val)=>val)
-   if(!matched)
-   {
-       return res.status(400).json({
-           status:false,
-           data:null,
-           message:v.errors
-       })
-   }
+    let matched = await v.check().then((val) => val)
+    if (!matched) {
+        return res.status(400).json({
+            status: false,
+            data: null,
+            message: v.errors
+        })
+    }
 
-   let subData = await Servicewish.findOne({
-    user_id: mongoose.Types.ObjectId(req.body.user_id),
-    serv_id: mongoose.Types.ObjectId(req.body.serv_id)
-  }).exec();
-  if (subData == null || subData == "") {
-    
+    let subData = await Servicewish.findOne({
+        user_id: mongoose.Types.ObjectId(req.body.user_id),
+        serv_id: mongoose.Types.ObjectId(req.body.serv_id)
+    }).exec();
+    if (subData == null || subData == "") {
+
         let dataSubmit = {
-            _id:mongoose.Types.ObjectId(),
-            user_id:mongoose.Types.ObjectId(req.body.user_id),
-            serv_id:mongoose.Types.ObjectId(req.body.serv_id),
-            seller_id:mongoose.Types.ObjectId(req.body.seller_id),
-            servicename:req.body.servicename,
-            price:req.body.price,
-            image:req.body.image
+            _id: mongoose.Types.ObjectId(),
+            user_id: mongoose.Types.ObjectId(req.body.user_id),
+            serv_id: mongoose.Types.ObjectId(req.body.serv_id),
+            seller_id: mongoose.Types.ObjectId(req.body.seller_id),
+            servicename: req.body.servicename,
+            price: req.body.price,
+            image: req.body.image
         }
 
         const saveData = new Servicewish(dataSubmit);
         return saveData
-        .save()
-        .then((data)=>{
-            ServiceCart.remove({
-                user_id: mongoose.Types.ObjectId(req.body.user_id),
-                serv_id: mongoose.Types.ObjectId(req.body.serv_id)
-              }, function (err, result){
-                if (err) 
-                {
-                    res.status(500).json({
-                        status: false,
-                        message: "Server error. Please try again.",
-                        error: err,
-                      });
-                }
-                else
-                {
-                    res.status(200).json({
-                        status:true,
-                        message:'Item Added to Successfully',
-                        data:data
-                    })
-                }
-              })
-            
-        })
-        .catch((err)=>{
-            res.status(500).json({
-                status: false,
-                message: "Server error. Please try again.",
-                error: err,
-              });
-        })
-  }
-  else
-  {
-    return res.status(400).json({
-        status:false,
-        data:null,
-        message:"Item Already Added"
-    })
-  }
-    
-}
-
-const getWish = async (req,res)=>{
-
-  return Servicewish.aggregate([
-    {
-        $match: {
-            user_id: mongoose.Types.ObjectId(req.params.user_id),
-        },
-    },
-    {
-        $lookup: {
-            from: "shop_services",
-            localField: "serv_id",
-            foreignField: "_id",
-            as: "service_data"
-        }
-    },
-    {
-        $project: {
-            // _id: 0,
-            
-            __v: 0,            
-        }
+            .save()
+            .then((data) => {
+                res.status(200).json({
+                    status: true,
+                    message: 'Item Added to Successfully',
+                    data: data
+                })
+            })
+            .catch((err) => {
+                res.status(500).json({
+                    status: false,
+                    message: "Server error. Please try again.",
+                    error: err,
+                });
+            })
     }
-])
-    .then((data) => {
-        if (data.length > 0) {
-            return res.status(200).json({
-                status: true,
-                message: "Wistlist Get Successfully",
-                data: data,
-            });
-        } else {
-            return res.status(200).json({
-                status: true,
-                message: "Empty List",
-                data: data,
-            });
-        }
-
-    })
-    .catch((err) => {
-        return res.status(500).json({
+    else {
+        return res.status(400).json({
             status: false,
-            message: "No Match",
             data: null,
-        });
-    });
+            message: "Item Already Added"
+        })
+    }
+
 }
 
-const Delete = async (req ,res)=>{
+const getWish = async (req, res) => {
+
+    return Servicewish.aggregate([
+        {
+            $match: {
+                user_id: mongoose.Types.ObjectId(req.params.user_id),
+            },
+        },
+        {
+            $lookup: {
+                from: "shop_services",
+                localField: "serv_id",
+                foreignField: "_id",
+                as: "service_data"
+            }
+        },
+        {
+            $project: {
+                // _id: 0,
+
+                __v: 0,
+            }
+        }
+    ])
+        .then((data) => {
+            if (data.length > 0) {
+                return res.status(200).json({
+                    status: true,
+                    message: "Wistlist Get Successfully",
+                    data: data,
+                });
+            } else {
+                return res.status(200).json({
+                    status: true,
+                    message: "Empty List",
+                    data: data,
+                });
+            }
+
+        })
+        .catch((err) => {
+            return res.status(500).json({
+                status: false,
+                message: "No Match",
+                data: null,
+            });
+        });
+}
+
+const Delete = async (req, res) => {
     return Servicewish.remove(
-        {_id: { $in : [mongoose.Types.ObjectId(req.params.id)]}})
-        .then((data)=>{
+        { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } })
+        .then((data) => {
             return res.status(200).json({
                 status: true,
                 message: 'Wishlist Item delete successfully',
                 data: data
             });
         })
-        .catch((err)=>{
+        .catch((err) => {
             res.status(500).json({
                 status: false,
                 message: 'Server error. Please try again.',
@@ -154,87 +135,83 @@ const Delete = async (req ,res)=>{
         })
 }
 
-const saveForLater = async (req,res)=>{
-    const v = new Validator(req.body,{
-     user_id:"required",
-     serv_id:"required",
-     seller_id:"required",
-     servicename:"required",
-     price:"required",
-     image:"required"
+const saveForLater = async (req, res) => {
+    const v = new Validator(req.body, {
+        user_id: "required",
+        serv_id: "required",
+        seller_id: "required",
+        servicename: "required",
+        price: "required",
+        image: "required"
     })
- 
-    let matched = await v.check().then((val)=>val)
-    if(!matched)
-    {
+
+    let matched = await v.check().then((val) => val)
+    if (!matched) {
         return res.status(400).json({
-            status:false,
-            data:null,
-            message:v.errors
+            status: false,
+            data: null,
+            message: v.errors
         })
     }
- 
+
     let subData = await Servicewish.findOne({
-     user_id: mongoose.Types.ObjectId(req.body.user_id),
-     serv_id: mongoose.Types.ObjectId(req.body.serv_id)
-   }).exec();
-   if (subData == null || subData == "") {
-     
-         let dataSubmit = {
-             _id:mongoose.Types.ObjectId(),
-             user_id:mongoose.Types.ObjectId(req.body.user_id),
-             serv_id:mongoose.Types.ObjectId(req.body.serv_id),
-             seller_id:mongoose.Types.ObjectId(req.body.seller_id),
-             servicename:req.body.servicename,
-             price:req.body.price,
-             image:req.body.image
-         }
- 
-         const saveData = new Servicewish(dataSubmit);
-         return saveData
-         .save()
-         .then((data)=>{
-             ServiceCart.remove({
-                 user_id: mongoose.Types.ObjectId(req.body.user_id),
-                 serv_id: mongoose.Types.ObjectId(req.body.serv_id),
-                 status: true
-               }, function (err, result){
-                 if (err) 
-                 {
-                     res.status(500).json({
-                         status: false,
-                         message: "Server error. Please try again.",
-                         error: err,
-                       });
-                 }
-                 else
-                 {
-                     res.status(200).json({
-                         status:true,
-                         message:'Item Added to Successfully',
-                         data:data
-                     })
-                 }
-               })
-             
-         })
-         .catch((err)=>{
-             res.status(500).json({
-                 status: false,
-                 message: "Server error. Please try again.",
-                 error: err,
-               });
-         })
-   }
-   else
-   {
-     return res.status(400).json({
-         status:false,
-         data:null,
-         message:"Item Already Added"
-     })
-   }
- }
+        user_id: mongoose.Types.ObjectId(req.body.user_id),
+        serv_id: mongoose.Types.ObjectId(req.body.serv_id)
+    }).exec();
+    if (subData == null || subData == "") {
+
+        let dataSubmit = {
+            _id: mongoose.Types.ObjectId(),
+            user_id: mongoose.Types.ObjectId(req.body.user_id),
+            serv_id: mongoose.Types.ObjectId(req.body.serv_id),
+            seller_id: mongoose.Types.ObjectId(req.body.seller_id),
+            servicename: req.body.servicename,
+            price: req.body.price,
+            image: req.body.image
+        }
+
+        const saveData = new Servicewish(dataSubmit);
+        return saveData
+            .save()
+            .then((data) => {
+                ServiceCart.remove({
+                    user_id: mongoose.Types.ObjectId(req.body.user_id),
+                    serv_id: mongoose.Types.ObjectId(req.body.serv_id),
+                    status: true
+                }, function (err, result) {
+                    if (err) {
+                        res.status(500).json({
+                            status: false,
+                            message: "Server error. Please try again.",
+                            error: err,
+                        });
+                    }
+                    else {
+                        res.status(200).json({
+                            status: true,
+                            message: 'Item Added to Successfully',
+                            data: data
+                        })
+                    }
+                })
+
+            })
+            .catch((err) => {
+                res.status(500).json({
+                    status: false,
+                    message: "Server error. Please try again.",
+                    error: err,
+                });
+            })
+    }
+    else {
+        return res.status(400).json({
+            status: false,
+            data: null,
+            message: "Item Already Added"
+        })
+    }
+}
 
 module.exports = {
     create,
