@@ -9,7 +9,7 @@ const { Validator } = require("node-input-validator");
 const create = async (req, res) => {
   const v = new Validator(req.body, {
     user_id: "required",
-    subtotal: "required",
+    total: "required",
     firstname: "required",
     lastname: "required",
     address1: "required",
@@ -34,7 +34,7 @@ const create = async (req, res) => {
     order_id: Number(
       `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`
     ),
-    subtotal: req.body.subtotal,
+    total: req.body.total,
     firstname: req.body.firstname,
     lastname: req.body.lastname,
     address1: req.body.address1,
@@ -50,9 +50,9 @@ const create = async (req, res) => {
     typeof req.body.discount_percent != undefined
   ) {
     dataSubmit.discount_percent = req.body.discount_percent;
-    dataSubmit.total = dataSubmit.subtotal - ((dataSubmit.subtotal * req.body.discount_percent)/100);
+    dataSubmit.subtotal = dataSubmit.total - ((dataSubmit.total * req.body.discount_percent)/100);
   } else {
-    dataSubmit.total = req.body.subtotal;
+    dataSubmit.subtotal = req.body.total;
   }
   if (
     req.body.coupon_id != "" &&

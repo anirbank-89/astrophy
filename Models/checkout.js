@@ -14,7 +14,7 @@ const CheckoutSchema = new mongoose.Schema({
 		default: dateKolkata,
 		required: false
     },
-    subtotal:{
+    total:{
         type:Number,
         required:true
     },
