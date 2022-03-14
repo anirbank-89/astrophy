@@ -114,20 +114,21 @@ router.post('/checkCoupon', CartController.checkCoupon);
 
 router.post('/checkout', CheckoutController.create);
 
+router.post('/servicecart', ServiceCartController.addToServiceCart);
+router.get('/servicecart/:user_id', ServiceCartController.getServiceCart);
+router.delete('/servicecart/:id',ServiceCartController.Delete);
+
+router.post('/servicewishlist', Servicewishlist.create);
+// same api as the last one
+router.post('/save-for-later', Servicewishlist.saveForLater);
+router.get('/servicegetWishlist/:user_id', Servicewishlist.getWish);
+router.delete('/servicedeleteWishlist/:id', Servicewishlist.Delete);
+
+router.post('/servicecheckout', ServiceCheckoutController.create);
+
 var UserAddresses = require('../../Controller/User/Address');
 router.post('/add-billing-address', UserAddresses.saveAddress);
 router.post('/future_use_address', UserAddresses.getAddressForFutureUse);
-
-router.post('/servicewishlist', Servicewishlist.create);
-router.get('/servicegetWishlist/:user_id', Servicewishlist.getWish);
-router.delete('/servicedeleteWishlist/:id', Servicewishlist.Delete);
-router.post('/save-for-later', Servicewishlist.saveForLater);
-
-router.post('/servicecart', ServiceCartController.addToServiceCart);
-router.get('/servicecart/:user_id', ServiceCartController.getServiceCart);
-router.delete('/servicecart/:id',ServiceCartController.Delete)
-
-router.post('/servicecheckout', ServiceCheckoutController.create);
 
 router.get('/orderdetails/:user_id', MyaccountController.viewAll);
 router.put('/refundProduct/:id', MyaccountController.refundProduct);  // from product cart in future

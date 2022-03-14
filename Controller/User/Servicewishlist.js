@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const ServiceCart = require('../../Models/servicecart')
+const ServiceCart = require('../../Models/new_servicecart')
 var Servicewish = require('../../Models/servicewishlist')
 
 const { Validator } = require('node-input-validator');
@@ -9,7 +9,7 @@ const create = async (req,res)=>{
     user_id:"required",
     serv_id:"required",
     seller_id:"required",
-    servicenamename:"required",
+    servicename:"required",
     price:"required",
     image:"required"
    })
@@ -35,7 +35,7 @@ const create = async (req,res)=>{
             user_id:mongoose.Types.ObjectId(req.body.user_id),
             serv_id:mongoose.Types.ObjectId(req.body.serv_id),
             seller_id:mongoose.Types.ObjectId(req.body.seller_id),
-            servicenamename:req.body.servicenamename,
+            servicename:req.body.servicename,
             price:req.body.price,
             image:req.body.image
         }
@@ -159,7 +159,7 @@ const saveForLater = async (req,res)=>{
      user_id:"required",
      serv_id:"required",
      seller_id:"required",
-     servicenamename:"required",
+     servicename:"required",
      price:"required",
      image:"required"
     })
@@ -185,7 +185,7 @@ const saveForLater = async (req,res)=>{
              user_id:mongoose.Types.ObjectId(req.body.user_id),
              serv_id:mongoose.Types.ObjectId(req.body.serv_id),
              seller_id:mongoose.Types.ObjectId(req.body.seller_id),
-             servicenamename:req.body.servicenamename,
+             servicename:req.body.servicename,
              price:req.body.price,
              image:req.body.image
          }
@@ -196,7 +196,8 @@ const saveForLater = async (req,res)=>{
          .then((data)=>{
              ServiceCart.remove({
                  user_id: mongoose.Types.ObjectId(req.body.user_id),
-                 serv_id: mongoose.Types.ObjectId(req.body.serv_id)
+                 serv_id: mongoose.Types.ObjectId(req.body.serv_id),
+                 status: true
                }, function (err, result){
                  if (err) 
                  {

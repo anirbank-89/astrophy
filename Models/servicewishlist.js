@@ -5,7 +5,7 @@ const ServicewishSchema = new mongoose.Schema({
     user_id:mongoose.Schema.Types.ObjectId,
     serv_id:mongoose.Schema.Types.ObjectId,
     seller_id:mongoose.Schema.Types.ObjectId,
-    servicenamename:{
+    servicename:{
         type:String,
         required:true
     },
@@ -14,7 +14,7 @@ const ServicewishSchema = new mongoose.Schema({
         required:true
     },
     image:{
-        type:String,
+        type:Array,
         required:true
     },
     status:{
