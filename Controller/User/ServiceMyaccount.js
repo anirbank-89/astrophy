@@ -25,6 +25,36 @@ const viewAll = async (req, res) => {
         }
       },
       {
+        $unwind: {
+          path: "$servicecart_data",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          let: { seller_id: "$servicecart_data.seller_id" },
+          pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$_id", "$$seller_id"] }] } } }],
+          as: "servicecart_data.seller_data"
+        }
+      },
+      {
+        $unwind: {
+          path: "$servicecart_data.seller_data",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      // should've done in reverse order - servicecart_data.service_data (only 1), 
+      // servicecart_data.service_data.seller_data (only 1)
+      {
+        $lookup: {
+          from: "shop_services",
+          let: { seller_id: "$servicecart_data.seller_data._id" },
+          pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$seller_id", "$$seller_id"] }] } } }],
+          as: "servicecart_data.seller_data.service_data"
+        }
+      },
+      {
         $lookup: {
           from: "service_refunds",
           localField: "order_id",
@@ -32,19 +62,24 @@ const viewAll = async (req, res) => {
           as: "servicerefund_data"
         }
       },
-      // {
-      //     $unwind: "$servicerefund_data"
-      // },
       {
-        $sort: {
-          _id: -1
+        $unwind: {
+          path: "$servicerefund_data",
+          preserveNullAndEmptyArrays: true
         }
       },
+      { $project: { _id: 0 } },
       {
-        $project: {
-          _v: 0
+        $group: {
+          _id: "$order_id",
+          order_subtotal: { $sum: "$servicecart_data.price" },
+          discount: { $avg: "$servicecart_data.discount_percent" },
+          servicecart_data: { $push: "$servicecart_data" },
+          service_refund: { $push: "$servicerefund_data" }
         }
-      }
+      },
+      { $sort: { _id: -1 } },
+      { $project: { _v: 0 } }
     ]
   )
     .then((docs) => {

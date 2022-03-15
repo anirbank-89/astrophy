@@ -154,6 +154,17 @@ const viewShopServicesPerSeller = async (req, res) => {
                         },
                         {
                             $lookup: {
+                                from: "services",
+                                localField: "subcategory_id",
+                                foreignField: "_id",
+                                as: "category_details"
+                            }
+                        },
+                        {
+                            $unwind: "$category_details"
+                        },
+                        {
+                            $lookup: {
                                 from: "shops",
                                 localField: "shop_id",
                                 foreignField: "_id",
@@ -182,16 +193,49 @@ const viewShopServicesPerSeller = async (req, res) => {
                                         }
                                     }
                                 ],
-                                as: "cart_data"
+                                as: "cart_items"
                             }
                         },
                         {
                             $addFields: {
                                 salesCount: {
                                     $cond: {
-                                        if: { $isArray: "$cart_data" },
-                                        then: { $size: "$cart_data" },
+                                        if: { $isArray: "$cart_items" },
+                                        then: { $size: "$cart_items" },
                                         else: "NA"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "servicewishes",
+                                let: {
+                                    serv_id: "$_id",
+                                    status: true
+                                },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $and: [
+                                                    { $eq: ["$serv_id", "$$serv_id"] },
+                                                    { $eq: ["$status", "$$status"] }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                ],
+                                as: "wishlist_data"
+                            }
+                        },
+                        {
+                            $addFields: {
+                                totalWishlistAdded: {
+                                    $cond: {
+                                        if: { $isArray: "$wishlist_data" },
+                                        then: { $size: "$wishlist_data" },
+                                        else: null
                                     }
                                 }
                             }

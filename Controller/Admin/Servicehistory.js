@@ -223,9 +223,7 @@ const reportViewAll = async (req, res) => {
                     preserveNullAndEmptyArrays: true
                 }
             },
-            {
-                $project: { _id: 0 }
-            },
+            { $project: { _id: 0 } },
             {
                 $group: {
                     _id: "$order_id",
@@ -237,11 +235,7 @@ const reportViewAll = async (req, res) => {
                 }
             },
             { $sort: { _id: -1 } },
-            {
-                $project: {
-                    _v: 0
-                }
-            }
+            { $project: { _v: 0 } }
         ]
     )
         .then((docs) => {
