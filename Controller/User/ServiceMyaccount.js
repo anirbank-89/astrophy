@@ -49,8 +49,8 @@ const viewAll = async (req, res) => {
       {
         $lookup: {
           from: "shop_services",
-          let: { seller_id: "$servicecart_data.seller_data._id" },
-          pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$seller_id", "$$seller_id"] }] } } }],
+          let: { serv_id: "$servicecart_data.serv_id" },
+          pipeline: [{ $match: { $expr: { $and: [{ $eq: ["$_id", "$$serv_id"] }] } } }],
           as: "servicecart_data.seller_data.service_data"
         }
       },
