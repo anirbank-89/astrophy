@@ -12,6 +12,7 @@ const ShopController = require('../../Controller/Admin/Shop');               // 
 const ShopServiceController = require('../../Controller/Admin/ShopServices');// added by anirbank-93
 const ServiceSubCategoryController = require('../../Controller/Admin/SubCategory');// added by anirbank-93
 const CouponController = require('../../Controller/Admin/Coupon');
+const ServiceCoupon = require('../../Controller/Admin/ServiceCoupon');
 const OrderhistoryController = require('../../Controller/Admin/Orderhistory');
 const ServicehistoryController = require('../../Controller/Admin/Servicehistory');
 const UserController = require('../../Controller/Auth/User');
@@ -154,6 +155,12 @@ router.get('/coupon', CouponController.viewAll)
 router.put('/coupon/:id', CouponController.update)
 router.delete('/coupon/:id', CouponController.Delete)
 router.put('/coupon/set-status/:id', CouponController.setStatus)
+
+router.post('/service-coupon', ServiceCoupon.create);
+router.get('/service-coupon', ServiceCoupon.viewAll);
+router.get('/service-coupon/:id', ServiceCoupon.viewById);
+router.put('/service-coupon/:id', ServiceCoupon.update);
+router.delete('/service-coupon/:id', ServiceCoupon.Delete);
 
 router.get('/orderHistory', OrderhistoryController.viewAll)  
 router.post('/orderHistoryrepo', OrderhistoryController.productViewAllrepo)

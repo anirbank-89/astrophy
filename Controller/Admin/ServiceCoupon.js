@@ -1,18 +1,14 @@
 var mongoose = require('mongoose');
 const { Validator } = require('node-input-validator');
-var jwt = require('jsonwebtoken');
-var uuidv1 = require('uuid').v1;
 
-var Coupon = require("../../Models/coupon");
+var Coupon = require("../../Models/servicecoupon");
 
 const create = async (req, res) => {
     const v = new Validator(req.body, {
         name: "required",
         minprice: "required",
-        percent: "required",
+        discount_type: "required",
         expdate: "required",
-        discount_type:"required",
-        discount_value:"required",
         // applicable_date:"required",
         times: "required",
 
@@ -30,12 +26,16 @@ const create = async (req, res) => {
         _id: mongoose.Types.ObjectId(),
         name: req.body.name,
         minprice: req.body.minprice,
-        percent: req.body.percent,
+        discount_type: req.body.discount_type,
         expdate: req.body.expdate,
-        discount_type:req.body.discount_type,
-        discount_value:req.body.discount_value,
         // applicable_date:req.body.applicable_date,
         times: req.body.times
+    }
+    if (req.body.percent != "" || req.body.percent != null || typeof req.body.percent != "undefined") {
+        couponData.percent = req.body.percent;
+    }
+    if (req.body.discount_value != "" || req.body.discount_value != null || typeof req.body.discount_value != "undefined") {
+        couponData.discount_value = req.body.discount_value;
     }
 
     const NEW_COUPON = await new Coupon(couponData)
@@ -80,11 +80,48 @@ const viewAll = async (req, res) => {
                 status: false,
                 message: "Server error. Please try again.",
                 error: error,
-            });
+            })
+        })
+}
+
+const viewById = async (req,res) => {
+    var id = req.params.id;
+
+    return Coupon.findOne({ _id: mongoose.Types.ObjectId(id) })
+        .then(docs => {
+            res.status(200).json({
+                status: true,
+                message: 'Coupon Data Get Successfully',
+                data: docs
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                status: false,
+                message: "Invalid id. Server error.",
+                error: err.message
+            })
         })
 }
 
 const update = async (req, res) => {
+    const v = new Validator(req.body, {
+        name: "required",
+        minprice: "required",
+        discount_type: "required",
+        expdate: "required",
+        // applicable_date:"required",
+        times: "required",
+
+    })
+
+    let matched = await v.check().then((val) => val)
+    if (!matched) {
+        return res.status(400).send({
+            status: false,
+            error: v.errors
+        })
+    }
 
     return Coupon.findOneAndUpdate(
         { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
@@ -118,84 +155,29 @@ const update = async (req, res) => {
 }
 
 const Delete = async (req, res) => {
-    return Coupon.remove(
-        { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } })
-        .then((data) => {
+    var id = req.params.id;
+
+    return Coupon.findOneAndDelete({ _id: mongoose.Types.ObjectId(id) })
+        .then((docs) => {
             return res.status(200).json({
                 status: true,
                 message: 'Coupon delete successfully',
-                data: data
+                data: docs
             });
         })
         .catch((err) => {
             res.status(500).json({
                 status: false,
-                message: 'Server error. Please try again.',
-                error: error,
+                message: 'Invalid id. Server error.',
+                error: err.message,
             });
         })
-}
-
-const setStatus = async (req, res) => {
-    var id = req.params.id;
-
-    var current_status = await Coupon.findById({ _id: id }).exec();
-
-    console.log("Subscription data", current_status);
-
-    if (current_status.status === true) {
-        console.log(true);
-        return Coupon.findByIdAndUpdate(
-            { _id: id },
-            { $set: { status: false } },
-            { new: true },
-            (err, docs) => {
-                if (!err) {
-                    res.status(200).json({
-                        status: true,
-                        message: "Coupon has been made inactive.",
-                        data: docs
-                    });
-                }
-                else {
-                    res.status(500).json({
-                        status: false,
-                        message: "Invalid id. Server error.",
-                        error: err
-                    });
-                }
-            }
-        );
-    }
-    else {
-        return Coupon.findByIdAndUpdate(
-            { _id: id },
-            { $set: { status: true } },
-            { new: true },
-            (err, docs) => {
-                if (!err) {
-                    res.status(200).json({
-                        status: true,
-                        message: "Coupon has been activated.",
-                        data: docs
-                    });
-                }
-                else {
-                    res.status(500).json({
-                        status: false,
-                        message: "Invalid id. Server error.",
-                        error: err
-                    });
-                }
-            }
-        );
-    }
 }
 
 module.exports = {
     create,
     viewAll,
+    viewById,
     update,
-    Delete,
-    setStatus
+    Delete
 }
