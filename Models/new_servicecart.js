@@ -29,6 +29,7 @@ const SERVICE_CART_SCHEMA = new mongoose.Schema({
         type: String,
         default: "pending"
     },
+    cancelstatus: String,
     status:{
         type:Boolean,
         default:true

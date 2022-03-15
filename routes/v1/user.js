@@ -138,6 +138,7 @@ router.get('/prod-order-receipt/:id', MyaccountController.downloadReceipt);
 
 router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
 router.put('/refundService/:id', ServiceMyaccountController.refundService);
+router.put('/cancel-serv-order/:id', ServiceMyaccountController.cancelServOrder);
 router.post('/buy-history-from-seller', ServiceMyaccountController.buyHistFromSeller);
 router.get('/serv-order-receipt/:id', ServiceMyaccountController.downloadReceipt);
 

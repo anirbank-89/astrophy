@@ -18,6 +18,20 @@ const viewAll = async (req, res) => {
       },
       {
         $lookup: {
+          from: "useraddresses",
+          localField: "user_id",
+          foreignField: "userid",
+          as: "user_address"
+        }
+      },
+      {
+        $unwind: {
+          path: "$user_address",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
           from: "new_servicecarts",
           localField: "order_id",
           foreignField: "order_id",
@@ -56,6 +70,36 @@ const viewAll = async (req, res) => {
       },
       {
         $lookup: {
+          from: "servicereviews",
+          let: {
+            service_id: "$servicecart_data.serv_id",
+            user_id: "$user_id",
+            order_id: "$order_id"
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$service_id", "$$service_id"] },
+                    { $eq: ["$user_id", "$$user_id"] },
+                    { $eq: ["$order_id", "$$order_id"] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "servicecart_data.review_data"
+        }
+      },
+      {
+        $unwind: {
+          path: "$servicecart_data.review_data",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
           from: "service_refunds",
           localField: "order_id",
           foreignField: "order_id",
@@ -74,6 +118,7 @@ const viewAll = async (req, res) => {
           _id: "$order_id",
           order_subtotal: { $sum: "$servicecart_data.price" },
           discount: { $avg: "$servicecart_data.discount_percent" },
+          useraddress_data: { $push: "$user_address" },
           servicecart_data: { $push: "$servicecart_data" },
           service_refund: { $push: "$servicerefund_data" }
         }
@@ -186,6 +231,41 @@ const refundService = async (req, res) => {
         data: null
       });
     }
+  }
+}
+
+var cancelServOrder = async (req, res) => {
+  var id = req.params.id    // _id of 'new_servicecarts' table
+
+  let servOrderDetails = await NewServiceCart.findOne({ _id: mongoose.Types.ObjectId(id) }).exec()
+
+  if (servOrderDetails.acceptstatus == "accept") {
+    return res.status(500).json({
+      status: false,
+      error: "Order is already accepted. Can't cancel.",
+      data: null
+    });
+  }
+  else {
+    return NewServiceCart.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(id) },
+      { $set: { cancelstatus: "cancel" } },
+      { new: true }
+    )
+      .then(docs => {
+        res.status(200).json({
+          status: true,
+          message: "This service order cancelled.",
+          data: docs
+        });
+      })
+      .catch(err => {
+        res.status(500).json({
+          status: false,
+          message: "Invalid id. Server error.",
+          error: err.message
+        });
+      });
   }
 }
 
@@ -421,6 +501,7 @@ var downloadReceipt = async (req, res) => {
 module.exports = {
   viewAll,
   refundService,
+  cancelServOrder,
   buyHistFromSeller,
   downloadReceipt
 }
