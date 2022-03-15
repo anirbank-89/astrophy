@@ -120,6 +120,101 @@ const refundProduct = async (req, res) => {
   );
 }
 
+const downloadReceipt = async (req, res) => {
+  var id = req.params.id;
+
+  let prodCheckout = await Checkout.findOne({ _id: mongoose.Types.ObjectId(id) }).exec()
+  let savedAddr = await userAddress.findOne(
+    {
+      userid: prodCheckout.user_id,
+      shipping: true
+    }
+  ).exec()
+  let prodCart = await Cart.aggregate([
+    {
+      $match: {
+        order_id: prodCheckout.order_id
+      }
+    },
+    {
+      $lookup: {
+        from: "products",
+        localField: "prod_id",
+        foreignField: "_id",
+        as: "product_data"
+      }
+    },
+    {
+      $unwind: "$product_data"
+    }
+  ]).exec()
+
+  var itemArr = []
+  prodCart.forEach(element => {
+    itemArr.push(
+      {
+        name: element.productname,
+        price_num: element.price,
+        price: element.product_data.currency + " " + element.price,
+        quantity: element.qty,
+      }
+    )
+  })
+  console.log("Cart items ", itemArr);
+
+  // Create invoice structure
+  const invoiceData = {
+    addresses: {
+      shipping: {
+        name: savedAddr.firstname + " " + savedAddr.lastname,
+        address: savedAddr.address1,
+        // city: savedAddr.city,
+        state: savedAddr.state,
+        country: savedAddr.country,
+        postalCode: savedAddr.zip
+      },
+      billing: {
+        name: prodCheckout.firstname + " " + prodCheckout.lastname,
+        address: prodCheckout.address1,
+        // city: prodCheckout.city,
+        state: prodCheckout.state,
+        country: prodCheckout.country,
+        postalCode: prodCheckout.zip
+      }
+    },
+    memo: 'As discussed',
+    order_id: prodCheckout.order_id,
+    items: itemArr,
+    subtotal: prodCheckout.subtotal,
+    paid: prodCheckout.total,
+    currency: prodCart[0].product_data.currency,
+    invoiceNumber: `${new Date().getDate()}${new Date().getMonth()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`,
+    // dueDate: servCheckout.due_date
+  }
+
+  const IG = new invoiceGenerator(invoiceData, res)
+  var fileName = IG.generate()
+
+  // return res.writeHead(200, {
+  //   'Content-Type': 'application/pdf',
+  // })
+
+  if (savedAddr == null) {
+    return res.status(500).json({
+      status: false,
+      error: "No shipping address. Could not generate invoice.",
+      file: null
+    });
+  }
+  else {
+    return res.status(200).json({
+      status: true,
+      message: "Generated invoice.",
+      file: fileName
+    })
+  }
+}
+
 const updateProfile = async (req, res) => {
   const V = new Validator(req.body, {
     // email, password should be made unable for edit in frontend
@@ -286,105 +381,35 @@ const updatePassword = async (req, res) => {
   }
 }
 
-var downloadReceipt = async (req, res) => {
+var deleteProfile = async (req, res) => {
   var id = req.params.id;
 
-  let prodCheckout = await Checkout.findOne({ _id: mongoose.Types.ObjectId(id) }).exec()
-  let savedAddr = await userAddress.findOne(
-    {
-      userid: prodCheckout.user_id,
-      shipping: true
-    }
-  ).exec()
-  let prodCart = await Cart.aggregate([
-    {
-      $match: {
-        order_id: prodCheckout.order_id
-      }
-    },
-    {
-      $lookup: {
-        from: "products",
-        localField: "prod_id",
-        foreignField: "_id",
-        as: "product_data"
-      }
-    },
-    {
-      $unwind: "$product_data"
-    }
-  ]).exec()
+  let profile = await User.findOne({ _id: mongoose.Types.ObjectId(id) }).exec();
 
-  var itemArr = []
-  prodCart.forEach(element => {
-    itemArr.push(
-      {
-        name: element.productname,
-        price_num: element.price,
-        price: element.product_data.currency + " " + element.price,
-        quantity: element.qty,
-      }
-    )
-  })
-  console.log("Cart items ", itemArr);
-
-  // Create invoice structure
-  const invoiceData = {
-    addresses: {
-      shipping: {
-        name: savedAddr.firstname + " " + savedAddr.lastname,
-        address: savedAddr.address1,
-        // city: savedAddr.city,
-        state: savedAddr.state,
-        country: savedAddr.country,
-        postalCode: savedAddr.zip
-      },
-      billing: {
-        name: prodCheckout.firstname + " " + prodCheckout.lastname,
-        address: prodCheckout.address1,
-        // city: prodCheckout.city,
-        state: prodCheckout.state,
-        country: prodCheckout.country,
-        postalCode: prodCheckout.zip
-      }
-    },
-    memo: 'As discussed',
-    order_id: prodCheckout.order_id,
-    items: itemArr,
-    subtotal: prodCheckout.subtotal,
-    paid: prodCheckout.total,
-    currency: prodCart[0].product_data.currency,
-    invoiceNumber: `${new Date().getDate()}${new Date().getMonth()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`,
-    // dueDate: servCheckout.due_date
-  }
-
-  const IG = new invoiceGenerator(invoiceData, res)
-  var fileName = IG.generate()
-
-  // return res.writeHead(200, {
-  //   'Content-Type': 'application/pdf',
-  // })
-
-  if (savedAddr == null) {
-    return res.status(500).json({
-      status: false,
-      error: "No shipping address. Could not generate invoice.",
-      file: null
-    });
-  }
-  else {
-    return res.status(200).json({
-      status: true,
-      message: "Generated invoice.",
-      file: fileName
-    })
+  if (profile.type == "User") {
+    return User.findOneAndDelete({ _id: mongoose.Types.ObjectId(id) })
+      .then(docs => {
+        res.status(200).json({
+          status: true,
+          message: "Profile deleted.",
+          data: docs
+        });
+      })
+      .catch(err => {
+        res.status(500).json({
+          status: false,
+          message: "Invalid id. Server error.",
+          error: err.message
+        });
+      });
   }
 }
 
 module.exports = {
   viewAll,
   refundProduct,
+  downloadReceipt,
   updateProfile,
   updatePassword,
-  downloadReceipt
+  deleteProfile
 }
