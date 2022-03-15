@@ -17,6 +17,7 @@ const create = async (req, res) => {
   let subData = await Servicereview.findOne({
     service_id: mongoose.Types.ObjectId(req.body.service_id),
     user_id: mongoose.Types.ObjectId(req.body.user_id),
+    order_id: req.body.order_id
   }).exec();
   if (subData == null || subData == "") {
     let review = new Servicereview(shopServiceData);

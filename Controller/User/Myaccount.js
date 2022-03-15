@@ -7,6 +7,9 @@ var User = require('../../Models/user')
 var ProductRefund = require('../../Models/product_refund')
 var userAddress = require('../../Models/user_address')
 var Cart = require('../../Models/cart')
+var Seller = require('../../Models/seller')
+var Shop = require('../../Models/shop')
+var ShopServices = require('../../Models/shop_service')
 
 var Upload = require('../../service/upload')
 var invoiceGenerator = require('../../service/invoiceGenerator')
@@ -392,6 +395,48 @@ var deleteProfile = async (req, res) => {
         res.status(200).json({
           status: true,
           message: "Profile deleted.",
+          data: docs
+        });
+      })
+      .catch(err => {
+        res.status(500).json({
+          status: false,
+          message: "Invalid id. Server error.",
+          error: err.message
+        });
+      });
+  }
+  else {
+    return User.findOneAndDelete({ _id: mongoose.Types.ObjectId(id) })
+      .then(async (docs) => {
+        /**----------- Delete 'sellers' data -----------*/
+        Seller.findOneAndDelete({ seller_id: mongoose.Types.ObjectId(id) }).exec();
+        /**-------------------------------------------- */
+
+        /**-------------- Deactivate shop --------------*/
+        let shopData = await Shop.findOneAndUpdate(
+          { userid: mongoose.Types.ObjectId(id) },
+          { $set: { status: false } },
+          { new: true }
+        ).exec();
+        /**-------------------------------------------- */
+
+        /**------------- Deactive services -------------*/
+        ShopServices.updateMany(
+          { shop_id: shopData._id },
+          { $set: { status: false } },
+          { multi: true },
+          (fault, result) => {
+            if (fault) {
+              console.log(result);
+            }
+          }
+        )
+        /**-------------------------------------------- */
+
+        res.status(200).json({
+          status: true,
+          message: "Profile deleted successfully. Related shop and shop services deactivated.",
           data: docs
         });
       })
