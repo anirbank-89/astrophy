@@ -111,7 +111,7 @@ router.post('/product-wishlist', WishlistController.addToWishlist);
 router.get('/product-wishlist/:user_id', WishlistController.getWish);
 router.delete('/product-wishlist/:id', WishlistController.Delete);
 
-router.post('/checkCoupon', CartController.checkCoupon);
+router.post('/checkCoupon', CartController.applyCoupon);
 
 router.post('/checkout', CheckoutController.create);
 

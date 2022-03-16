@@ -127,6 +127,14 @@ const getCart = async (req, res) => {
       }
     },
     {
+      $lookup: {
+        from: "coupons",
+        localField: "coupon",
+        foreignField: "name",
+        as: "coupon_data"
+      }
+    },
+    {
       $project: {
         // _id: 0,
 
@@ -176,29 +184,35 @@ const Delete = async (req, res) => {
     });
 };
 
-const checkCoupon = async(req,res)=>
+const applyCoupon = async(req,res)=>
 {
+  var user_id = req.body.user_id;
+  var coup_name = req.body.name;
+
+  Cart.updateMany(
+    {
+      user_id: mongoose.Types.ObjectId(user_id),
+      status: true
+    },
+    { $set: { coupon: coup_name } }, 
+    { multi: true }, 
+    (err,docs) => {
+      if (err) {
+        console.log("Failed to update in cart due to ", err.message);
+      }
+    }
+  ).exec();
+
   let coupData = await Coupon.findOne({
     name: req.body.name,
     status: true,
   }).exec();
   // console.log(coupData)
-  if(coupData!='' && coupData !=null)
-  {
-    return res.status(200).json({
-      status:true,
-      data:coupData,
-      message:"Coupon get successfully"
-    })
-  }
-  else
-  {
-    return res.status(400).json({
-      status:false,
-      data:null,
-      message:"No Data"
-    })
-  }
+  return res.status(200).json({
+    status:true,
+    message:"Applied coupon info.",
+    data:coupData
+  });
 }
 
 module.exports = {
@@ -206,5 +220,5 @@ module.exports = {
   getCart,
   updateCart,
   Delete,
-  checkCoupon
+  applyCoupon
 };

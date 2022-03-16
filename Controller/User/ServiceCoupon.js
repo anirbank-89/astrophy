@@ -38,7 +38,7 @@ var applyCoupon = async (req, res) => {
         { multi: true },
         (err, docs) => {
             if (err) {
-                console.log(docs);
+                console.log("Failed to update in cart due to ", err.message);
             }
         }
     ).exec();
@@ -48,7 +48,7 @@ var applyCoupon = async (req, res) => {
         status: true,
     }).exec();
 
-    res.status(200).json({
+    return res.status(200).json({
         status: true,
         message: "Applied coupon info.",
         data: coupData
