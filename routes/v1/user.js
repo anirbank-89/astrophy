@@ -111,7 +111,9 @@ router.post('/product-wishlist', WishlistController.addToWishlist);
 router.get('/product-wishlist/:user_id', WishlistController.getWish);
 router.delete('/product-wishlist/:id', WishlistController.Delete);
 
+/**------- Route to apply coupon in product cart -------*/
 router.post('/checkCoupon', CartController.applyCoupon);
+/**---------------------------------------------------- */
 
 router.post('/checkout', CheckoutController.create);
 
@@ -120,7 +122,9 @@ router.get('/servicecart/:user_id', ServiceCartController.getServiceCart);
 router.delete('/servicecart/:id',ServiceCartController.Delete);
 
 router.post('/checkServCoupon', ServiceCoupon.checkCoupon);  // added by anirbank-93
+/**------- Route to apply coupon in service cart -------*/
 router.post('/applyCoupon', ServiceCoupon.applyCoupon);      // added by anirbank-93
+/**---------------------------------------------------- */
 
 router.post('/servicewishlist', Servicewishlist.create);
 // same api as the last one

@@ -4,6 +4,7 @@ const { Validator } = require("node-input-validator");
 var Cart = require("../../Models/cart");
 var Wishlist = require("../../Models/wishlist");
 var Coupon = require("../../Models/coupon");
+var Checkout = require("../../Models/checkout");
 
 const addToCart = async (req, res) => {
   const v = new Validator(req.body, {
@@ -27,21 +28,21 @@ const addToCart = async (req, res) => {
   let subData = await Cart.findOne({
     user_id: mongoose.Types.ObjectId(req.body.user_id),
     prod_id: mongoose.Types.ObjectId(req.body.prod_id),
-    status:true
+    status: true
   }).exec();
   if (subData == null || subData == "") {
-      
+
     let WishData = await Wishlist.findOne({
       user_id: mongoose.Types.ObjectId(req.body.user_id),
       prod_id: mongoose.Types.ObjectId(req.body.prod_id),
     }).exec();
     if (WishData != null || WishData != "") {
-        Wishlist.remove(
+      Wishlist.remove(
         {
           user_id: mongoose.Types.ObjectId(req.body.user_id),
           prod_id: mongoose.Types.ObjectId(req.body.prod_id),
         },
-        function (err, result){}
+        function (err, result) { }
       );
     }
     let dataSubmit = {
@@ -84,7 +85,7 @@ const updateCart = async (req, res) => {
   return Cart.findOneAndUpdate(
     { _id: { $in: [mongoose.Types.ObjectId(req.params.id)] } },
     req.body,
-    {new: true},
+    { new: true },
     async (err, data) => {
       if (err) {
         res.status(500).json({
@@ -115,7 +116,7 @@ const getCart = async (req, res) => {
     {
       $match: {
         user_id: mongoose.Types.ObjectId(req.params.user_id),
-        status :true
+        status: true
       },
     },
     {
@@ -184,35 +185,61 @@ const Delete = async (req, res) => {
     });
 };
 
-const applyCoupon = async(req,res)=>
-{
-  var user_id = req.body.user_id;
+const applyCoupon = async (req, res) => {
   var coup_name = req.body.name;
-
-  Cart.updateMany(
-    {
-      user_id: mongoose.Types.ObjectId(user_id),
-      status: true
-    },
-    { $set: { coupon: coup_name } }, 
-    { multi: true }, 
-    (err,docs) => {
-      if (err) {
-        console.log("Failed to update in cart due to ", err.message);
-      }
-    }
-  ).exec();
+  var user_id = req.body.user_id;
 
   let coupData = await Coupon.findOne({
-    name: req.body.name,
+    name: coup_name,
     status: true,
   }).exec();
   // console.log(coupData)
-  return res.status(200).json({
-    status:true,
-    message:"Applied coupon info.",
-    data:coupData
-  });
+
+  if (coupData.times == 0) {
+    return res.status(500).json({
+      status: false,
+      error: "This coupon is not available anymore.",
+      data: null
+    });
+  }
+  else {
+    let couponUsedOrNot = await Checkout.findOne({
+      user_id: mongoose.Types.ObjectId(user_id),
+      coupon_id: coupData._id
+    }).exec();
+
+    if (couponUsedOrNot != null || typeof couponUsedOrNot != "undefined") {
+      return res.status(500).json({
+        status: false,
+        error: "This coupon has already been used.",
+        data: null
+      });
+    }
+    else {
+      Cart.updateMany(
+        {
+          user_id: mongoose.Types.ObjectId(user_id),
+          status: true
+        },
+        { $set: { coupon: coup_name } },
+        { multi: true },
+        (err, docs) => {
+          if (err) {
+            console.log("Failed to update in cart due to ", err.message);
+          }
+        }
+      ).exec();
+
+      coupData.times -= 1;
+      let availableCoupNum = await coupData.save();
+
+      return res.status(200).json({
+        status: true,
+        message: "Applied coupon info.",
+        data: coupData
+      });
+    }
+  }
 }
 
 module.exports = {
