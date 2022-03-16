@@ -414,24 +414,29 @@ var deleteProfile = async (req, res) => {
         /**-------------------------------------------- */
 
         /**-------------- Deactivate shop --------------*/
-        let shopData = await Shop.findOneAndUpdate(
-          { userid: mongoose.Types.ObjectId(id) },
-          { $set: { status: false } },
-          { new: true }
-        ).exec();
-        /**-------------------------------------------- */
+        let shopData = await Shop.findOne({ userid: mongoose.Types.ObjectId(id) }).exec();
+        console.log("Shop data ", shopData);
 
-        /**------------- Deactive services -------------*/
-        ShopServices.updateMany(
-          { shop_id: shopData._id },
-          { $set: { status: false } },
-          { multi: true },
-          (fault, result) => {
-            if (fault) {
-              console.log(result);
+        if (shopData != null && typeof shopData != "undefined") {
+          Shop.findOneAndUpdate(
+            { userid: mongoose.Types.ObjectId(id) },
+            { $set: { status: false } },
+            { new: true }
+          ).exec();
+
+          /**------------- Deactive services -------------*/
+          ShopServices.updateMany(
+            { shop_id: shopData._id },
+            { $set: { status: false } },
+            { multi: true },
+            (fault, result) => {
+              if (fault) {
+                console.log(result);
+              }
             }
-          }
-        )
+          )
+          /**-------------------------------------------- */
+        }
         /**-------------------------------------------- */
 
         res.status(200).json({
