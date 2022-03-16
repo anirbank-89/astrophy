@@ -314,9 +314,9 @@ var buyHistFromSeller = async (req, res) => {
 }
 
 var downloadReceipt = async (req, res) => {
-  var id = req.params.id;
+  var order_id = req.params.order_id;
 
-  let servCheckout = await NewServiceCheckout.findOne({ _id: mongoose.Types.ObjectId(id) }).exec()
+  let servCheckout = await NewServiceCheckout.findOne({ order_id: Number(order_id) }).exec()
   let savedAddr = await userAddress.findOne(
     {
       userid: servCheckout.user_id,
@@ -326,7 +326,7 @@ var downloadReceipt = async (req, res) => {
   let servCart = await NewServiceCart.aggregate([
     {
       $match: {
-        order_id: servCheckout.order_id
+        order_id: Number(order_id)
       }
     },
     {

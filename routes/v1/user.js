@@ -141,7 +141,7 @@ router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
 router.put('/refundService/:id', ServiceMyaccountController.refundService);
 router.put('/cancel-serv-order/:id', ServiceMyaccountController.cancelServOrder);
 router.post('/buy-history-from-seller', ServiceMyaccountController.buyHistFromSeller);
-router.get('/serv-order-receipt/:id', ServiceMyaccountController.downloadReceipt);
+router.get('/serv-order-receipt/:order_id', ServiceMyaccountController.downloadReceipt);
 
 router.post('/productreview', ProductreviewController.create);
 router.get('/productreview/:prod_id', ProductreviewController.getReviews);
