@@ -119,6 +119,17 @@ const getServiceCart = async (req, res) => {
       }
     },
     {
+      $lookup: {
+        from: "servicecoupons",
+        localField: "coupon_id",
+        foreignField: "_id",
+        as: "coupon_data"
+      }
+    },
+    {
+      $unwind: "$coupon_data"
+    },
+    {
       $project: {
         // _id: 0,
 
@@ -168,32 +179,9 @@ const Delete = async (req, res) => {
     });
 };
 
-const checkCoupon = async (req, res) => {
-  let coupData = await SERVICE_COUPON.findOne({
-    name: req.body.name,
-    status: true,
-  }).exec();
-  // console.log(coupData)
-  if (coupData != '' && coupData != null) {
-    return res.status(200).json({
-      status: true,
-      data: coupData,
-      message: "Coupon get successfully"
-    })
-  }
-  else {
-    return res.status(400).json({
-      status: false,
-      data: null,
-      message: "No Data"
-    })
-  }
-}
-
 module.exports = {
   addToServiceCart,
   getServiceCart,
   //updateServiceCart,
-  Delete,
-  checkCoupon
+  Delete
 };

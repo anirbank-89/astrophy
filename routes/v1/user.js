@@ -16,6 +16,7 @@ const ProductreviewController = require('../../Controller/User/ProductReview');
 const ServicereviewController = require('../../Controller/User/ServiceReview');
 const ServiceMyaccountController = require('../../Controller/User/ServiceMyaccount');//krittika
 const ServiceCartController = require('../../Controller/User/ServiceCart');//krittika
+const ServiceCoupon = require('../../Controller/User/ServiceCoupon');  // added by anirbank-93
 const ServiceCheckoutController = require('../../Controller/User/ServiceCheckout');//krittika
 const SellerMyaccountController = require('../../Controller/User/SellerMyaccount');//krittika
 
@@ -118,7 +119,8 @@ router.post('/servicecart', ServiceCartController.addToServiceCart);
 router.get('/servicecart/:user_id', ServiceCartController.getServiceCart);
 router.delete('/servicecart/:id',ServiceCartController.Delete);
 
-router.post('/checkServCoupon', ServiceCartController.checkCoupon);
+router.post('/checkServCoupon', ServiceCoupon.checkCoupon);  // added by anirbank-93
+router.post('/applyCoupon', ServiceCoupon.applyCoupon);      // added by anirbank-93
 
 router.post('/servicewishlist', Servicewishlist.create);
 // same api as the last one
