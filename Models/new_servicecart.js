@@ -8,7 +8,7 @@ const SERVICE_CART_SCHEMA = new mongoose.Schema({
     user_id:mongoose.Schema.Types.ObjectId,
     serv_id:mongoose.Schema.Types.ObjectId,
     seller_id:mongoose.Schema.Types.ObjectId,
-    coupon_id: mongoose.Schema.Types.ObjectId,
+    coupon: String,
     order_id: Number,
     rating: Number,
     servicename:{

@@ -27,14 +27,14 @@ var checkCoupon = async (req, res) => {
 
 var applyCoupon = async (req, res) => {
     var user_id = req.body.user_id;
-    var coup_id = req.body.coup_id;
+    var coup_name = req.body.coup_name;
 
     let cartItems = await SERVICE_CART.updateMany(
         {
             user_id: mongoose.Types.ObjectId(user_id),
             status: true
         },
-        { $set: { coupon_id: mongoose.Types.ObjectId(coup_id) } },
+        { $set: { coupon: coup_name } },
         { multi: true },
         (err, docs) => {
             if (err) {
