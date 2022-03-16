@@ -115,7 +115,7 @@ router.post('/checkCoupon', CartController.checkCoupon);
 router.post('/checkout', CheckoutController.create);
 
 router.post('/servicecart', ServiceCartController.addToServiceCart);
-router.post('/getServicecart', ServiceCartController.getServiceCart);
+router.get('/servicecart/:user_id', ServiceCartController.getServiceCart);
 router.delete('/servicecart/:id',ServiceCartController.Delete);
 
 router.post('/checkServCoupon', ServiceCartController.checkCoupon);

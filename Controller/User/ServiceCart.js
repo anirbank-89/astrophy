@@ -101,10 +101,12 @@ const addToServiceCart = async (req, res) => {
 };*/
 
 const getServiceCart = async (req, res) => {
+  var user_id = req.params.user_id;
+
   let cartData = await NEW_SERVIECART.aggregate([
     {
       $match: {
-        user_id: mongoose.Types.ObjectId(req.body.user_id),
+        user_id: mongoose.Types.ObjectId(user_id),
         status: true
       },
     },
@@ -125,59 +127,25 @@ const getServiceCart = async (req, res) => {
     },
   ]).exec();
 
-  let couponData = await SERVICE_COUPON.findOne({
-    name: req.body.coupon_name,
-    status: true
-  }).exec();
+  // let couponData = await SERVICE_COUPON.findOne({
+  //   name: req.body.coupon_name,
+  //   status: true
+  // }).exec();
 
   if (cartData.length > 0) {
-    if (couponData != null || typeof couponData != "undefined") {
-      return res.status(200).json({
-        status: true,
-        message: "Data successfully get.",
-        cart_data: cartData,
-        coupon_data: couponData
-      });
-    }
-    else {
-      return res.status(200).json({
-        status: true,
-        message: "Data successfully get.",
-        cart_data: cartData,
-        coupon_data: couponData
-      });
-    }
-  }
-  else {
-    return res.status(500).json({
-      status: false,
-      error: "Invalid user id. Server error.",
-      cart_data: null,
-      coupon_data: null
+    return res.status(200).json({
+      status: true,
+      message: "Data successfully get.",
+      data: cartData,
     });
   }
-  // .then((data) => {
-  //   if (data.length > 0) {
-  //     return res.status(200).json({
-  //       status: true,
-  //       message: "Service Cart Listing Successfully",
-  //       data: data,
-  //     });
-  //   } else {
-  //     return res.status(200).json({
-  //       status: true,
-  //       message: "Empty ServiceCart",
-  //       data: data,
-  //     });
-  //   }
-  // })
-  // .catch((err) => {
-  //   return res.status(500).json({
-  //     status: false,
-  //     message: "No Match",
-  //     data: null,
-  //   });
-  // });
+  else {
+    return res.status(200).json({
+      status: true,
+      message: "Empty service cart.",
+      data: cartData
+    });
+  }
 };
 
 const Delete = async (req, res) => {
@@ -200,27 +168,24 @@ const Delete = async (req, res) => {
     });
 };
 
-const checkCoupon = async(req,res)=>
-{
+const checkCoupon = async (req, res) => {
   let coupData = await SERVICE_COUPON.findOne({
     name: req.body.name,
     status: true,
   }).exec();
   // console.log(coupData)
-  if(coupData!='' && coupData !=null)
-  {
+  if (coupData != '' && coupData != null) {
     return res.status(200).json({
-      status:true,
-      data:coupData,
-      message:"Coupon get successfully"
+      status: true,
+      data: coupData,
+      message: "Coupon get successfully"
     })
   }
-  else
-  {
+  else {
     return res.status(400).json({
-      status:false,
-      data:null,
-      message:"No Data"
+      status: false,
+      data: null,
+      message: "No Data"
     })
   }
 }
