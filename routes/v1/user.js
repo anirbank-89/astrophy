@@ -115,8 +115,10 @@ router.post('/checkCoupon', CartController.checkCoupon);
 router.post('/checkout', CheckoutController.create);
 
 router.post('/servicecart', ServiceCartController.addToServiceCart);
-router.get('/servicecart/:user_id', ServiceCartController.getServiceCart);
+router.post('/getServicecart', ServiceCartController.getServiceCart);
 router.delete('/servicecart/:id',ServiceCartController.Delete);
+
+router.post('/checkServCoupon', ServiceCartController.checkCoupon);
 
 router.post('/servicewishlist', Servicewishlist.create);
 // same api as the last one

@@ -1,14 +1,14 @@
 var mongoose = require("mongoose");
 const { Validator } = require("node-input-validator");
 
-const ServiceCart = require("../../Models/servicecart");
 const NEW_SERVIECART = require("../../Models/new_servicecart");
+const SERVICE_COUPON = require("../../Models/servicecoupon");
 
 const addToServiceCart = async (req, res) => {
   const v = new Validator(req.body, {
     user_id: "required",
     serv_id: "required",
-    seller_id:"required",
+    seller_id: "required",
     servicename: "required",
     price: "required",
     image: "required",
@@ -24,13 +24,13 @@ const addToServiceCart = async (req, res) => {
   }
 
   let subData = await NEW_SERVIECART.findOne({
-    user_id: mongoose.Types.ObjectId(req.body.user_id), 
-    serv_id: mongoose.Types.ObjectId(req.body.serv_id), 
-    status:true
+    user_id: mongoose.Types.ObjectId(req.body.user_id),
+    serv_id: mongoose.Types.ObjectId(req.body.serv_id),
+    status: true
   }).exec();
   if (subData == null || subData == "") {
-      
-  
+
+
     let dataSubmit = {
       _id: mongoose.Types.ObjectId(),
       user_id: mongoose.Types.ObjectId(req.body.user_id),
@@ -101,11 +101,11 @@ const addToServiceCart = async (req, res) => {
 };*/
 
 const getServiceCart = async (req, res) => {
-  return NEW_SERVIECART.aggregate([
+  let cartData = await NEW_SERVIECART.aggregate([
     {
       $match: {
-        user_id: mongoose.Types.ObjectId(req.params.user_id),
-        status :true
+        user_id: mongoose.Types.ObjectId(req.body.user_id),
+        status: true
       },
     },
     {
@@ -123,29 +123,61 @@ const getServiceCart = async (req, res) => {
         __v: 0,
       },
     },
-  ])
-    .then((data) => {
-      if (data.length > 0) {
-        return res.status(200).json({
-          status: true,
-          message: "Service Cart Listing Successfully",
-          data: data,
-        });
-      } else {
-        return res.status(200).json({
-          status: true,
-          message: "Empty ServiceCart",
-          data: data,
-        });
-      }
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        status: false,
-        message: "No Match",
-        data: null,
+  ]).exec();
+
+  let couponData = await SERVICE_COUPON.findOne({
+    name: req.body.coupon_name,
+    status: true
+  }).exec();
+
+  if (cartData.length > 0) {
+    if (couponData != null || typeof couponData != "undefined") {
+      return res.status(200).json({
+        status: true,
+        message: "Data successfully get.",
+        cart_data: cartData,
+        coupon_data: couponData
       });
+    }
+    else {
+      return res.status(200).json({
+        status: true,
+        message: "Data successfully get.",
+        cart_data: cartData,
+        coupon_data: couponData
+      });
+    }
+  }
+  else {
+    return res.status(500).json({
+      status: false,
+      error: "Invalid user id. Server error.",
+      cart_data: null,
+      coupon_data: null
     });
+  }
+  // .then((data) => {
+  //   if (data.length > 0) {
+  //     return res.status(200).json({
+  //       status: true,
+  //       message: "Service Cart Listing Successfully",
+  //       data: data,
+  //     });
+  //   } else {
+  //     return res.status(200).json({
+  //       status: true,
+  //       message: "Empty ServiceCart",
+  //       data: data,
+  //     });
+  //   }
+  // })
+  // .catch((err) => {
+  //   return res.status(500).json({
+  //     status: false,
+  //     message: "No Match",
+  //     data: null,
+  //   });
+  // });
 };
 
 const Delete = async (req, res) => {
@@ -168,9 +200,9 @@ const Delete = async (req, res) => {
     });
 };
 
-/*const checkCoupon = async(req,res)=>
+const checkCoupon = async(req,res)=>
 {
-  let coupData = await Coupon.findOne({
+  let coupData = await SERVICE_COUPON.findOne({
     name: req.body.name,
     status: true,
   }).exec();
@@ -191,12 +223,12 @@ const Delete = async (req, res) => {
       message:"No Data"
     })
   }
-}*/
+}
 
 module.exports = {
   addToServiceCart,
   getServiceCart,
   //updateServiceCart,
   Delete,
-  //checkCoupon
+  checkCoupon
 };
