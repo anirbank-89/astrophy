@@ -43,15 +43,15 @@ var applyCoupon = async (req, res) => {
         }
     ).exec();
 
-    let updatedCartItems = await SERVICE_CART.find({
-        user_id: mongoose.Types.ObjectId(user_id),
-        status: true
+    let coupData = await SERVICE_COUPON.findOne({
+        name: req.body.coup_name,
+        status: true,
     }).exec();
 
     res.status(200).json({
         status: true,
-        message: "Coupon applied.",
-        data: updatedCartItems
+        message: "Applied coupon info.",
+        data: coupData
     });
 }
 
