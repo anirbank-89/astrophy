@@ -5,7 +5,7 @@ const ServiceCheckout = require("../../Models/servicecheckout");
 const NEW_SERVICE_CHECKOUT = require("../../Models/new_service_checkout");
 // const ServiceCart = require("../../Models/servicecart");
 const NEW_SERVICECART = require("../../Models/new_servicecart");
-//var Coupon = require("../../Models/coupon");
+const Coupon = require("../../Models/servicecoupon");
 const UserAddresses = require('../../Models/user_address');
 const User = require('../../Models/user');
 const Servicecommission = require("../../Models/servicecommission");
@@ -72,33 +72,6 @@ const create = async (req, res) => {
   if (req.body.address_future_use != "" || req.body.address_future_use != null || typeof req.body.address_future_use != "undefined") {
     dataSubmit.address_future_use = req.body.address_future_use;
   }
-  /*if (
-  req.body.coupon_id != "" &&
-  req.body.coupon_id != null &&
-  typeof req.body.coupon_id != undefined
-) {
-  let coupData = await Coupon.findOne({
-    _id: mongoose.Types.ObjectId(req.body.coupon_id),
-    status: true,
-  }).exec();
-  let coupLimit = parseInt(coupData.times) - parseInt(1);
-  Coupon.updateMany(
-    { _id: mongoose.Types.ObjectId(req.body.coupon_id) },
-    { $set: { times: coupLimit } },
-    { multi: true },
-    (err, writeResult) => {
-      // console.log(err);
-    }
-  );
-}
-*/
-  //   if (
-  //   req.body.tip != "" &&
-  //   req.body.tip != null &&
-  //   typeof req.body.tip != undefined
-  // ) {
-  //   dataSubmit.tip = mongoose.Types.ObjectId(req.body.tip);
-  // }
 
   const saveData = new NEW_SERVICE_CHECKOUT(dataSubmit);
   return saveData.save()
@@ -123,6 +96,15 @@ const create = async (req, res) => {
           }
         }
       );
+
+      // Decrease the number of the coupon applied on checkout
+      let coupData = await Coupon.findOne({
+        name: data.coupon.name,
+        status: true
+      }).exec();
+
+      coupData.times -= 1;
+      coupData.save();
 
       // Save billing and/or shipping address
       if (data.address_future_use != "" || data.address_future_use != null || typeof data.address_future_use != "undefined") {
