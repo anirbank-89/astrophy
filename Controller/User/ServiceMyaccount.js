@@ -30,12 +30,20 @@ const viewAll = async (req, res) => {
           preserveNullAndEmptyArrays: true
         }
       },
-      // {
-      //   $lookup: {
-      //     from: "servicecoupons",
-      //     localField: ""
-      //   }
-      // },
+      {
+        $lookup: {
+          from: "servicecoupons",
+          localField: "coupon.name",
+          foreignField: "name",
+          as: "coupon_data"
+        }
+      },
+      {
+        $unwind: {
+          path: "$coupon_data",
+          preserveNullAndEmptyArrays: true
+        }
+      },
       {
         $lookup: {
           from: "new_servicecarts",
@@ -125,6 +133,7 @@ const viewAll = async (req, res) => {
           order_total: { $sum: "$servicecart_data.price" },
           order_subtotal: { $avg: "$subtotal" },
           discount: { $avg: "$servicecart_data.discount_percent" },
+          coupon_used: { $push: "$coupon_data" },
           useraddress_data: { $push: "$user_address" },
           servicecart_data: { $push: "$servicecart_data" },
           service_refund: { $push: "$servicerefund_data" }

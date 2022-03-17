@@ -130,7 +130,7 @@ const getCart = async (req, res) => {
     {
       $lookup: {
         from: "coupons",
-        localField: "coupon",
+        localField: "coupon.name",
         foreignField: "name",
         as: "coupon_data"
       }
