@@ -1,10 +1,12 @@
 var mongoose = require("mongoose");
+
 var Productreview = require("../../Models/productreview");
+var Cart = require("../../Models/cart");
 
 const create = async (req, res) => {
   let shopServiceData = {
     _id: mongoose.Types.ObjectId(),
-    product_id: mongoose.Types.ObjectId(req.body.prod_id),
+    product_id: mongoose.Types.ObjectId(req.body.product_id),
     user_id: mongoose.Types.ObjectId(req.body.user_id),
     order_id: req.body.order_id,
   };
@@ -15,15 +17,31 @@ const create = async (req, res) => {
     shopServiceData.comment = req.body.comment;
   }
   let subData = await Productreview.findOne({
-    product_id: mongoose.Types.ObjectId(req.body.prod_id),
+    product_id: mongoose.Types.ObjectId(req.body.product_id),
     user_id: mongoose.Types.ObjectId(req.body.user_id),
-    // order_id: req.body.order_id
+    order_id: req.body.order_id
   }).exec();
   if (subData == null || subData == "") {
     let review = new Productreview(shopServiceData);
     review
       .save()
       .then((docs) => {
+        console.log(docs);
+        Cart.updateMany(
+          {
+            prod_id: docs.product_id,
+            user_id: docs.user_id,
+            order_id: docs.order_id
+          },
+          { $set: { rating: docs.rating } }, 
+          { multi: true }, 
+          (fault, result) => {
+            if (fault) {
+              console.log("Failed to update rating for cart items due to ", fault.message);
+            }
+          }
+        ).exec();
+
         res.status(200).json({
           status: true,
           message: "Review Saved sucessfully!",
@@ -61,7 +79,7 @@ const getReviews = async (req, res) => {
         as: "user_data",
       },
     },
-    { $unwind : "$user_data" },
+    // { $unwind : "$user_data" },
     {
       $project: {
         // _id: 0,

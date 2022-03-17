@@ -24,6 +24,7 @@ const CartSchema = new mongoose.Schema({
         default: 0
     },
     coupon: String,
+    rating: Number,
     image:{
         type:Array,
         required:true
