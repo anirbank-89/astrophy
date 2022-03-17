@@ -32,7 +32,8 @@ const CartSchema = new mongoose.Schema({
     status:{
         type:Boolean,
         default:true
-    }
+    },
+    buy_date: Date
 })
 
 module.exports = mongoose.model('Cart',CartSchema);

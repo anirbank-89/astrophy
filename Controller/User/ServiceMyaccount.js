@@ -58,6 +58,7 @@ const viewAll = async (req, res) => {
           preserveNullAndEmptyArrays: true
         }
       },
+      { $sort: { "servicecart_data.booking_date": -1 } },
       {
         $lookup: {
           from: "users",
@@ -139,7 +140,6 @@ const viewAll = async (req, res) => {
           service_refund: { $push: "$servicerefund_data" }
         }
       },
-      { $sort: { _id: -1 } },
       { $project: { _v: 0 } }
     ]
   )

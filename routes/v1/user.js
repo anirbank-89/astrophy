@@ -140,20 +140,20 @@ router.post('/future_use_address', UserAddresses.getAddressForFutureUse);
 
 router.get('/orderdetails/:user_id', MyaccountController.viewAll);
 router.put('/refundProduct/:id', MyaccountController.refundProduct);
-router.get('/prod-order-receipt/:id', MyaccountController.downloadReceipt);
+router.get('/prod-order-receipt/:order_id', MyaccountController.downloadReceipt);
 router.put('/update-profile/:id', upload1.single("image"), MyaccountController.updateProfile);
 router.put('/update-password/:id', MyaccountController.updatePassword);
 router.delete('/delete-profile/:id', MyaccountController.deleteProfile);
+
+router.post('/productreview', ProductreviewController.create);
+router.get('/productreview/:prod_id', ProductreviewController.getReviews);
+router.post('/filter-product-reviews', ProductreviewController.filterReviews);
 
 router.get('/servicebookhistory/:user_id', ServiceMyaccountController.viewAll);
 router.put('/refundService/:id', ServiceMyaccountController.refundService);
 router.put('/cancel-serv-order/:id', ServiceMyaccountController.cancelServOrder);
 router.post('/buy-history-from-seller', ServiceMyaccountController.buyHistFromSeller);
 router.get('/serv-order-receipt/:order_id', ServiceMyaccountController.downloadReceipt);
-
-router.post('/productreview', ProductreviewController.create);
-router.get('/productreview/:prod_id', ProductreviewController.getReviews);
-router.post('/filter-product-reviews', ProductreviewController.filterReviews);
 
 router.post('/servicereview', ServicereviewController.create);
 router.get('/servicereview/:serv_id', ServicereviewController.getReviews);

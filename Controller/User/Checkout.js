@@ -114,7 +114,12 @@ const create = async (req, res) => {
     .then(async (data) => {
       Cart.updateMany(
         { user_id: mongoose.Types.ObjectId(req.body.user_id), status: true },
-        { $set: { status: false, order_id: data.order_id } },
+        { $set: {
+          status: false, 
+          order_id: data.order_id,
+          discount_percent: data.discount_percent,
+          buy_date: data.booking_date
+        } },
         { multi: true },
         (err, writeResult) => {
           // console.log(err);

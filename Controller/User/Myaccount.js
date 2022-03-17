@@ -24,6 +24,28 @@ const viewAll = async (req, res) => {
       },
       {
         $lookup: {
+          from: "useraddresses",
+          localField: "user_id",
+          foreignField: "userid",
+          as: "user_address"
+        }
+      },
+      {
+        $lookup: {
+          from: "coupons",
+          localField: "coupon.name",
+          foreignField: "name",
+          as: "coupon_data"
+        }
+      },
+      {
+        $unwind: {
+          path: "$coupon_data",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
           from: "carts",//
           localField: "order_id",//
           foreignField: "order_id",
@@ -31,15 +53,63 @@ const viewAll = async (req, res) => {
         }
       },
       {
-        $sort: {
-          _id: -1
+        $unwind: {
+          path: "$cart_data",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      { $sort: { "cart_data.buy_date": -1 } }, 
+      {
+        $lookup: {
+          from: "products",
+          let: { prod_id: "$cart_data.prod_id" }, 
+          pipeline: [{ $match: { $expr: { $and: [ {$eq: ["$_id", "$$prod_id"] } ] } } }], 
+          as: "cart_data.product_data"
         }
       },
       {
-        $project: {
-          _v: 0
+        $lookup: {
+          from: "reviews",
+          let: {
+            product_id: "$cart_data.prod_id",
+            user_id: "$user_id",
+            order_id: "$order_id"
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$product_id", "$$product_id"] }, 
+                    { $eq: ["$user_id", "$$user_id"] }, 
+                    { $eq: ["$order_id", "$$order_id"] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "cart_data.review_data"
         }
-      }
+      },
+      {
+        $unwind: {
+          path: "$cart_data.review_data",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      { $project: { _id: 0 } }, 
+      {
+        $group: {
+          _id: "$order_id",
+          order_total: { $sum: "$cart_data.price" },
+          order_subtotal: { $avg: "$subtotal" },
+          discount: { $avg: "$cart_data.discount_percent" },
+          coupon_used: { $push: "$coupon_data" },
+          useraddress_data: { $push: "$user_address" },
+          cart_data: { $push: "$cart_data" }
+        }
+      },
+      { $project: { _v: 0 } }
     ]
   )
     .then((docs) => {
@@ -124,9 +194,9 @@ const refundProduct = async (req, res) => {
 }
 
 const downloadReceipt = async (req, res) => {
-  var id = req.params.id;
+  var order_id = req.params.order_id;
 
-  let prodCheckout = await Checkout.findOne({ _id: mongoose.Types.ObjectId(id) }).exec()
+  let prodCheckout = await Checkout.findOne({ order_id: Number(order_id) }).exec()
   let savedAddr = await userAddress.findOne(
     {
       userid: prodCheckout.user_id,
@@ -136,7 +206,7 @@ const downloadReceipt = async (req, res) => {
   let prodCart = await Cart.aggregate([
     {
       $match: {
-        order_id: prodCheckout.order_id
+        order_id: Number(order_id)
       }
     },
     {

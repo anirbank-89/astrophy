@@ -112,7 +112,8 @@ const create = async (req, res) => {
           {
             status: false,
             order_id: data.order_id,
-            discount_percent: data.discount_percent
+            discount_percent: data.discount_percent,
+            booking_date: data.booking_date
           }
         },
         { multi: true },

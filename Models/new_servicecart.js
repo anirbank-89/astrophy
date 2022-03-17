@@ -46,10 +46,7 @@ const SERVICE_CART_SCHEMA = new mongoose.Schema({
         type: String,
         default: ""
     },
-    booking_date: {
-        type: Date,
-        default: dateKolkata
-    }
+    booking_date: Date
 });
 
 module.exports = mongoose.model("new_servicecart", SERVICE_CART_SCHEMA);
