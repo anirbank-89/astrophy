@@ -116,7 +116,8 @@ const viewAll = async (req, res) => {
       {
         $group: {
           _id: "$order_id",
-          order_subtotal: { $sum: "$servicecart_data.price" },
+          order_total: { $sum: "$servicecart_data.price" },
+          order_subtotal: { $avg: "$subtotal" },
           discount: { $avg: "$servicecart_data.discount_percent" },
           useraddress_data: { $push: "$user_address" },
           servicecart_data: { $push: "$servicecart_data" },
@@ -138,7 +139,7 @@ const viewAll = async (req, res) => {
       res.status(500).json({
         status: false,
         message: "Server error. Please try again.",
-        error: err
+        error: err.message
       })
     })
 }

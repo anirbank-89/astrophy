@@ -207,8 +207,9 @@ const applyCoupon = async (req, res) => {
       user_id: mongoose.Types.ObjectId(user_id),
       "coupon._id": coupData._id
     }).exec();
+    console.log(couponUsedOrNot);
 
-    if (couponUsedOrNot != null || typeof couponUsedOrNot != "undefined") {
+    if (couponUsedOrNot != null) {
       return res.status(500).json({
         status: false,
         error: "This coupon has already been used.",

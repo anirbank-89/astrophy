@@ -48,7 +48,7 @@ var applyCoupon = async (req, res) => {
             "coupon._id": coupData._id
         }).exec();
 
-        if (couponUsedOrNot != null || typeof couponUsedOrNot != "undefined") {
+        if (couponUsedOrNot != null) {
             return res.status(500).json({
                 status: false,
                 error: "This coupon has already been used",
