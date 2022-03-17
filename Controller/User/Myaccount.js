@@ -101,7 +101,7 @@ const viewAll = async (req, res) => {
       {
         $group: {
           _id: "$order_id",
-          order_total: { $sum: "$cart_data.price" },
+          order_total: { $avg: "$total" },
           order_subtotal: { $avg: "$subtotal" },
           discount: { $avg: "$cart_data.discount_percent" },
           coupon_used: { $push: "$coupon_data" },

@@ -231,8 +231,8 @@ const applyCoupon = async (req, res) => {
         }
       ).exec();
 
-      coupData.times -= 1;
-      let availableCoupNum = await coupData.save();
+      // coupData.times -= 1;
+      // let availableCoupNum = await coupData.save();
 
       return res.status(200).json({
         status: true,

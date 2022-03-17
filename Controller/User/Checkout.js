@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
+const { Validator } = require("node-input-validator");
+
 const Cart = require("../../Models/cart");
-var Coupon = require("../../Models/coupon");
+const Coupon = require("../../Models/coupon");
 const Checkout = require("../../Models/checkout");
 const UserAddresses = require('../../Models/user_address');
-
-const { Validator } = require("node-input-validator");
 
 const create = async (req, res) => {
   const v = new Validator(req.body, {
@@ -59,21 +59,6 @@ const create = async (req, res) => {
     typeof req.body.coupon_id != undefined
   ) {
     dataSubmit.coupon_id = mongoose.Types.ObjectId(req.body.coupon_id);
-
-    let coupData = await Coupon.findOne({
-      _id: mongoose.Types.ObjectId(req.body.coupon_id),
-      status: true,
-    }).exec();
-    coupData.times -= 1;
-    // let coupLimit = parseInt(coupData.times) - parseInt(1);
-    // Coupon.updateMany(
-    //   { _id: mongoose.Types.ObjectId(req.body.coupon_id) },
-    //   { $set: { times: coupLimit } },
-    //   { multi: true },
-    //   (err, writeResult) => {
-    //     // console.log(err);
-    //   }
-    // );
   }
   if (
     req.body.coupon_type != "" &&
@@ -112,6 +97,7 @@ const create = async (req, res) => {
   return saveData
     .save()
     .then(async (data) => {
+      // Update the cart items with order id and other details
       Cart.updateMany(
         { user_id: mongoose.Types.ObjectId(req.body.user_id), status: true },
         { $set: {
@@ -125,6 +111,16 @@ const create = async (req, res) => {
           // console.log(err);
         }
       );
+      // Decrease the number of coupon used in the checkout
+      let coupData = await Coupon.findOne(
+        {
+          name: data.coupon.name,
+          status: true
+        }
+      ).exec();
+
+      coupData.times -= 1;
+      coupData.save();
 
       // Save billing and/or shipping address
       if (data.address_future_use != "" || data.address_future_use != null || typeof data.address_future_use != "undefined") {
@@ -214,28 +210,6 @@ const create = async (req, res) => {
     });
 };
 
-const checkCoupon = async (req, res) => {
-  let coupData = await Coupon.findOne({
-    name: req.body.name,
-    status: true,
-  }).exec();
-  // console.log(coupData)
-  if (coupData != "" && coupData != null) {
-    return res.status(200).json({
-      status: true,
-      data: coupData,
-      message: "Coupon get successfully",
-    });
-  } else {
-    return res.status(400).json({
-      status: false,
-      data: null,
-      message: "No Data",
-    });
-  }
-};
-
 module.exports = {
-  create,
-  checkCoupon,
-};
+  create
+}
