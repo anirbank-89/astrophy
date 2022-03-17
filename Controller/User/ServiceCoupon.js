@@ -45,7 +45,7 @@ var applyCoupon = async (req, res) => {
     else {
         let couponUsedOrNot = await SERVICE_CHECKOUT.findOne({
             user_id: mongoose.Types.ObjectId(user_id),
-            "coupon._id": coupData._id
+            "coupon.name": coupData.name
         }).exec();
 
         if (couponUsedOrNot != null) {

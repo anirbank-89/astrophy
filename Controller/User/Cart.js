@@ -191,7 +191,7 @@ const applyCoupon = async (req, res) => {
 
   let coupData = await Coupon.findOne({
     name: coup_name,
-    status: true,
+    status: true, 
   }).exec();
   // console.log(coupData)
 
@@ -205,7 +205,7 @@ const applyCoupon = async (req, res) => {
   else {
     let couponUsedOrNot = await Checkout.findOne({
       user_id: mongoose.Types.ObjectId(user_id),
-      "coupon._id": coupData._id
+      "coupon.name": coupData.name
     }).exec();
     console.log(couponUsedOrNot);
 

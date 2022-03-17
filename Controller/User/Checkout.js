@@ -204,7 +204,7 @@ const create = async (req, res) => {
       res.status(500).json({
         status: false,
         message: "Server error. Please try again.",
-        error: err,
+        error: err.message,
       });
     });
 };

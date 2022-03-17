@@ -417,7 +417,7 @@ var deleteProfile = async (req, res) => {
         let shopData = await Shop.findOne({ userid: mongoose.Types.ObjectId(id) }).exec();
         console.log("Shop data ", shopData);
 
-        if (shopData != null && typeof shopData != "undefined") {
+        if (shopData != null) {
           Shop.findOneAndUpdate(
             { userid: mongoose.Types.ObjectId(id) },
             { $set: { status: false } },
