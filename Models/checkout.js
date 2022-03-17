@@ -31,7 +31,7 @@ const CheckoutSchema = new mongoose.Schema({
         required:false
     },
     coupon:{
-        type:String,
+        type:Object,
         required:false,
     },
     subtotal: {
