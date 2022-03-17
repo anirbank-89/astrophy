@@ -24,12 +24,12 @@ const viewAll = async (req, res) => {
           as: "user_address"
         }
       },
-      {
-        $unwind: {
-          path: "$user_address",
-          preserveNullAndEmptyArrays: true
-        }
-      },
+      // {
+      //   $unwind: {
+      //     path: "$user_address",
+      //     preserveNullAndEmptyArrays: true
+      //   }
+      // },
       {
         $lookup: {
           from: "servicecoupons",

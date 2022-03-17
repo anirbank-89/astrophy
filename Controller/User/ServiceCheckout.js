@@ -54,6 +54,9 @@ const create = async (req, res) => {
   if (req.body.discount_percent != "" || req.body.discount_percent != null || typeof req.body.discount_percent != undefined) {
     dataSubmit.discount_percent = req.body.discount_percent;
   }
+  if (req.body.coupon != "" && req.body.coupon != null && typeof req.body.coupon != undefined) {
+    dataSubmit.coupon = req.body.coupon;
+  }
   if (req.body.total != "" || req.body.total != null || typeof req.body.total != undefined) {
     dataSubmit.total = req.body.total;
   }
@@ -89,13 +92,6 @@ const create = async (req, res) => {
   );
 }
 */
-  // if (
-  //   req.body.coupon != "" &&
-  //   req.body.coupon != null &&
-  //   typeof req.body.coupon != undefined
-  // ) {
-  //   dataSubmit.coupon = req.body.coupon;
-  // }
   //   if (
   //   req.body.tip != "" &&
   //   req.body.tip != null &&
