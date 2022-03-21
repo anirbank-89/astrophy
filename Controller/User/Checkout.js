@@ -100,27 +100,31 @@ const create = async (req, res) => {
       // Update the cart items with order id and other details
       Cart.updateMany(
         { user_id: mongoose.Types.ObjectId(req.body.user_id), status: true },
-        { $set: {
-          status: false, 
-          order_id: data.order_id,
-          discount_percent: data.discount_percent,
-          buy_date: data.booking_date
-        } },
+        {
+          $set: {
+            status: false,
+            order_id: data.order_id,
+            discount_percent: data.discount_percent,
+            buy_date: data.booking_date
+          }
+        },
         { multi: true },
         (err, writeResult) => {
           // console.log(err);
         }
       );
       // Decrease the number of coupon used in the checkout
-      let coupData = await Coupon.findOne(
-        {
-          name: data.coupon.name,
-          status: true
-        }
-      ).exec();
+      if (data.coupon != null) {
+        let coupData = await Coupon.findOne(
+          {
+            name: data.coupon.name,
+            status: true
+          }
+        ).exec();
 
-      coupData.times -= 1;
-      coupData.save();
+        coupData.times -= 1;
+        coupData.save();
+      }
 
       // Save billing and/or shipping address
       if (data.address_future_use != "" || data.address_future_use != null || typeof data.address_future_use != "undefined") {

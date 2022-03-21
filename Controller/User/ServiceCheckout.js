@@ -98,13 +98,15 @@ const create = async (req, res) => {
       );
 
       // Decrease the number of the coupon applied on checkout
-      let coupData = await Coupon.findOne({
-        name: data.coupon.name,
-        status: true
-      }).exec();
+      if (data.coupon != null) {
+        let coupData = await Coupon.findOne({
+          name: data.coupon.name,
+          status: true
+        }).exec();
 
-      coupData.times -= 1;
-      coupData.save();
+        coupData.times -= 1;
+        coupData.save();
+      }
 
       // Save billing and/or shipping address
       if (data.address_future_use != "" || data.address_future_use != null || typeof data.address_future_use != "undefined") {
