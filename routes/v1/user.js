@@ -128,7 +128,7 @@ router.post('/applyCoupon', ServiceCoupon.applyCoupon);      // added by anirban
 
 router.post('/servicewishlist', Servicewishlist.create);
 // same api as the last one
-router.post('/save-for-later', Servicewishlist.saveForLater);
+router.delete('/save-for-later/:id', Servicewishlist.saveForLater);
 router.get('/servicegetWishlist/:user_id', Servicewishlist.getWish);
 router.delete('/servicedeleteWishlist/:id', Servicewishlist.Delete);
 
