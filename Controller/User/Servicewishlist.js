@@ -177,27 +177,24 @@ const saveForLater = async (req, res) => {
         return saveData
             .save()
             .then((data) => {
-                ServiceCart.remove({
-                    user_id: mongoose.Types.ObjectId(req.body.user_id),
-                    serv_id: mongoose.Types.ObjectId(req.body.serv_id),
-                    status: true
-                }, function (err, result) {
-                    if (err) {
-                        res.status(500).json({
-                            status: false,
-                            message: "Server error. Please try again.",
-                            error: err,
-                        });
+                ServiceCart.deleteOne(
+                    {
+                        user_id: mongoose.Types.ObjectId(req.body.user_id),
+                        serv_id: mongoose.Types.ObjectId(req.body.serv_id),
+                        status: true
+                    },
+                    (fault, result) => {
+                        if (fault) {
+                            console.log("Failed to remove from cart due to ", fault.message);
+                        }
                     }
-                    else {
-                        res.status(200).json({
-                            status: true,
-                            message: 'Item Added to Successfully',
-                            data: data
-                        })
-                    }
-                })
+                );
 
+                res.status(200).json({
+                    status: true,
+                    message: 'Item Added to Successfully',
+                    data: data
+                });
             })
             .catch((err) => {
                 res.status(500).json({
