@@ -57,6 +57,9 @@ const create = async( req , res ) =>
         delivery:req.body.delivery,
         delivery_time:req.body.delivery_time
     }
+    if (req.body.offer != 0 || req.body.offer != null || typeof req.body.offer != "undefined") {
+        prductData.offer = req.body.offer;
+    }
 
     const productSave = await new Product(prductData)
 

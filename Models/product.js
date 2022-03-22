@@ -31,6 +31,10 @@ const ProductSchema = new mongoose.Schema({
         required: true
     },
     tax: String,
+    offer: {
+        type: Number,
+        default: 0
+    },
     // total: Number,
     image: Array,
     status: {
